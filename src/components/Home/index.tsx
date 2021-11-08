@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+// import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import tw from 'tailwind-styled-components'
 import { motion } from 'framer-motion'
@@ -10,7 +10,7 @@ import { faTelegramPlane, faDiscord, faTwitter, faFacebookF, faInstagram } from 
 import Anchor from '../Anchor'
 
 import About from './About'
-import Contract from './Contract'
+// import Contract from './Contract'
 import Roadmap from './Roadmap'
 
 const Outer = tw.div`
@@ -66,11 +66,11 @@ const MainAnchor = tw(Anchor)`
   text-2xl
 `
 
-const MainLink = tw(Link)`
-  text-indigo-300
-  hover:text-indigo-200
-  text-2xl
-`
+// const MainLink = tw(Link)`
+//   text-indigo-300
+//   hover:text-indigo-200
+//   text-2xl
+// `
 
 // const Socials = tw.div`
 //   flex
@@ -109,7 +109,7 @@ const Home: React.FC = () => {
           <HeroSection>
             <Header>OnlyMoons</Header>
 
-            <Description>A super cool token packed with awesome utility.</Description>
+            <Description>A community driven blockchain project.</Description>
 
             <Links>
               <MainAnchor
