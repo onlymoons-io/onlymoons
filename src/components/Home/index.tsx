@@ -103,6 +103,10 @@ const SocialLink = tw(SocialLinkCSS)`
   rounded-full
 `
 
+const scrollToElem = (elem: HTMLElement | null) => {
+  window.scrollTo(0, window.scrollY + (elem?.getBoundingClientRect().top || 0))
+}
+
 const Home: React.FC = () => {
   return (
     <Outer>
@@ -130,7 +134,15 @@ const Home: React.FC = () => {
                 Chart
               </MainAnchor>
 
-              <MainAnchor href="#roadmap">Roadmap</MainAnchor>
+              <MainAnchor
+                href="#roadmap"
+                onClick={(e) => {
+                  e.preventDefault()
+                  scrollToElem(document.getElementById('roadmap'))
+                }}
+              >
+                Roadmap
+              </MainAnchor>
             </Links>
 
             <Links>
