@@ -5,7 +5,7 @@ import tw from 'tailwind-styled-components'
 import { motion } from 'framer-motion'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTelegramPlane, faDiscord, faTwitter, faFacebookF, faInstagram } from '@fortawesome/free-brands-svg-icons'
+import { faTelegramPlane, faDiscord, faTwitter, faTwitch, faInstagram } from '@fortawesome/free-brands-svg-icons'
 
 import Anchor from '../Anchor'
 
@@ -159,15 +159,30 @@ const Home: React.FC = () => {
                 <FontAwesomeIcon icon={faDiscord} />
               </SocialLink>
 
-              <SocialLink target="_blank" rel="noreferrer noopener" href="/" title="Twitter">
+              <SocialLink
+                target="_blank"
+                rel="noreferrer noopener"
+                href="https://twitter.com/OnlyMoonsTeam"
+                title="Twitter"
+              >
                 <FontAwesomeIcon icon={faTwitter} />
               </SocialLink>
 
-              <SocialLink target="_blank" rel="noreferrer noopener" href="/" title="Facebook">
-                <FontAwesomeIcon icon={faFacebookF} />
+              <SocialLink
+                target="_blank"
+                rel="noreferrer noopener"
+                href="https://www.twitch.tv/onlymoonsofficial"
+                title="Twitch"
+              >
+                <FontAwesomeIcon icon={faTwitch} />
               </SocialLink>
 
-              <SocialLink target="_blank" rel="noreferrer noopener" href="/" title="Instagram">
+              <SocialLink
+                target="_blank"
+                rel="noreferrer noopener"
+                href="https://www.instagram.com/onlymoonsteam/"
+                title="Instagram"
+              >
                 <FontAwesomeIcon icon={faInstagram} />
               </SocialLink>
             </Links>
