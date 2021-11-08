@@ -51,6 +51,8 @@ const Header = tw.h1`
 
 const Description = tw.div`
   mt-4
+  text-center
+  md:text-left
 `
 
 const Links = tw.div`
@@ -109,7 +111,7 @@ const Home: React.FC = () => {
           <HeroSection>
             <Header>OnlyMoons</Header>
 
-            <Description>A community driven blockchain project.</Description>
+            <Description>A community driven launchpad.</Description>
 
             <Links>
               <MainAnchor

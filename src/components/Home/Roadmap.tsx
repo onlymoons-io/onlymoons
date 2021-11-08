@@ -60,10 +60,9 @@ const Roadmap: React.FC = () => {
 
             <RoadmapSectionContent>
               <ul className="list-disc">
-                <li style={{ textDecoration: 'line-through' }}>Launch token on Pancakeswap.</li>
-                <li style={{ textDecoration: 'line-through' }}>Launch website.</li>
-                <li>Update the roadmap</li>
-                <li>Begin development of DApp.</li>
+                <li style={{ textDecoration: 'line-through' }}>Launch token on Pancakeswap</li>
+                <li style={{ textDecoration: 'line-through' }}>Launch website</li>
+                <li>Begin development of launchpad platform</li>
                 <li>Marketing campaign</li>
               </ul>
             </RoadmapSectionContent>

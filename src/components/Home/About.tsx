@@ -1,6 +1,9 @@
 import React, { HTMLAttributes } from 'react'
 import styled from 'styled-components'
 import tw from 'tailwind-styled-components'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { IconDefinition } from '@fortawesome/fontawesome-common-types'
+import { faLock } from '@fortawesome/free-solid-svg-icons'
 import { useInView } from 'react-intersection-observer'
 import ReactTooltip from 'react-tooltip'
 import Anchor from '../Anchor'
@@ -135,17 +138,19 @@ const AboutItemComponent: React.FC<AboutItemComponentProps> = ({ title, content,
   )
 }
 
-interface ContractInfoSectionComponentProps {
-  direction: 'left' | 'right'
-}
-
 const getDirectionToPixels = (direction: 'left' | 'right', amount: number = 20) => {
   return direction === 'left' ? -amount : amount
+}
+
+interface ContractInfoSectionComponentProps {
+  direction: 'left' | 'right'
+  icon?: IconDefinition
 }
 
 const ContractInfoSectionComponent: React.FC<ContractInfoSectionComponentProps & HTMLAttributes<HTMLDivElement>> = ({
   children,
   direction,
+  icon,
   ...rest
 }) => {
   const [ref, inView] = useInView({ delay: 250, triggerOnce: true })
@@ -158,7 +163,12 @@ const ContractInfoSectionComponent: React.FC<ContractInfoSectionComponentProps &
       animate={{ opacity: inView ? 1 : 0, translateX: inView ? 0 : getDirectionToPixels(direction) }}
       transition={{ duration: 0.5 }}
     >
-      <ContractInfoSection {...rest}>{children}</ContractInfoSection>
+      <ContractInfoSection {...rest}>
+        <div className="">
+          <div className=""></div>
+          <div className="">{children}</div>
+        </div>
+      </ContractInfoSection>
     </motion.div>
   )
 }
@@ -190,7 +200,7 @@ const About: React.FC = () => {
               <ContractInfoSectionTitle>Liquidity locked</ContractInfoSectionTitle>
 
               <ContractInfoSectionContent>
-                Initial liquidity was burned.
+                Initial LP tokens were burned.
                 <br />
                 <br />
                 Additional liquidity was added and locked post-launch.
@@ -219,8 +229,7 @@ const About: React.FC = () => {
               <ContractInfoSectionTitle>No team wallet</ContractInfoSectionTitle>
 
               <ContractInfoSectionContent>
-                No tokens were distributed to team wallets. Any tokens held by team members were purchased fairly after
-                launch.
+                No tokens were distributed to team wallets. Any tokens held by team members were purchased after launch.
               </ContractInfoSectionContent>
             </ContractInfoSectionComponent>
           </ContractInfo>
