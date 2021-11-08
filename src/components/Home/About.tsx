@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { HTMLAttributes } from 'react'
 import styled from 'styled-components'
 import tw from 'tailwind-styled-components'
+import { useInView } from 'react-intersection-observer'
 import Anchor from '../Anchor'
+import { motion } from 'framer-motion'
 
 const OuterCSS = styled.section`
   min-height: 320px;
@@ -51,27 +53,31 @@ const Inner = tw(InnerCSS)`
 `
 
 const AboutContent = tw.div`
-  flex
-  flex-col
-  md:flex-row
+  grid md:grid-cols-2 lg:grid-cols-4 gap-4
 `
 
 const AboutItem = tw.div`
-  p-8
+  p-2
   flex
   flex-col
+  w-full
   m-auto
-  justify-center
+  justify-start
   items-center
+  h-full
+  text-center
 `
 
 const AboutItemHeader = tw.div`
   text-3xl
   font-bold
+  whitespace-nowrap
+  p-4
 `
 
 const AboutItemContent = tw.div`
   text-lg
+  w-full
 `
 
 const Content = tw.div`
@@ -93,6 +99,7 @@ const ContractInfoSection = tw.div`
   text-gray-900
   rounded
   p-16
+  w-full
   md:w-3/4
   mt-20
 `
@@ -120,6 +127,34 @@ const AboutItemComponent: React.FC<AboutItemComponentProps> = ({ title, content 
   )
 }
 
+interface ContractInfoSectionComponentProps {
+  direction: 'left' | 'right'
+}
+
+const getDirectionToPixels = (direction: 'left' | 'right', amount: number = 20) => {
+  return direction === 'left' ? -amount : amount
+}
+
+const ContractInfoSectionComponent: React.FC<ContractInfoSectionComponentProps & HTMLAttributes<HTMLDivElement>> = ({
+  children,
+  direction,
+  ...rest
+}) => {
+  const [ref, inView] = useInView({ delay: 250, triggerOnce: true })
+
+  return (
+    <motion.div
+      ref={ref}
+      className="w-full h-full flex justify-center"
+      initial={{ opacity: 0, translateX: getDirectionToPixels(direction) }}
+      animate={{ opacity: inView ? 1 : 0, translateX: inView ? 0 : getDirectionToPixels(direction) }}
+      transition={{ duration: 0.5 }}
+    >
+      <ContractInfoSection {...rest}>{children}</ContractInfoSection>
+    </motion.div>
+  )
+}
+
 const About: React.FC = () => {
   return (
     <Outer>
@@ -136,7 +171,7 @@ const About: React.FC = () => {
           </AboutContent>
 
           <ContractInfo>
-            <ContractInfoSection style={{ marginTop: 0 }}>
+            <ContractInfoSectionComponent direction="right" style={{ marginTop: 0 }}>
               <ContractInfoSectionTitle>Liquidity locked</ContractInfoSectionTitle>
 
               <ContractInfoSectionContent>
@@ -144,7 +179,7 @@ const About: React.FC = () => {
                 <br />
                 <br />
                 Additional liquidity was added and locked post-launch.
-                <div className="mt-6 flex flex-row gap-3 justify-center">
+                <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
                   <Anchor
                     href="https://bscscan.com/token/0xea03d63fad4c799e3868902bff689fd44ccdd21f#balances"
                     target="_blank"
@@ -165,16 +200,16 @@ const About: React.FC = () => {
                   </Anchor>
                 </div>
               </ContractInfoSectionContent>
-            </ContractInfoSection>
+            </ContractInfoSectionComponent>
 
-            <ContractInfoSection>
+            <ContractInfoSectionComponent direction="left">
               <ContractInfoSectionTitle>No team wallet</ContractInfoSectionTitle>
 
               <ContractInfoSectionContent>
                 No tokens were distributed to team wallets. Any tokens held by team members were purchased fairly after
                 launch.
               </ContractInfoSectionContent>
-            </ContractInfoSection>
+            </ContractInfoSectionComponent>
           </ContractInfo>
         </Content>
       </Inner>

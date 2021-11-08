@@ -34,13 +34,14 @@ const RoadmapSection = tw.div`
   md:flex-row
   justify-between
   items-center
+  gap-20
 `
 
 const RoadmapSectionTitle = tw.div`
   text-3xl
   font-bold
   md:w-1/2
-  text-center
+  text-right
 `
 
 const RoadmapSectionContent = tw.div`
