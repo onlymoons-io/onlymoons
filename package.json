@@ -1,6 +1,6 @@
 {
-  "name": "onlymoons-frontend-v2",
-  "version": "0.1.0",
+  "name": "onlymoons-frontend",
+  "version": "0.0.1",
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.4.0",
