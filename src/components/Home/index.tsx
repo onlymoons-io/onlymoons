@@ -209,7 +209,7 @@ const Home: React.FC = () => {
           {/* moon logo section */}
           <HeroSection className="text-center">
             <motion.img
-              className="w-96 h-96 bg-blue-500 rounded-full m-auto object-cover"
+              className="w-96 h-96 bg-blue-500 rounded-full m-auto object-cover pointer-events-none"
               src={logoSrc}
               style={{ maxWidth: '30vw', maxHeight: '30vw' }}
               initial={{ opacity: 0, translateY: 20 }}
