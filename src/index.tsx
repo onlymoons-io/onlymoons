@@ -4,7 +4,7 @@ import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 
-if (window.location.pathname !== 'localhost' && !window.location.protocol.startsWith('https')) {
+if (window.location.hostname !== 'localhost' && !window.location.protocol.startsWith('https')) {
   const url = new URL(window.location.href)
   url.protocol = 'https:'
   window.location.assign(url.href)
