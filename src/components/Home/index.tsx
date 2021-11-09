@@ -20,6 +20,8 @@ import About from './About'
 // import Contract from './Contract'
 import Roadmap from './Roadmap'
 
+import logoSrc from '../../images/logo-white.svg'
+
 const Outer = tw.div`
   w-full
 `
@@ -204,9 +206,11 @@ const Home: React.FC = () => {
             </Links>
           </HeroSection>
 
+          {/* moon logo section */}
           <HeroSection className="text-center">
-            <motion.div
-              className="bg-gray-100 w-96 h-96 rounded-full m-auto"
+            <motion.img
+              className="w-96 h-96 bg-blue-500 rounded-full m-auto object-cover"
+              src={logoSrc}
               style={{ maxWidth: '30vw', maxHeight: '30vw' }}
               initial={{ opacity: 0, translateY: 20 }}
               animate={{ opacity: 1, translateY: 0 }}
