@@ -38,7 +38,7 @@ contract TokenStats {
         uint256 burned,
         uint8 decimals,
         uint256 liquidityAmount,
-        uint256 liquidityBnb,
+        uint256 liquidityWeth,
         uint256 liquidityTokens
     ){
         name = _token.name();
@@ -53,7 +53,7 @@ contract TokenStats {
         burned += _token.balanceOf(address(_token));
         decimals = _token.decimals();
         liquidityAmount = _pair.totalSupply();
-        liquidityBnb = _weth.balanceOf(address(_pair));
+        liquidityWeth = _weth.balanceOf(address(_pair));
         liquidityTokens = _token.balanceOf(address(_pair));
     }
 }
