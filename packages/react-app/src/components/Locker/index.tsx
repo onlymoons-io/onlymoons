@@ -1,24 +1,20 @@
-import React from 'react'
-import styled from 'styled-components'
+import React, { useContext, useEffect, useState, useCallback } from 'react'
 import tw from 'tailwind-styled-components'
-import { Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
-import AngledSection from '../AngledSection'
+import { TokenLockerManagerV1ContractContext } from '../contracts/TokenLockerManagerV1'
 import Lock from './Lock'
-import { Primary as PrimaryButton, Dark as DarkButton } from '../Button'
-import Input from '../Input'
+import NotConnected from '../NotConnected'
+import { TokenLockData } from '../../typings'
+import Header from './Header'
 
 const Outer = tw.div`
-  flex
-  flex-col
-  min-h-screen
+  
 `
 
-const TopSectionCSS = styled.section``
-
-const TopSection = tw(TopSectionCSS)`
+const MidSection = tw.section`
+  bg-blue-500
   p-10
-  pb-36
 `
 
 const BottomSection = tw.section`
@@ -35,11 +31,6 @@ const SectionInner = tw.div`
   items-center
 `
 
-const Title = tw.h2`
-  text-2xl
-  font-extralight
-`
-
 const Locks = tw.div`
   grid
   grid-cols-1
@@ -47,53 +38,87 @@ const Locks = tw.div`
   xl:grid-cols-3
   2xl:grid-cols-4
   gap-5
+  w-full
 `
 
 const Locker: React.FC = () => {
-  const { account } = useWeb3React()
+  const { account: accountToCheck, chainId: chainIdToUse, id: idToUse } = useParams()
+  const { account, chainId } = useWeb3React()
+  const { contract, getTokenLockersForAccount, getTokenLockData, tokenLockerCount } = useContext(
+    TokenLockerManagerV1ContractContext,
+  )
+  const [tokenLocks, setTokenLocks] = useState<Array<TokenLockData>>([])
+  const [sortedLocks, setSortedLocks] = useState<Array<TokenLockData>>([])
+
+  useEffect(() => {
+    if (chainId && chainIdToUse && chainId !== parseInt(chainIdToUse)) {
+      //
+      console.warn('Incorrect chain id!')
+    }
+  }, [chainId, chainIdToUse])
+
+  const setupLocks = useCallback(() => {
+    if (!contract || !account || !tokenLockerCount || !getTokenLockData || !getTokenLockersForAccount) {
+      setTokenLocks([])
+      return
+    }
+
+    if (idToUse) {
+      getTokenLockData(parseInt(idToUse))
+        .then(result => setTokenLocks([result]))
+        .catch(console.error)
+    } else if (accountToCheck) {
+      getTokenLockersForAccount(accountToCheck).then((ids: Array<number>) =>
+        Promise.all(ids.map(id => getTokenLockData(id)))
+          .then((results: Array<TokenLockData>) => setTokenLocks(results))
+          .catch(console.error),
+      )
+    } else {
+      Promise.all(new Array(tokenLockerCount).fill(null).map((val, index) => getTokenLockData(index)))
+        .then((results: Array<TokenLockData>) => setTokenLocks(results))
+        .catch(console.error)
+    }
+  }, [contract, idToUse, account, accountToCheck, getTokenLockData, getTokenLockersForAccount, tokenLockerCount])
+
+  useEffect(setupLocks, [setupLocks])
+
+  useEffect(() => {
+    setSortedLocks(
+      [...tokenLocks].sort(
+        //
+        (a, b) => (a.createdAt > b.createdAt ? -1 : a.createdAt < b.createdAt ? 1 : 0),
+      ),
+    )
+  }, [tokenLocks])
 
   return (
     <Outer>
-      <TopSection>
+      <Header filterEnabled={idToUse ? false : true} />
+
+      <MidSection>
         <SectionInner>
-          <Title>Token Locker V1</Title>
-
-          <div className="my-2 flex flex-col md:flex-row items-start md:items-center gap-3">
-            <div className="flex items-center gap-3">
-              <PrimaryButton disabled={!account}>Create lock</PrimaryButton>
-
-              {account ? (
-                <Link to={`/locker/manage`}>
-                  <DarkButton>Your locks</DarkButton>
-                </Link>
+          {account ? (
+            <div className="flex flex-col justify-center w-full items-center gap-4">
+              {idToUse && sortedLocks[0] ? (
+                <div className="w-full md:max-w-md">
+                  <Lock key={sortedLocks[0].address} lock={sortedLocks[0]} />
+                </div>
               ) : (
-                <DarkButton disabled={true}>Your locks</DarkButton>
+                <Locks>
+                  {sortedLocks.map((lock: TokenLockData) => (
+                    <Lock key={lock.address} lock={lock} />
+                  ))}
+                </Locks>
               )}
             </div>
-
-            <Input disabled={!account} placeholder="Filter by name or address" style={{ minWidth: '260px' }} />
-          </div>
+          ) : (
+            <NotConnected text="Connect your wallet to view locks." />
+          )}
         </SectionInner>
-      </TopSection>
-
-      <AngledSection angle={0}>
-        {account ? (
-          <Locks>
-            <Lock />
-            <Lock />
-            <Lock />
-            <Lock />
-            <Lock />
-            <Lock />
-            <Lock />
-          </Locks>
-        ) : (
-          <>Please connect your wallet to view locks.</>
-        )}
-      </AngledSection>
+      </MidSection>
 
       <BottomSection>
-        <SectionInner>Footer</SectionInner>
+        <SectionInner></SectionInner>
       </BottomSection>
     </Outer>
   )

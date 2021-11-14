@@ -24,6 +24,7 @@ import logoSrc from '../../images/logo-white.svg'
 
 const Outer = tw.div`
   w-full
+  bg-gray-900
 `
 
 const HeroOuter = tw.div`
@@ -129,7 +130,7 @@ const Home: React.FC = () => {
 
               <MainAnchor
                 href="#roadmap"
-                onClick={(e) => {
+                onClick={e => {
                   e.preventDefault()
                   scrollToElem(document.getElementById('roadmap'))
                 }}

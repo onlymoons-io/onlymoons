@@ -38,15 +38,15 @@ const InnerCSS = styled.div`
   min-height: 320px;
 `
 
+const Section = tw.section`
+  px-10
+`
+
 const Inner = tw(InnerCSS)`
   relative
   z-1
-  w-full
   container
   m-auto
-  flex
-  flex-col
-  p-5
 `
 
 interface Props {
@@ -60,7 +60,9 @@ const AngledSection: React.FC<Props & HTMLAttributes<HTMLDivElement>> = ({ child
         <AngledInner style={{ transform: `rotateZ(${angle}deg)` }} />
       </Angled>
 
-      <Inner>{children}</Inner>
+      <Section>
+        <Inner>{children}</Inner>
+      </Section>
     </Outer>
   )
 }

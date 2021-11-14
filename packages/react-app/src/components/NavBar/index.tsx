@@ -59,7 +59,7 @@ const LogoImg = tw(LogoImgCSS)`
 `
 
 const LogoText = tw.div`
-  text-4xl
+  text-3xl
   uppercase
   hidden
   md:flex

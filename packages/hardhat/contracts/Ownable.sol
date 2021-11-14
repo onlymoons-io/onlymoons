@@ -19,8 +19,9 @@ pragma solidity ^0.8.0;
  * parent for ownable contracts
  */
 abstract contract Ownable {
-  constructor() {
-    _owner = msg.sender;
+  constructor(address owner_) {
+    _owner = owner_;
+    emit OwnershipTransfered(address(0), _owner);
   }
 
   address private _owner;
@@ -36,7 +37,7 @@ abstract contract Ownable {
     return _owner;
   }
 
-  function transferOwnership(address newOwner) onlyOwner() public {
+  function _transferOwnership(address newOwner) private onlyOwner() {
     // keep track of old owner for event
     address oldOwner = _owner;
 
@@ -45,5 +46,9 @@ abstract contract Ownable {
 
     // emit event about ownership change
     emit OwnershipTransfered(oldOwner, _owner);
+  }
+
+  function transferOwnership(address newOwner) onlyOwner() external {
+    _transferOwnership(newOwner);
   }
 }

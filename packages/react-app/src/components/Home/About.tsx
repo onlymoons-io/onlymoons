@@ -11,7 +11,12 @@ import AngledSection from '../AngledSection'
 import { motion } from 'framer-motion'
 
 const AboutContent = tw.div`
-  grid md:grid-cols-2 lg:grid-cols-4 gap-4
+  grid
+  md:grid-cols-2
+  lg:grid-cols-4
+  gap-4
+  max-w-5xl
+  m-auto
 `
 
 const AboutItem = tw.div`
@@ -42,10 +47,10 @@ const ContractInfo = tw.div`
   m-auto
   mt-24
   text-center
-  px-10
   flex
   flex-col
   items-center
+  max-w-4xl
 `
 
 const ContractInfoSection = tw.div`
