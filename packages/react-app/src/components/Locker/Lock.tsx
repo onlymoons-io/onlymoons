@@ -167,7 +167,7 @@ const Lock: React.FC<Props> = ({ lock }) => {
     if (!contract || !getTokenLockData) return
 
     getTokenLockData(lock.id)
-      .then(lockData => setLockData({ ...lockData, address: lock.address }))
+      .then(lockData => setLockData(lockData))
       .catch(console.error)
   }, [contract, lock, getTokenLockData])
 
@@ -222,7 +222,7 @@ const Lock: React.FC<Props> = ({ lock }) => {
     connector
       .getProvider()
       .then(provider =>
-        setLockContract(new Contract(lockData.address, lockAbi, new Web3Provider(provider).getSigner())),
+        setLockContract(new Contract(lockData.contractAddress, lockAbi, new Web3Provider(provider).getSigner())),
       )
       .catch(err => {
         console.error(err)
@@ -412,9 +412,9 @@ const Lock: React.FC<Props> = ({ lock }) => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-indigo-500"
-                    href={getExplorerContractLink(getChainId(), lockData.address)}
+                    href={getExplorerContractLink(getChainId(), lockData.contractAddress)}
                   >
-                    {getShortAddress(lockData.address)}
+                    {getShortAddress(lockData.contractAddress)}
                   </a>
                 }
               />
@@ -533,7 +533,7 @@ const Lock: React.FC<Props> = ({ lock }) => {
                 </div>
 
                 <PrimaryButton
-                  disabled={!canSubmitExtend}
+                  disabled={!canSubmitExtend || isExtending}
                   onClick={() => {
                     //
                     if (isExtendApproved) {

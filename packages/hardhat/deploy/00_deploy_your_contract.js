@@ -42,12 +42,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   {
     const tokenLockerV1 = await deploy("TokenLockerV1", {
       from: deployer,
-      args: [
-        0,
-        deployer,
-        testToken.address,
-        Math.ceil(Date.now() / 1000 + 60000),
-      ],
+      args: [0, deployer, testToken.address, 99999999999],
       libraries: {
         Util: utilLibrary.address,
       },

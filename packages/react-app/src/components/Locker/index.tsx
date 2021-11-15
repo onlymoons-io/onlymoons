@@ -111,7 +111,7 @@ const Locker: React.FC = () => {
             <div className="flex flex-col justify-center w-full items-center gap-4">
               {idToUse && sortedLocks[0] ? (
                 <div className="w-full md:max-w-md">
-                  <Lock key={sortedLocks[0].address} lock={sortedLocks[0]} />
+                  <Lock key={sortedLocks[0].contractAddress} lock={sortedLocks[0]} />
                 </div>
               ) : sortedLocks.length === 0 ? (
                 <LocksLoading>
@@ -122,7 +122,7 @@ const Locker: React.FC = () => {
               ) : (
                 <Locks>
                   {sortedLocks.map((lock: TokenLockData) => (
-                    <Lock key={lock.address} lock={lock} />
+                    <Lock key={lock.contractAddress} lock={lock} />
                   ))}
                 </Locks>
               )}

@@ -5,7 +5,7 @@
       "chainId": "97",
       "contracts": {
         "ERC20": {
-          "address": "0xC136895e915bA03D4133C18749277bcF71738141",
+          "address": "0xe789768a40Ac016332EC75DEDb6356E3D2011Eb9",
           "abi": [
             {
               "inputs": [
@@ -301,7 +301,7 @@
           ]
         },
         "TokenLockerManagerV1": {
-          "address": "0xc9bCf6fa4391AE700A05B723d4334974866513C7",
+          "address": "0x8F7e0184519B14571837bcB39De935cB7D291a87",
           "abi": [
             {
               "inputs": [],
@@ -324,7 +324,7 @@
                   "type": "address"
                 }
               ],
-              "name": "OwnershipTransfered",
+              "name": "OwnershipTransferred",
               "type": "event"
             },
             {
@@ -356,9 +356,9 @@
                 },
                 {
                   "indexed": false,
-                  "internalType": "uint32",
+                  "internalType": "uint40",
                   "name": "unlockTime",
-                  "type": "uint32"
+                  "type": "uint40"
                 }
               ],
               "name": "TokenLockerCreated",
@@ -377,9 +377,9 @@
                   "type": "uint256"
                 },
                 {
-                  "internalType": "uint32",
+                  "internalType": "uint40",
                   "name": "unlockTime_",
-                  "type": "uint32"
+                  "type": "uint40"
                 }
               ],
               "name": "createTokenLocker",
@@ -498,6 +498,11 @@
                 },
                 {
                   "internalType": "address",
+                  "name": "contractAddress",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
                   "name": "owner",
                   "type": "address"
                 },
@@ -512,14 +517,14 @@
                   "type": "address"
                 },
                 {
-                  "internalType": "uint32",
+                  "internalType": "uint40",
                   "name": "createdAt",
-                  "type": "uint32"
+                  "type": "uint40"
                 },
                 {
-                  "internalType": "uint32",
+                  "internalType": "uint40",
                   "name": "unlockTime",
-                  "type": "uint32"
+                  "type": "uint40"
                 },
                 {
                   "internalType": "uint256",
@@ -558,7 +563,7 @@
               "inputs": [
                 {
                   "internalType": "bool",
-                  "name": "value",
+                  "name": "value_",
                   "type": "bool"
                 }
               ],
@@ -584,7 +589,7 @@
               "inputs": [
                 {
                   "internalType": "address",
-                  "name": "newOwner",
+                  "name": "newOwner_",
                   "type": "address"
                 }
               ],
@@ -596,7 +601,7 @@
           ]
         },
         "TokenLockerV1": {
-          "address": "0x7090E910e9477ee02c7081a0106D5b8882Fa198D",
+          "address": "0xad99A4c4D668b99dbeEEF656e5505C5D6a1CD710",
           "abi": [
             {
               "inputs": [
@@ -616,9 +621,9 @@
                   "type": "address"
                 },
                 {
-                  "internalType": "uint32",
+                  "internalType": "uint40",
                   "name": "unlockTime_",
-                  "type": "uint32"
+                  "type": "uint40"
                 }
               ],
               "stateMutability": "nonpayable",
@@ -642,9 +647,9 @@
               "inputs": [
                 {
                   "indexed": false,
-                  "internalType": "uint32",
+                  "internalType": "uint40",
                   "name": "newUnlockTime",
-                  "type": "uint32"
+                  "type": "uint40"
                 }
               ],
               "name": "Extended",
@@ -666,7 +671,7 @@
                   "type": "address"
                 }
               ],
-              "name": "OwnershipTransfered",
+              "name": "OwnershipTransferred",
               "type": "event"
             },
             {
@@ -696,9 +701,9 @@
                   "type": "uint256"
                 },
                 {
-                  "internalType": "uint32",
+                  "internalType": "uint40",
                   "name": "newUnlockTime_",
-                  "type": "uint32"
+                  "type": "uint40"
                 }
               ],
               "name": "deposit",
@@ -717,6 +722,11 @@
                 },
                 {
                   "internalType": "address",
+                  "name": "contractAddress",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
                   "name": "owner",
                   "type": "address"
                 },
@@ -731,14 +741,14 @@
                   "type": "address"
                 },
                 {
-                  "internalType": "uint32",
+                  "internalType": "uint40",
                   "name": "createdAt",
-                  "type": "uint32"
+                  "type": "uint40"
                 },
                 {
-                  "internalType": "uint32",
+                  "internalType": "uint40",
                   "name": "unlockTime",
-                  "type": "uint32"
+                  "type": "uint40"
                 },
                 {
                   "internalType": "uint256",
@@ -814,7 +824,7 @@
               "inputs": [
                 {
                   "internalType": "address",
-                  "name": "newOwner",
+                  "name": "newOwner_",
                   "type": "address"
                 }
               ],
@@ -857,7 +867,7 @@
           ]
         },
         "Util": {
-          "address": "0x825304a08D3fBB5BB0e0A51Af5187366bBEEf04a",
+          "address": "0x82D4983A9bc8a165e3011026F830064D074796bA",
           "abi": [
             {
               "inputs": [

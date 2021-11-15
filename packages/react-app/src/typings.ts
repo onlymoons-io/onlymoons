@@ -11,7 +11,7 @@ export interface TokenData {
 export interface TokenLockData {
   owner: string
   id: number
-  address: string
+  contractAddress: string
   token: string
   createdBy: string
   createdAt: number

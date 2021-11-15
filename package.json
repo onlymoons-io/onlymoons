@@ -24,6 +24,7 @@
     "compile": "yarn workspace @scaffold-eth/hardhat compile",
     "deploy": "yarn workspace @scaffold-eth/hardhat deploy",
     "deploy:bsc": "yarn deploy --network bsc",
+    "deploy:localhost": "yarn deploy --network localhost",
     "deploy:bsctest": "yarn deploy --network bsctest",
     "deploy:rinkeby": "yarn deploy --network rinkeby",
     "deploy:ropsten": "yarn deploy --network ropsten",

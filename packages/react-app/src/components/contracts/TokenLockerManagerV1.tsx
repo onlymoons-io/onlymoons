@@ -66,9 +66,7 @@ const TokenLockerManagerV1ContractContextProvider: React.FC = ({ children }) => 
         throw new Error('Token locker contract is not loaded')
       }
 
-      const [address, lockData] = await Promise.all([contract.getTokenLockAddress(id), contract.getTokenLockData(id)])
-
-      return { address, ...lockData }
+      return contract.getTokenLockData(id)
     },
     [contract],
   )

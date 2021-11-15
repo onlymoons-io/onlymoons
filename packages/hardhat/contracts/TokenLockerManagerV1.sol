@@ -28,7 +28,7 @@ contract TokenLockerManagerV1 is Ownable {
     address indexed owner,
     address indexed tokenAddress,
     uint256 amount,
-    uint32 unlockTime
+    uint40 unlockTime
   );
 
   constructor() Ownable(msg.sender) {
@@ -50,14 +50,20 @@ contract TokenLockerManagerV1 is Ownable {
     return _creationEnabled;
   }
 
-  function setCreationEnabled(bool value) external onlyOwner() {
-    _creationEnabled = value;
+  /**
+   * @dev allow turning off new lockers from being created, so that we can
+   * migrate to new versions of the contract & stop people from locking
+   * with the older versions. this will not prevent extending, depositing,
+   * or withdrawing from old locks - it only stops new locks from being created.
+   */
+  function setCreationEnabled(bool value_) external onlyOwner() {
+    _creationEnabled = value_;
   }
 
   function createTokenLocker(
     address tokenAddress_,
     uint256 amount_,
-    uint32 unlockTime_
+    uint40 unlockTime_
   ) external {
     require(_creationEnabled, "Locker creation is disabled");
 
@@ -72,17 +78,21 @@ contract TokenLockerManagerV1 is Ownable {
     emit TokenLockerCreated(id, msg.sender, tokenAddress_, _tokenLockers[id].balance(), unlockTime_);
   }
 
+  /**
+   * @return the address of a locker contract with the given id
+   */
   function getTokenLockAddress(uint40 id_) external view returns (address) {
     return address(_tokenLockers[id_]);
   }
 
   function getTokenLockData(uint40 id_) external view returns (
     uint40 id,
+    address contractAddress,
     address owner,
     address token,
     address createdBy,
-    uint32 createdAt,
-    uint32 unlockTime,
+    uint40 createdAt,
+    uint40 unlockTime,
     uint256 tokenBalance,
     uint256 totalSupply
   ){

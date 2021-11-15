@@ -53,7 +53,8 @@ const Header: React.FC<Props> = ({ filterEnabled = true }) => {
           </div>
 
           <Input
-            disabled={!account || !filterEnabled}
+            // disabled={!account || !filterEnabled}
+            disabled={true}
             color="dark"
             placeholder="Filter by name or address"
             style={{ minWidth: '260px' }}

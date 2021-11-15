@@ -46,18 +46,18 @@ abstract contract Ownable {
     return _owner;
   }
 
-  function _transferOwnership(address newOwner) private onlyOwner() {
+  function _transferOwnership(address newOwner_) private onlyOwner() {
     // keep track of old owner for event
     address oldOwner = _owner;
 
     // set the new owner
-    _owner = newOwner;
+    _owner = newOwner_;
 
     // emit event about ownership change
     emit OwnershipTransferred(oldOwner, _owner);
   }
 
-  function transferOwnership(address newOwner) onlyOwner() external {
-    _transferOwnership(newOwner);
+  function transferOwnership(address newOwner_) external onlyOwner() {
+    _transferOwnership(newOwner_);
   }
 }

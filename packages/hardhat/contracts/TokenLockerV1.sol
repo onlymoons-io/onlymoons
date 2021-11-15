@@ -24,27 +24,27 @@ import { IERC20 } from "./library/IERC20.sol";
 import { Util } from "./Util.sol";
 
 contract TokenLockerV1 is Ownable {
-  event Extended(uint32 newUnlockTime);
+  event Extended(uint40 newUnlockTime);
   event Deposited(uint256 amount);
   event Withdrew();
 
-  constructor(uint40 id_, address owner_, address tokenAddress_, uint32 unlockTime_) Ownable(owner_) {
-    require(unlockTime_ > uint32(block.timestamp), "Unlock time must be in the future");
+  constructor(uint40 id_, address owner_, address tokenAddress_, uint40 unlockTime_) Ownable(owner_) {
+    require(unlockTime_ > uint40(block.timestamp), "Unlock time must be in the future");
 
     _id = id_;
     _token = IERC20(tokenAddress_);
     _createdBy = owner_;
-    _createdAt = uint32(block.timestamp);
+    _createdAt = uint40(block.timestamp);
     _unlockTime = unlockTime_;
   }
   
-  uint40 internal _id;
+  uint40 private _id;
   IERC20 private _token;
   address private _createdBy;
-  uint32 internal _createdAt;
-  uint32 internal _unlockTime;
+  uint40 private _createdAt;
+  uint40 private _unlockTime;
 
-  function _balance() internal view returns (uint256) {
+  function _balance() private view returns (uint256) {
     return _token.balanceOf(address(this));
   }
 
@@ -52,17 +52,19 @@ contract TokenLockerV1 is Ownable {
     return _balance();
   }
 
-  function _getLockData() internal view returns (
+  function _getLockData() private view returns (
     uint40 id,
+    address contractAddress,
     address owner,
     address token,
     address createdBy,
-    uint32 createdAt,
-    uint32 unlockTime,
+    uint40 createdAt,
+    uint40 unlockTime,
     uint256 tokenBalance,
     uint256 totalSupply
   ){
     id = _id;
+    contractAddress = address(this);
     owner = _getOwner();
     token = address(_token);
     createdBy = _createdBy;
@@ -74,11 +76,12 @@ contract TokenLockerV1 is Ownable {
 
   function getLockData() external view returns (
     uint40 id,
+    address contractAddress,
     address owner,
     address token,
     address createdBy,
-    uint32 createdAt,
-    uint32 unlockTime,
+    uint40 createdAt,
+    uint40 unlockTime,
     uint256 tokenBalance,
     uint256 totalSupply
   ) {
@@ -109,7 +112,7 @@ contract TokenLockerV1 is Ownable {
   /**
    * @dev deposit and extend duration in one call
    */
-  function deposit(uint256 amount_, uint32 newUnlockTime_) external onlyOwner() {
+  function deposit(uint256 amount_, uint40 newUnlockTime_) external onlyOwner() {
     if (amount_ != 0) {
       uint256 oldBalance = _balance();
       _token.transferFrom(msg.sender, address(this), amount_);
@@ -118,7 +121,7 @@ contract TokenLockerV1 is Ownable {
 
     if (newUnlockTime_ != 0) {
       require(newUnlockTime_ >= _unlockTime, "New unlock time must be beyond the previous");
-      require(newUnlockTime_ >= uint32(block.timestamp), "New unlock time must be in the future");
+      require(newUnlockTime_ >= uint40(block.timestamp), "New unlock time must be in the future");
       _unlockTime = newUnlockTime_;
       emit Extended(_unlockTime);
     }
@@ -128,10 +131,9 @@ contract TokenLockerV1 is Ownable {
    * @dev withdraw all of the deposited token
    */
   function withdraw() external onlyOwner() {
-    require(uint32(block.timestamp) >= _unlockTime, "Wait until unlockTime to withdraw");
+    require(uint40(block.timestamp) >= _unlockTime, "Wait until unlockTime to withdraw");
 
-    uint256 oldBalance = _balance();
-    _token.transfer(_getOwner(), oldBalance);
+    _token.transfer(_getOwner(), _balance());
 
     emit Withdrew();
   }

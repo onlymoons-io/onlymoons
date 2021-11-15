@@ -85,7 +85,7 @@ const Roadmap: React.FC = () => {
                 <li style={{ textDecoration: 'line-through' }}>Launch token on Pancakeswap</li>
                 <li style={{ textDecoration: 'line-through' }}>Launch website V1</li>
                 <li style={{ textDecoration: 'line-through' }}>Begin development of launchpad platform</li>
-                <li style={{ textDecoration: 'line-through' }}>Token locker V1 release</li>
+                <li>Token locker V1 release</li>
                 <li>Begin marketing campaign</li>
                 <li>Website V2 update</li>
                 <li>List on CoinGecko</li>
