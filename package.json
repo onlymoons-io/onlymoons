@@ -1,63 +1,70 @@
 {
-  "name": "onlymoons-frontend",
-  "version": "0.0.1",
+  "name": "@scaffold-eth/monorepo",
+  "version": "1.0.0",
+  "keywords": [
+    "ethereum",
+    "react",
+    "uniswap",
+    "workspaces",
+    "yarn"
+  ],
   "private": true,
-  "dependencies": {
-    "@craco/craco": "^6.4.0",
-    "@fortawesome/fontawesome-svg-core": "^1.2.36",
-    "@fortawesome/free-brands-svg-icons": "^5.15.4",
-    "@fortawesome/free-regular-svg-icons": "^5.15.4",
-    "@fortawesome/free-solid-svg-icons": "^5.15.4",
-    "@fortawesome/react-fontawesome": "^0.1.16",
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "@types/jest": "^26.0.15",
-    "@types/node": "^12.0.0",
-    "@types/react": "^17.0.0",
-    "@types/react-dom": "^17.0.0",
-    "@types/react-tooltip": "^4.2.4",
-    "@types/styled-components": "^5.1.15",
-    "framer-motion": "^5.2.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-intersection-observer": "^8.32.2",
-    "react-router": "^6.0.1",
-    "react-router-dom": "^6.0.1",
-    "react-scripts": "4.0.3",
-    "react-tooltip": "^4.2.21",
-    "styled-components": "^5.3.3",
-    "tailwind-styled-components": "^2.0.3",
-    "typescript": "^4.1.2",
-    "web-vitals": "^1.0.1"
-  },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "test": "craco test",
-    "eject": "react-scripts eject"
+    "react-app:build": "yarn workspace @onlymoons/frontend build --max-old-space-size=12288",
+    "react-app:eject": "yarn workspace @onlymoons/frontend eject",
+    "react-app:start": "yarn workspace @onlymoons/frontend start",
+    "react-app:test": "yarn workspace @onlymoons/frontend test",
+    "build": "yarn workspace @onlymoons/frontend build --max-old-space-size=12288",
+    "prettier": "yarn workspace @onlymoons/frontend prettier",
+    "chain": "yarn workspace @scaffold-eth/hardhat chain",
+    "fork": "yarn workspace @scaffold-eth/hardhat fork",
+    "node": "yarn workspace @scaffold-eth/hardhat chain",
+    "test": "yarn workspace @scaffold-eth/hardhat test",
+    "start": "yarn workspace @onlymoons/frontend start",
+    "compile": "yarn workspace @scaffold-eth/hardhat compile",
+    "deploy": "yarn workspace @scaffold-eth/hardhat deploy",
+    "deploy:bsc": "yarn deploy --network bsc",
+    "deploy:localhost": "yarn deploy --network localhost",
+    "deploy:bsctest": "yarn deploy --network bsctest",
+    "deploy:rinkeby": "yarn deploy --network rinkeby",
+    "deploy:ropsten": "yarn deploy --network ropsten",
+    "deploy:kovan": "yarn deploy --network kovan",
+    "watch": "yarn workspace @scaffold-eth/hardhat watch",
+    "accounts": "yarn workspace @scaffold-eth/hardhat accounts",
+    "balance": "yarn workspace @scaffold-eth/hardhat balance",
+    "send": "yarn workspace @scaffold-eth/hardhat send",
+    "generate": "yarn workspace @scaffold-eth/hardhat generate",
+    "account": "yarn workspace @scaffold-eth/hardhat account",
+    "mineContractAddress": "cd packages/hardhat && npx hardhat mineContractAddress",
+    "wallet": "cd packages/hardhat && npx hardhat wallet",
+    "fundedwallet": "cd packages/hardhat && npx hardhat fundedwallet",
+    "flatten": "cd packages/hardhat && npx hardhat flatten",
+    "clean": "cd packages/hardhat && npx hardhat clean",
+    "privatekey": "yarn workspace @scaffold-eth/hardhat privatekey",
+    "run-graph-node": "yarn workspace @scaffold-eth/services run-graph-node",
+    "remove-graph-node": "yarn workspace @scaffold-eth/services remove-graph-node",
+    "clean-graph-node": "yarn workspace @scaffold-eth/services clean-graph-node",
+    "graph-prepare": "mustache packages/subgraph/config/config.json packages/subgraph/src/subgraph.template.yaml > packages/subgraph/subgraph.yaml",
+    "graph-codegen": "yarn workspace @scaffold-eth/subgraph graph codegen",
+    "graph-build": "yarn workspace @scaffold-eth/subgraph graph build",
+    "graph-create-local": "yarn workspace @scaffold-eth/subgraph graph create --node http://localhost:8020/ scaffold-eth/your-contract",
+    "graph-remove-local": "yarn workspace @scaffold-eth/subgraph graph remove --node http://localhost:8020/ scaffold-eth/your-contract",
+    "graph-deploy-local": "yarn workspace @scaffold-eth/subgraph graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 scaffold-eth/your-contract",
+    "graph-ship-local": "yarn graph-prepare && yarn graph-codegen && yarn graph-deploy-local",
+    "deploy-and-graph": "yarn deploy && yarn graph-ship-local"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+  "workspaces": {
+    "packages": [
+      "packages/*"
     ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
+    "nohoist": [
+      "**/@graphprotocol/graph-ts",
+      "**/@graphprotocol/graph-ts/**",
+      "**/hardhat",
+      "**/hardhat/**",
+      "**/hardhat-ts",
+      "**/hardhat-ts/**"
     ]
   },
-  "devDependencies": {
-    "autoprefixer": "^9",
-    "postcss": "^7",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat"
-  }
+  "dependencies": {}
 }
