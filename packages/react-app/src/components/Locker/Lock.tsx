@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react'
-// import { useMount } from 'react-use'
+import { useMount } from 'react-use'
 // import styled from 'styled-components'
 import tw from 'tailwind-styled-components'
 import { Link } from 'react-router-dom'
@@ -15,6 +15,7 @@ import { TokenLockerManagerV1ContractContext } from '../contracts/TokenLockerMan
 import { TokenData, TokenLockData, LPLockData } from '../../typings'
 import { motion } from 'framer-motion'
 import { Primary as PrimaryButton } from '../Button'
+import ReactTooltip from 'react-tooltip'
 import TokenInput from '../TokenInput'
 import contracts from '../../contracts/production_contracts.json'
 import { getShortAddress, getExplorerContractLink, getExplorerTokenLink, timestampToDateTimeLocal } from '../../util'
@@ -43,7 +44,7 @@ const shortEnglishHumanizer = humanizeDuration.humanizer({
   units: ['y', 'mo', 'w', 'd', 'h', 'm', 's'],
 })
 
-const Outer = tw.div`
+const Outer = tw(motion.div)`
   
 `
 
@@ -150,6 +151,13 @@ const Lock: React.FC<Props> = ({ lock }) => {
   const [lpLockData, setLpLockData] = useState<LPLockData>()
   const [lpToken0Data, setLpToken0Data] = useState<TokenData>()
   const [lpToken1Data, setLpToken1Data] = useState<TokenData>()
+  const [elemScale, setElemScale] = useState<number>(0.975)
+  const [elemOpacity, setElemOpacity] = useState<number>(1)
+
+  useMount(() => {
+    setElemScale(1)
+    setElemOpacity(1)
+  })
 
   const getChainId = useCallback(() => {
     return chainId || 0
@@ -288,18 +296,82 @@ const Lock: React.FC<Props> = ({ lock }) => {
   // useMount(() => updateLockData())
 
   return (
-    <Outer>
+    <Outer initial={false} animate={{ scale: elemScale, opacity: elemOpacity }}>
       <Inner className="relative">
         <Section>
-          <Title>
-            <Link to={`/locker/${chainId}/${lock.id}`}>{lockTokenData?.symbol || '...'}</Link>
-          </Title>
+          <div className="flex justify-between items-center">
+            <div className="flex flex-col">
+              <Title>
+                <Link to={`/locker/${chainId}/${lock.id}`}>{lockTokenData?.symbol || '...'}</Link>
+              </Title>
 
-          <div className="text-sm">
-            Locked by{' '}
-            <Link to={`/locker/account/${lockData.owner}`} className="mt-2 text-indigo-500">
-              {getShortAddress(lockData.owner)}
-            </Link>
+              <div className="text-sm">
+                Locked by{' '}
+                <Link to={`/locker/account/${lockData.createdBy}`} className="mt-2 text-indigo-500">
+                  {getShortAddress(lockData.createdBy)}
+                </Link>
+                {lockData.owner !== lockData.createdBy && (
+                  <>
+                    , owned by{' '}
+                    <Link to={`/locker/account/${lockData.owner}`} className="mt-2 text-indigo-500">
+                      {getShortAddress(lockData.owner)}
+                    </Link>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div
+              className="cursor-default"
+              style={{ maxWidth: '64px' }}
+              data-tip={true}
+              data-for={`lock-status-${lockData.id}`}
+            >
+              <CircularProgressbar
+                value={(() => {
+                  //
+                  const duration = lockData.unlockTime - lockData.createdAt
+                  const progress = Math.ceil(Date.now() / 1000) - lockData.createdAt
+
+                  return 100 - (progress / duration) * 100
+                })()}
+                styles={
+                  BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) && !lockData.tokenBalance.eq(0)
+                    ? progressStylesUnlocked
+                    : progressStyles
+                }
+                children={
+                  BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) ? (
+                    <FontAwesomeIcon
+                      className={`text-2xl text-gray-${lockData.tokenBalance.eq(0) ? '400' : '700'}`}
+                      icon={lockData.tokenBalance.eq(0) ? faCheck : faLockOpen}
+                      fixedWidth
+                    />
+                  ) : (
+                    <span>
+                      {shortEnglishHumanizer(
+                        BigNumber.from(lockData.unlockTime)
+                          .sub(BigNumber.from(Math.ceil(Date.now() / 1000)))
+                          .mul(1000)
+                          .toNumber(),
+                      )}
+                    </span>
+                  )
+                }
+              />
+
+              {/* <div className="m-auto text-center mt-2">
+                {lockData.unlockTime > Date.now() / 1000
+                  ? 'Locked'
+                  : lockData.tokenBalance.gt(0)
+                  ? 'Unlocked'
+                  : 'Empty'}
+              </div> */}
+            </div>
+
+            <ReactTooltip id={`lock-status-${lockData.id}`} type="dark" effect="solid">
+              {lockData.unlockTime > Date.now() / 1000 ? 'Locked' : lockData.tokenBalance.gt(0) ? 'Unlocked' : 'Empty'}
+            </ReactTooltip>
           </div>
         </Section>
 
@@ -372,51 +444,6 @@ const Lock: React.FC<Props> = ({ lock }) => {
                 value={new Date(lockData.unlockTime * 1000).toLocaleString()}
               />
             </div>
-
-            <div className="m-auto p-5" style={{ maxWidth: '132px' }}>
-              <CircularProgressbar
-                value={(() => {
-                  //
-                  const duration = lockData.unlockTime - lockData.createdAt
-                  const progress = Math.ceil(Date.now() / 1000) - lockData.createdAt
-
-                  return 100 - (progress / duration) * 100
-                })()}
-                styles={
-                  BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) && !lockData.tokenBalance.eq(0)
-                    ? progressStylesUnlocked
-                    : progressStyles
-                }
-                children={
-                  BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) ? (
-                    <FontAwesomeIcon
-                      className={`text-2xl text-gray-${lockData.tokenBalance.eq(0) ? '400' : '700'}`}
-                      icon={lockData.tokenBalance.eq(0) ? faCheck : faLockOpen}
-                      fixedWidth
-                    />
-                  ) : (
-                    <span>
-                      {shortEnglishHumanizer(
-                        BigNumber.from(lockData.unlockTime)
-                          .sub(BigNumber.from(Math.ceil(Date.now() / 1000)))
-                          .mul(1000)
-                          .toNumber(),
-                      )}
-                    </span>
-                  )
-                }
-              />
-
-              <div className="m-auto text-center mt-2">
-                {lockData.unlockTime > Date.now() / 1000
-                  ? 'Locked'
-                  : lockData.tokenBalance.gt(0)
-                  ? 'Unlocked'
-                  : 'Empty'}
-              </div>
-            </div>
-
-            {/* <Link to={`/locker/account/${lockData.owner}`}>More from {getShortAddress(lockData.owner)}</Link> */}
           </Details>
         </Section>
 
@@ -457,6 +484,34 @@ const Lock: React.FC<Props> = ({ lock }) => {
                   spin
                 />
               </PrimaryButton>
+
+              {/* <PrimaryButton
+                onClick={() => {
+                  if (!lockContract) return
+
+                  lockContract
+                    .withdrawEth()
+                    .then((tx: any) => tx.wait())
+                    .then((tx: any) => console.log(tx))
+                    .catch(console.error)
+                }}
+              >
+                Recover ETH
+              </PrimaryButton>
+
+              <PrimaryButton
+                onClick={() => {
+                  if (!lockContract) return
+
+                  lockContract
+                    .withdrawToken('token address')
+                    .then((tx: any) => tx.wait())
+                    .then((tx: any) => console.log(tx))
+                    .catch(console.error)
+                }}
+              >
+                Recover tokens
+              </PrimaryButton> */}
             </Section>
 
             {extendVisible && lockContract && lockData && lockTokenData && (

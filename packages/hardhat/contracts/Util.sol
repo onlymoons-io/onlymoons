@@ -1,14 +1,19 @@
 // SPDX-License-Identifier: UNLICENSED
 
 /**
-  ____/\__    __ __        .__   __  .__                               ____/\__
- /   / /_/   /  Y  \  __ __|  |_/  |_|__|__________    ______ ______  /   / /_/
- \__/ / \   /  \ /  \|  |  \  |\   __\  \____ \__  \  /  ___//  ___/  \__/ / \ 
- / / /   \ /    Y    \  |  /  |_|  | |  |  |_> > __ \_\___ \ \___ \   / / /   \
-/_/ /__  / \____|__  /____/|____/__| |__|   __(____  /____  >____  > /_/ /__  /
-  \/   \/          \/                   |__|       \/     \/     \/    \/   \/ 
+  /$$$$$$            /$$           /$$      /$$                                        
+ /$$__  $$          | $$          | $$$    /$$$                                        
+| $$  \ $$ /$$$$$$$ | $$ /$$   /$$| $$$$  /$$$$  /$$$$$$   /$$$$$$  /$$$$$$$   /$$$$$$$
+| $$  | $$| $$__  $$| $$| $$  | $$| $$ $$/$$ $$ /$$__  $$ /$$__  $$| $$__  $$ /$$_____/
+| $$  | $$| $$  \ $$| $$| $$  | $$| $$  $$$| $$| $$  \ $$| $$  \ $$| $$  \ $$|  $$$$$$ 
+| $$  | $$| $$  | $$| $$| $$  | $$| $$\  $ | $$| $$  | $$| $$  | $$| $$  | $$ \____  $$
+|  $$$$$$/| $$  | $$| $$|  $$$$$$$| $$ \/  | $$|  $$$$$$/|  $$$$$$/| $$  | $$ /$$$$$$$/
+ \______/ |__/  |__/|__/ \____  $$|__/     |__/ \______/  \______/ |__/  |__/|_______/ 
+                         /$$  | $$                                                     
+                        |  $$$$$$/                                                     
+                         \______/                                                      
 
-  https://multipass.tools
+  https://onlymoons.io/
 */
 
 pragma solidity ^0.8.0;
@@ -17,6 +22,9 @@ import { IERC20 } from "./library/IERC20.sol";
 import { IUniswapV2Pair } from "./library/Dex.sol";
 
 library Util {
+  /**
+   * @dev retrieves basic information about a token, including sender balance
+   */
   function getTokenData(address address_) external view returns (
     string memory name,
     string memory symbol,
@@ -34,7 +42,7 @@ library Util {
   }
 
   /**
-   * @dev NOTE - this throws an error on false, instead of returning false,
+   * @dev this throws an error on false, instead of returning false,
    * but can still be used the same way on frontend.
    */
   function isLpToken(address address_) external view returns (bool) {
@@ -43,6 +51,11 @@ library Util {
     return pair.token0() != address(0) && pair.token1() != address(0);
   }
 
+  /**
+   * @dev like isLpToken, this function also errors when it's called
+   * on something other than an lp token, which makes isLpToken kind of pointless
+   * since we can call this and assume it's not an lp token if it throws an error.
+   */
   function getLpData(address address_) external view returns (
     address token0,
     address token1,

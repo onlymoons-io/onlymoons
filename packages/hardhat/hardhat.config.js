@@ -12,6 +12,8 @@ require("hardhat-gas-reporter");
 require("@eth-optimism/hardhat-ovm");
 require("@nomiclabs/hardhat-ethers");
 
+require("@nomiclabs/hardhat-etherscan");
+
 const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 
 /*
@@ -26,7 +28,7 @@ const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 //
 // Select the network you want to deploy to here:
 //
-const defaultNetwork = "localhost";
+const defaultNetwork = "bsctest";
 
 const mainnetGwei = 21;
 
@@ -312,12 +314,15 @@ module.exports = {
     ],
   },
   ovm: {
-    solcVersion: "0.7.6",
+    solcVersion: "0.8.10",
   },
   namedAccounts: {
     deployer: {
       default: 0, // here this will by default take the first account as deployer
     },
+  },
+  etherscan: {
+    apiKey: "YJ4MF4JRWQWY5NGYENR27XASJMVN4J43A3",
   },
 };
 

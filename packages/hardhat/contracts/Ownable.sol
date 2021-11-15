@@ -1,14 +1,19 @@
 // SPDX-License-Identifier: UNLICENSED
 
 /**
-  ____/\__    __ __        .__   __  .__                               ____/\__
- /   / /_/   /  Y  \  __ __|  |_/  |_|__|__________    ______ ______  /   / /_/
- \__/ / \   /  \ /  \|  |  \  |\   __\  \____ \__  \  /  ___//  ___/  \__/ / \ 
- / / /   \ /    Y    \  |  /  |_|  | |  |  |_> > __ \_\___ \ \___ \   / / /   \
-/_/ /__  / \____|__  /____/|____/__| |__|   __(____  /____  >____  > /_/ /__  /
-  \/   \/          \/                   |__|       \/     \/     \/    \/   \/ 
+  /$$$$$$            /$$           /$$      /$$                                        
+ /$$__  $$          | $$          | $$$    /$$$                                        
+| $$  \ $$ /$$$$$$$ | $$ /$$   /$$| $$$$  /$$$$  /$$$$$$   /$$$$$$  /$$$$$$$   /$$$$$$$
+| $$  | $$| $$__  $$| $$| $$  | $$| $$ $$/$$ $$ /$$__  $$ /$$__  $$| $$__  $$ /$$_____/
+| $$  | $$| $$  \ $$| $$| $$  | $$| $$  $$$| $$| $$  \ $$| $$  \ $$| $$  \ $$|  $$$$$$ 
+| $$  | $$| $$  | $$| $$| $$  | $$| $$\  $ | $$| $$  | $$| $$  | $$| $$  | $$ \____  $$
+|  $$$$$$/| $$  | $$| $$|  $$$$$$$| $$ \/  | $$|  $$$$$$/|  $$$$$$/| $$  | $$ /$$$$$$$/
+ \______/ |__/  |__/|__/ \____  $$|__/     |__/ \______/  \______/ |__/  |__/|_______/ 
+                         /$$  | $$                                                     
+                        |  $$$$$$/                                                     
+                         \______/                                                      
 
-  https://multipass.tools
+  https://onlymoons.io/
 */
 
 pragma solidity ^0.8.0;
@@ -21,19 +26,23 @@ pragma solidity ^0.8.0;
 abstract contract Ownable {
   constructor(address owner_) {
     _owner = owner_;
-    emit OwnershipTransfered(address(0), _owner);
+    emit OwnershipTransferred(address(0), _owner);
   }
 
   address private _owner;
 
-  event OwnershipTransfered(address indexed oldOwner, address indexed newOwner);
+  event OwnershipTransferred(address indexed oldOwner, address indexed newOwner);
 
   modifier onlyOwner() {
     require(_owner == msg.sender, "Only the owner can execute this function");
     _;
   }
 
-  function getOwner() public view returns (address) {
+  function _getOwner() internal view returns (address) {
+    return _owner;
+  }
+
+  function getOwner() external view returns (address) {
     return _owner;
   }
 
@@ -45,7 +54,7 @@ abstract contract Ownable {
     _owner = newOwner;
 
     // emit event about ownership change
-    emit OwnershipTransfered(oldOwner, _owner);
+    emit OwnershipTransferred(oldOwner, _owner);
   }
 
   function transferOwnership(address newOwner) onlyOwner() external {

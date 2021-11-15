@@ -45,6 +45,7 @@ const RoadmapSectionTitle = tw.div`
 `
 
 const RoadmapSectionContent = tw.div`
+  w-full
   md:w-1/2
 `
 

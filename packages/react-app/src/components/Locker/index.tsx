@@ -2,6 +2,9 @@ import React, { useContext, useEffect, useState, useCallback } from 'react'
 import tw from 'tailwind-styled-components'
 import { useParams } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleNotch } from '@fortawesome/free-solid-svg-icons'
+import { motion } from 'framer-motion'
 import { TokenLockerManagerV1ContractContext } from '../contracts/TokenLockerManagerV1'
 import Lock from './Lock'
 import NotConnected from '../NotConnected'
@@ -39,6 +42,13 @@ const Locks = tw.div`
   2xl:grid-cols-4
   gap-5
   w-full
+`
+
+const LocksLoading = tw.div`
+  flex
+  justify-center
+  items-center
+  py-20
 `
 
 const Locker: React.FC = () => {
@@ -103,6 +113,12 @@ const Locker: React.FC = () => {
                 <div className="w-full md:max-w-md">
                   <Lock key={sortedLocks[0].address} lock={sortedLocks[0]} />
                 </div>
+              ) : sortedLocks.length === 0 ? (
+                <LocksLoading>
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                    <FontAwesomeIcon icon={faCircleNotch} fixedWidth spin className="opacity-50" size="5x" />
+                  </motion.div>
+                </LocksLoading>
               ) : (
                 <Locks>
                   {sortedLocks.map((lock: TokenLockData) => (

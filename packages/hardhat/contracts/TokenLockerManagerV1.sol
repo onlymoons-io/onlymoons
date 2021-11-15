@@ -1,5 +1,21 @@
 // SPDX-License-Identifier: UNLICENSED
 
+/**
+  /$$$$$$            /$$           /$$      /$$                                        
+ /$$__  $$          | $$          | $$$    /$$$                                        
+| $$  \ $$ /$$$$$$$ | $$ /$$   /$$| $$$$  /$$$$  /$$$$$$   /$$$$$$  /$$$$$$$   /$$$$$$$
+| $$  | $$| $$__  $$| $$| $$  | $$| $$ $$/$$ $$ /$$__  $$ /$$__  $$| $$__  $$ /$$_____/
+| $$  | $$| $$  \ $$| $$| $$  | $$| $$  $$$| $$| $$  \ $$| $$  \ $$| $$  \ $$|  $$$$$$ 
+| $$  | $$| $$  | $$| $$| $$  | $$| $$\  $ | $$| $$  | $$| $$  | $$| $$  | $$ \____  $$
+|  $$$$$$/| $$  | $$| $$|  $$$$$$$| $$ \/  | $$|  $$$$$$/|  $$$$$$/| $$  | $$ /$$$$$$$/
+ \______/ |__/  |__/|__/ \____  $$|__/     |__/ \______/  \______/ |__/  |__/|_______/ 
+                         /$$  | $$                                                     
+                        |  $$$$$$/                                                     
+                         \______/                                                      
+
+  https://onlymoons.io/
+*/
+
 pragma solidity ^0.8.0;
 
 import { Ownable } from "./Ownable.sol";
@@ -26,11 +42,6 @@ contract TokenLockerManagerV1 is Ownable {
   mapping(uint40 => TokenLockerV1) private _tokenLockers;
   mapping(address => uint40[]) private _accountTokenLockers;
 
-  modifier onlyCreationEnabled() {
-    require(_creationEnabled, "Locker creation is disabled");
-    _;
-  }
-
   function tokenLockerCount() external view returns (uint40) {
     return _tokenLockerCount;
   }
@@ -47,7 +58,9 @@ contract TokenLockerManagerV1 is Ownable {
     address tokenAddress_,
     uint256 amount_,
     uint32 unlockTime_
-  ) external onlyCreationEnabled() {
+  ) external {
+    require(_creationEnabled, "Locker creation is disabled");
+
     uint40 id = _tokenLockerCount++;
     _tokenLockers[id] = new TokenLockerV1(id, msg.sender, tokenAddress_, unlockTime_);
 

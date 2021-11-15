@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useState, useEffect } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import { TokenData, LPLockData } from '../../typings'
 import contracts from '../../contracts/production_contracts.json'

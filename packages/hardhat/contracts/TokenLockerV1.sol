@@ -1,5 +1,21 @@
 // SPDX-License-Identifier: UNLICENSED
 
+/**
+  /$$$$$$            /$$           /$$      /$$                                        
+ /$$__  $$          | $$          | $$$    /$$$                                        
+| $$  \ $$ /$$$$$$$ | $$ /$$   /$$| $$$$  /$$$$  /$$$$$$   /$$$$$$  /$$$$$$$   /$$$$$$$
+| $$  | $$| $$__  $$| $$| $$  | $$| $$ $$/$$ $$ /$$__  $$ /$$__  $$| $$__  $$ /$$_____/
+| $$  | $$| $$  \ $$| $$| $$  | $$| $$  $$$| $$| $$  \ $$| $$  \ $$| $$  \ $$|  $$$$$$ 
+| $$  | $$| $$  | $$| $$| $$  | $$| $$\  $ | $$| $$  | $$| $$  | $$| $$  | $$ \____  $$
+|  $$$$$$/| $$  | $$| $$|  $$$$$$$| $$ \/  | $$|  $$$$$$/|  $$$$$$/| $$  | $$ /$$$$$$$/
+ \______/ |__/  |__/|__/ \____  $$|__/     |__/ \______/  \______/ |__/  |__/|_______/ 
+                         /$$  | $$                                                     
+                        |  $$$$$$/                                                     
+                         \______/                                                      
+
+  https://onlymoons.io/
+*/
+
 pragma solidity ^0.8.0;
 
 import { Ownable } from "./Ownable.sol";
@@ -47,7 +63,7 @@ contract TokenLockerV1 is Ownable {
     uint256 totalSupply
   ){
     id = _id;
-    owner = getOwner();
+    owner = _getOwner();
     token = address(_token);
     createdBy = _createdBy;
     createdAt = _createdAt;
@@ -115,22 +131,21 @@ contract TokenLockerV1 is Ownable {
     require(uint32(block.timestamp) >= _unlockTime, "Wait until unlockTime to withdraw");
 
     uint256 oldBalance = _balance();
-    _token.transfer(msg.sender, oldBalance);
+    _token.transfer(_getOwner(), oldBalance);
 
     emit Withdrew();
   }
 
   /**
    * @dev recovery function -
-   * just in case this contract winds up with additional tokens (from dividends, etc)
+   * just in case this contract winds up with additional tokens (from dividends, etc).
+   * attempting to withdraw the locked token will revert.
    */
   function withdrawToken(address address_) external onlyOwner() {
     require(address_ != address(_token), "Use 'withdraw' to withdraw the primary locked token");
 
     IERC20 theToken = IERC20(address_);
-
-    uint256 oldBalance = theToken.balanceOf(address(this));
-    theToken.transfer(msg.sender, oldBalance);
+    theToken.transfer(_getOwner(), theToken.balanceOf(address(this)));
   }
 
   /**
@@ -138,7 +153,7 @@ contract TokenLockerV1 is Ownable {
    * just in case this contract winds up with eth in it (from dividends etc)
    */
   function withdrawEth() external onlyOwner() {
-    address payable receiver = payable(msg.sender);
+    address payable receiver = payable(_getOwner());
     receiver.transfer(address(this).balance);
   }
 
