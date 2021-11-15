@@ -5,7 +5,7 @@ import tw from 'tailwind-styled-components'
 import { IconDefinition } from '@fortawesome/fontawesome-common-types'
 // import { faLock } from '@fortawesome/free-solid-svg-icons'
 import { useInView } from 'react-intersection-observer'
-import ReactTooltip from 'react-tooltip'
+import Tooltip from '../Tooltip'
 import Anchor from '../Anchor'
 import AngledSection from '../AngledSection'
 import { motion } from 'framer-motion'
@@ -135,11 +135,11 @@ const About: React.FC = () => {
         <AboutItemComponent title="Total supply" content="1,000,000,000,000" />
         <>
           <AboutItemComponent title="Burned" content="54% ⓘ" tip={true} for="burned" />
-          <ReactTooltip id="burned" type="dark" effect="solid" offset={{ top: -10 }}>
+          <Tooltip id="burned" offset={{ top: -10 }}>
             44% in a traditional 0x00 dead wallet, with an additional
             <br />
             10% permanently locked in the token contract.
-          </ReactTooltip>
+          </Tooltip>
         </>
         <AboutItemComponent title="Reflection rate" content="3% per transaction" />
         <AboutItemComponent title="Burn rate" content="3% per transaction" />

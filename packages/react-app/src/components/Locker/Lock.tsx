@@ -14,7 +14,7 @@ import { TokenLockerManagerV1ContractContext } from '../contracts/TokenLockerMan
 import { TokenData, TokenLockData, LPLockData } from '../../typings'
 import { motion } from 'framer-motion'
 import { Primary as PrimaryButton } from '../Button'
-import ReactTooltip from 'react-tooltip'
+import Tooltip from '../Tooltip'
 import TokenInput from '../TokenInput'
 import contracts from '../../contracts/production_contracts.json'
 import { getShortAddress, getExplorerContractLink, getExplorerTokenLink, timestampToDateTimeLocal } from '../../util'
@@ -322,7 +322,7 @@ const Lock: React.FC<Props> = ({ lock }) => {
                     children={
                       BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) ? (
                         <FontAwesomeIcon
-                          className={`text-2xl text-gray-${lockData.tokenBalance.eq(0) ? '400' : '700'}`}
+                          className={`text-2xl ${lockData.tokenBalance.eq(0) ? 'text-gray-400' : 'text-gray-700'}`}
                           icon={lockData.tokenBalance.eq(0) ? faCheck : faLockOpen}
                           fixedWidth
                         />
@@ -340,13 +340,13 @@ const Lock: React.FC<Props> = ({ lock }) => {
                   />
                 </div>
 
-                <ReactTooltip id={`lock-status-${lockData.id}`} type="dark" effect="solid">
+                <Tooltip id={`lock-status-${lockData.id}`}>
                   {lockData.unlockTime > Date.now() / 1000
                     ? 'Locked'
                     : lockData.tokenBalance.gt(0)
                     ? 'Unlocked'
                     : 'Empty'}
-                </ReactTooltip>
+                </Tooltip>
               </div>
             </Section>
 
