@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react'
-import { useMount } from 'react-use'
-// import styled from 'styled-components'
+import { useMount, useUnmount } from 'react-use'
 import tw from 'tailwind-styled-components'
 import { Link } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
@@ -70,27 +69,6 @@ const Title = tw.h3`
   gap-3
 `
 
-// const ExplorerLinkCSS = styled.a``
-
-// const ExplorerLink = tw(ExplorerLinkCSS)``
-
-// const ExplorerLinkImgCSS = styled.img`
-//   filter: grayscale(1);
-
-//   ${ExplorerLinkCSS}:hover & {
-//     filter: grayscale(0);
-//   }
-// `
-
-// const ExplorerLinkImg = tw(ExplorerLinkImgCSS)`
-//   select-none
-//   pointer-events-none
-//   bg-gray-100
-//   rounded-full
-//   w-5
-//   h-5
-// `
-
 const Details = tw.div`
   flex
   justify-between
@@ -133,11 +111,8 @@ const Lock: React.FC<Props> = ({ lock }) => {
   const { account, chainId, connector } = useWeb3React()
   const { getTokenData } = useContext(UtilContractContext)
   const { contract, getTokenLockData } = useContext(TokenLockerManagerV1ContractContext)
-  const [lockData, setLockData] = useState<TokenLockData>(lock)
+  const [lockData, setLockData] = useState<TokenLockData | undefined>(lock)
   const [lockTokenData, setLockTokenData] = useState<TokenData>()
-  // const {getTokenLockData} = useContext(TokenLockerManagerV1ContractContext)
-  // const [tokenOrLp, setTokenOrLp] = useState<'token' | 'lp'>((lock as any).token0 ? 'lp' : 'token')
-  // const [lockName, setLockName] = useState<string>((lock as any).token0 ? '...' : '...')
   const [lockContract, setLockContract] = useState<Contract>()
   const [tokenContract, setTokenContract] = useState<Contract>()
   const [lockAbi, setLockAbi] = useState<any>()
@@ -152,11 +127,14 @@ const Lock: React.FC<Props> = ({ lock }) => {
   const [lpToken0Data, setLpToken0Data] = useState<TokenData>()
   const [lpToken1Data, setLpToken1Data] = useState<TokenData>()
   const [elemScale, setElemScale] = useState<number>(0.975)
-  const [elemOpacity, setElemOpacity] = useState<number>(1)
 
   useMount(() => {
     setElemScale(1)
-    setElemOpacity(1)
+    setLockData(lock)
+  })
+
+  useUnmount(() => {
+    setLockData(undefined)
   })
 
   const getChainId = useCallback(() => {
@@ -172,18 +150,21 @@ const Lock: React.FC<Props> = ({ lock }) => {
   }, [contract, lock, getTokenLockData])
 
   useEffect(() => {
-    lockData.unlockTime && setExtendedUnlockTime(lockData.unlockTime)
+    lockData?.unlockTime && setExtendedUnlockTime(lockData.unlockTime)
   }, [lockData])
 
   useEffect(() => {
-    if (!contract || !connector || !getTokenData) return
+    if (!contract || !connector || !getTokenData || !lockData) {
+      setTokenContract(undefined)
+      setLockTokenData(undefined)
+      return
+    }
 
     connector
       .getProvider()
-      .then(provider => {
-        //
-        setTokenContract(new Contract(lockData.token, ERC20ABI, new Web3Provider(provider).getSigner()))
-      })
+      .then(provider =>
+        setTokenContract(new Contract(lockData.token, ERC20ABI, new Web3Provider(provider).getSigner())),
+      )
       .catch((err: Error) => {
         console.error(err)
         setTokenContract(undefined)
@@ -211,7 +192,7 @@ const Lock: React.FC<Props> = ({ lock }) => {
       default:
         setLockAbi(undefined)
     }
-  }, [lockData, chainId])
+  }, [chainId])
 
   useEffect(() => {
     if (!contract || !lockData || !lockAbi || !connector) {
@@ -231,8 +212,9 @@ const Lock: React.FC<Props> = ({ lock }) => {
   }, [contract, lockData, connector, lockAbi])
 
   useEffect(() => {
-    if (!account || !tokenContract || !lockTokenData || !lockContract) {
+    if (!account || !tokenContract || !lockTokenData || !lockContract || !lockData) {
       setIsExtendApproved(false)
+      setCanSubmitExtend(false)
       return
     }
 
@@ -244,13 +226,11 @@ const Lock: React.FC<Props> = ({ lock }) => {
       setCanSubmitExtend(true)
     }
 
-    //
     tokenContract
       .allowance(account, lockContract.address)
-      .then((allowance_: BigNumber) => {
-        //
-        setIsExtendApproved(allowance_.gte(utils.parseUnits(depositTokens, lockTokenData.decimals)))
-      })
+      .then((allowance_: BigNumber) =>
+        setIsExtendApproved(allowance_.gte(utils.parseUnits(depositTokens, lockTokenData.decimals))),
+      )
       .catch((err: Error) => {
         console.error(err)
         setIsExtendApproved(false)
@@ -263,7 +243,6 @@ const Lock: React.FC<Props> = ({ lock }) => {
       return
     }
 
-    //
     lockContract
       .getLpData()
       .then((result: LPLockData) => setLpLockData(result))
@@ -286,206 +265,202 @@ const Lock: React.FC<Props> = ({ lock }) => {
         setLpToken1Data(token1Data)
       })
       .catch(err => {
-        //
         console.error(err)
         setLpToken0Data(undefined)
         setLpToken1Data(undefined)
       })
   }, [lpLockData, getTokenData])
 
-  // useMount(() => updateLockData())
-
   return (
-    <Outer initial={false} animate={{ scale: elemScale, opacity: elemOpacity }}>
+    <Outer initial={false} animate={{ scale: elemScale }}>
       <Inner className="relative">
-        <Section>
-          <div className="flex justify-between items-center">
-            <div className="flex flex-col">
-              <Title>
-                <Link to={`/locker/${chainId}/${lock.id}`}>{lockTokenData?.symbol || '...'}</Link>
-              </Title>
-
-              <div className="text-sm">
-                Locked by{' '}
-                <Link to={`/locker/account/${lockData.createdBy}`} className="mt-2 text-indigo-500">
-                  {getShortAddress(lockData.createdBy)}
-                </Link>
-                {lockData.owner !== lockData.createdBy && (
-                  <>
-                    , owned by{' '}
-                    <Link to={`/locker/account/${lockData.owner}`} className="mt-2 text-indigo-500">
-                      {getShortAddress(lockData.owner)}
-                    </Link>
-                  </>
-                )}
-              </div>
-            </div>
-
-            <div
-              className="cursor-default"
-              style={{ maxWidth: '64px' }}
-              data-tip={true}
-              data-for={`lock-status-${lockData.id}`}
-            >
-              <CircularProgressbar
-                value={(() => {
-                  //
-                  const duration = lockData.unlockTime - lockData.createdAt
-                  const progress = Math.ceil(Date.now() / 1000) - lockData.createdAt
-
-                  return 100 - (progress / duration) * 100
-                })()}
-                styles={
-                  BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) && !lockData.tokenBalance.eq(0)
-                    ? progressStylesUnlocked
-                    : progressStyles
-                }
-                children={
-                  BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) ? (
-                    <FontAwesomeIcon
-                      className={`text-2xl text-gray-${lockData.tokenBalance.eq(0) ? '400' : '700'}`}
-                      icon={lockData.tokenBalance.eq(0) ? faCheck : faLockOpen}
-                      fixedWidth
-                    />
-                  ) : (
-                    <span>
-                      {shortEnglishHumanizer(
-                        BigNumber.from(lockData.unlockTime)
-                          .sub(BigNumber.from(Math.ceil(Date.now() / 1000)))
-                          .mul(1000)
-                          .toNumber(),
-                      )}
-                    </span>
-                  )
-                }
-              />
-
-              {/* <div className="m-auto text-center mt-2">
-                {lockData.unlockTime > Date.now() / 1000
-                  ? 'Locked'
-                  : lockData.tokenBalance.gt(0)
-                  ? 'Unlocked'
-                  : 'Empty'}
-              </div> */}
-            </div>
-
-            <ReactTooltip id={`lock-status-${lockData.id}`} type="dark" effect="solid">
-              {lockData.unlockTime > Date.now() / 1000 ? 'Locked' : lockData.tokenBalance.gt(0) ? 'Unlocked' : 'Empty'}
-            </ReactTooltip>
-          </div>
-        </Section>
-
-        {lpToken0Data && lpToken1Data && (
-          <motion.div
-            className="px-4 flex gap-1 bg-yellow-100 border-b border-gray-200 absolute left-0 right-0"
-            initial={{ scaleY: 0, y: '-100%', opacity: 0 }}
-            animate={{ scaleY: 1, y: 0, opacity: 1 }}
-          >
-            <span>Pair: </span>
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-indigo-500"
-              href={getExplorerTokenLink(getChainId(), lpToken0Data.address)}
-            >
-              {lpToken0Data.symbol}
-            </a>
-            <span>/</span>
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-indigo-500"
-              href={getExplorerTokenLink(getChainId(), lpToken1Data.address)}
-            >
-              {lpToken1Data.symbol}
-            </a>
-          </motion.div>
-        )}
-
-        <Section className="bg-gray-100 rounded-b">
-          <Details className="mt-3">
-            <div className="flex-grow flex flex-col gap-2">
-              <LockDetail
-                label="Locker address"
-                value={
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-indigo-500"
-                    href={getExplorerContractLink(getChainId(), lockData.contractAddress)}
-                  >
-                    {getShortAddress(lockData.contractAddress)}
-                  </a>
-                }
-              />
-              <LockDetail
-                label="Token address"
-                value={
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-indigo-500"
-                    href={getExplorerTokenLink(getChainId(), lockData.token)}
-                  >
-                    {getShortAddress(lockData.token)}
-                  </a>
-                }
-              />
-              <LockDetail
-                label="Tokens locked"
-                value={utils.commify(utils.formatUnits(lockData.tokenBalance, lockTokenData?.decimals || 18))}
-              />
-              <LockDetail
-                label="Percent of supply"
-                value={`${utils.formatUnits(lockData.tokenBalance.mul(10000000).div(lockData.totalSupply), 5)}%`}
-              />
-              <LockDetail
-                label={lockData.unlockTime > Date.now() / 1000 ? 'Unlocks at' : `Unlocked at`}
-                value={new Date(lockData.unlockTime * 1000).toLocaleString()}
-              />
-            </div>
-          </Details>
-        </Section>
-
-        {lockData.owner === account && lockContract && (
+        {lockData && (
           <>
-            <Section className="text-gray-100 grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <PrimaryButton className="flex-grow" onClick={() => setExtendVisible(!extendVisible)}>
-                Extend / Deposit
-              </PrimaryButton>
-              <PrimaryButton
-                className="flex-grow relative flex justify-center items-center"
-                disabled={
-                  isWithdrawing ||
-                  lockData.tokenBalance.eq(0) ||
-                  BigNumber.from(lockData.unlockTime).gt(BigNumber.from(Math.ceil(Date.now() / 1000)))
-                }
-                onClick={() => {
-                  //
-                  setIsWithdrawing(true)
-                  lockContract
-                    .withdraw()
-                    .then((tx: any) => tx.wait())
-                    .then(() => {
-                      updateLockData()
-                      setIsWithdrawing(false)
-                    })
-                    .catch((err: Error) => {
-                      console.error(err)
-                      setIsWithdrawing(false)
-                    })
-                }}
-              >
-                <span className={isWithdrawing ? 'invisible' : ''}>Withdraw</span>
-                <FontAwesomeIcon
-                  className={isWithdrawing ? 'absolute' : 'hidden'}
-                  icon={faCircleNotch}
-                  fixedWidth
-                  spin
-                />
-              </PrimaryButton>
+            <Section>
+              <div className="flex justify-between items-center">
+                <div className="flex flex-col">
+                  <Title>
+                    <Link to={`/locker/${chainId}/${lock.id}`}>{lockTokenData?.symbol || '...'}</Link>
+                  </Title>
 
-              {/* <PrimaryButton
+                  <div className="text-sm">
+                    Locked by{' '}
+                    <Link to={`/locker/account/${lockData.createdBy}`} className="mt-2 text-indigo-500">
+                      {getShortAddress(lockData.createdBy)}
+                    </Link>
+                    {lockData.owner !== lockData.createdBy && (
+                      <>
+                        , owned by{' '}
+                        <Link to={`/locker/account/${lockData.owner}`} className="mt-2 text-indigo-500">
+                          {getShortAddress(lockData.owner)}
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div
+                  className="cursor-default"
+                  style={{ maxWidth: '64px' }}
+                  data-tip={true}
+                  data-for={`lock-status-${lockData.id}`}
+                >
+                  <CircularProgressbar
+                    value={(() => {
+                      //
+                      const duration = lockData.unlockTime - lockData.createdAt
+                      const progress = Math.ceil(Date.now() / 1000) - lockData.createdAt
+
+                      return 100 - (progress / duration) * 100
+                    })()}
+                    styles={
+                      BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) &&
+                      !lockData.tokenBalance.eq(0)
+                        ? progressStylesUnlocked
+                        : progressStyles
+                    }
+                    children={
+                      BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) ? (
+                        <FontAwesomeIcon
+                          className={`text-2xl text-gray-${lockData.tokenBalance.eq(0) ? '400' : '700'}`}
+                          icon={lockData.tokenBalance.eq(0) ? faCheck : faLockOpen}
+                          fixedWidth
+                        />
+                      ) : (
+                        <span>
+                          {shortEnglishHumanizer(
+                            BigNumber.from(lockData.unlockTime)
+                              .sub(BigNumber.from(Math.ceil(Date.now() / 1000)))
+                              .mul(1000)
+                              .toNumber(),
+                          )}
+                        </span>
+                      )
+                    }
+                  />
+                </div>
+
+                <ReactTooltip id={`lock-status-${lockData.id}`} type="dark" effect="solid">
+                  {lockData.unlockTime > Date.now() / 1000
+                    ? 'Locked'
+                    : lockData.tokenBalance.gt(0)
+                    ? 'Unlocked'
+                    : 'Empty'}
+                </ReactTooltip>
+              </div>
+            </Section>
+
+            {lpToken0Data && lpToken1Data && (
+              <motion.div
+                className="px-4 flex gap-1 bg-yellow-100 border-b border-gray-200 absolute left-0 right-0"
+                initial={{ scaleY: 0, y: '-100%', opacity: 0 }}
+                animate={{ scaleY: 1, y: 0, opacity: 1 }}
+              >
+                <span>Pair: </span>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-500"
+                  href={getExplorerTokenLink(getChainId(), lpToken0Data.address)}
+                >
+                  {lpToken0Data.symbol}
+                </a>
+                <span>/</span>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-500"
+                  href={getExplorerTokenLink(getChainId(), lpToken1Data.address)}
+                >
+                  {lpToken1Data.symbol}
+                </a>
+              </motion.div>
+            )}
+
+            <Section className="bg-gray-100 rounded-b">
+              <Details className="mt-3">
+                <div className="flex-grow flex flex-col gap-2">
+                  <LockDetail
+                    label="Locker address"
+                    value={
+                      <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-indigo-500"
+                        href={getExplorerContractLink(getChainId(), lockData.contractAddress)}
+                      >
+                        {getShortAddress(lockData.contractAddress)}
+                      </a>
+                    }
+                  />
+                  <LockDetail
+                    label="Token address"
+                    value={
+                      <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-indigo-500"
+                        href={getExplorerTokenLink(getChainId(), lockData.token)}
+                      >
+                        {getShortAddress(lockData.token)}
+                      </a>
+                    }
+                  />
+                  <LockDetail
+                    label="Tokens locked"
+                    value={utils.commify(utils.formatUnits(lockData.tokenBalance, lockTokenData?.decimals || 18))}
+                  />
+                  <LockDetail
+                    label="Percent of supply"
+                    value={`${utils.formatUnits(lockData.tokenBalance.mul(10000000).div(lockData.totalSupply), 5)}%`}
+                  />
+                  <LockDetail
+                    label={lockData.unlockTime > Date.now() / 1000 ? 'Unlocks at' : `Unlocked at`}
+                    value={new Date(lockData.unlockTime * 1000).toLocaleString()}
+                  />
+                </div>
+              </Details>
+            </Section>
+
+            {lockData.owner === account && lockContract && (
+              <>
+                <Section className="text-gray-100 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <PrimaryButton className="flex-grow" onClick={() => setExtendVisible(!extendVisible)}>
+                    Extend / Deposit
+                  </PrimaryButton>
+                  <PrimaryButton
+                    className="flex-grow relative flex justify-center items-center"
+                    disabled={
+                      isWithdrawing ||
+                      lockData.tokenBalance.eq(0) ||
+                      BigNumber.from(lockData.unlockTime).gt(BigNumber.from(Math.ceil(Date.now() / 1000)))
+                    }
+                    onClick={() => {
+                      //
+                      setIsWithdrawing(true)
+                      lockContract
+                        .withdraw()
+                        .then((tx: any) => tx.wait())
+                        .then(() => {
+                          updateLockData()
+                          setIsWithdrawing(false)
+                        })
+                        .catch((err: Error) => {
+                          console.error(err)
+                          setIsWithdrawing(false)
+                        })
+                    }}
+                  >
+                    <span className={isWithdrawing ? 'invisible' : ''}>Withdraw</span>
+                    <FontAwesomeIcon
+                      className={isWithdrawing ? 'absolute' : 'hidden'}
+                      icon={faCircleNotch}
+                      fixedWidth
+                      spin
+                    />
+                  </PrimaryButton>
+
+                  {/* <PrimaryButton
                 onClick={() => {
                   if (!lockContract) return
 
@@ -512,77 +487,72 @@ const Lock: React.FC<Props> = ({ lock }) => {
               >
                 Recover tokens
               </PrimaryButton> */}
-            </Section>
+                </Section>
 
-            {extendVisible && lockContract && lockData && lockTokenData && (
-              <Section className="flex flex-col gap-2">
-                <TokenInput
-                  tokenData={lockTokenData}
-                  placeholder="Tokens to add (optional)"
-                  onChange={value => setDepositTokens(value)}
-                />
+                {extendVisible && lockContract && lockData && lockTokenData && (
+                  <Section className="flex flex-col gap-2">
+                    <TokenInput
+                      tokenData={lockTokenData}
+                      placeholder="Tokens to add (optional)"
+                      onChange={value => setDepositTokens(value)}
+                    />
 
-                <div className="flex bg-gray-100 text-gray-800 rounded items-center">
-                  <div className="p-3 flex-shrink-0">Unlock time</div>
-                  <input
-                    type="datetime-local"
-                    className="flex-grow p-3 outline-none bg-white rounded-r"
-                    defaultValue={timestampToDateTimeLocal(lockData.unlockTime)}
-                    onInput={e => setExtendedUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))}
-                  />
-                </div>
+                    <div className="flex bg-gray-100 text-gray-800 rounded items-center">
+                      <div className="p-3 flex-shrink-0">Unlock time</div>
+                      <input
+                        type="datetime-local"
+                        className="flex-grow p-3 outline-none bg-white rounded-r"
+                        defaultValue={timestampToDateTimeLocal(lockData.unlockTime)}
+                        onInput={e =>
+                          setExtendedUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))
+                        }
+                      />
+                    </div>
 
-                <PrimaryButton
-                  disabled={!canSubmitExtend || isExtending}
-                  onClick={() => {
-                    //
-                    if (isExtendApproved) {
-                      //
-                      setIsExtending(true)
-                      lockContract
-                        .deposit(utils.parseUnits(depositTokens || '0', lockTokenData.decimals), extendedUnlockTime)
-                        .then((tx: any) => {
-                          //
-                          return tx.wait()
-                        })
-                        .then(() => {
-                          //
-                          setIsExtending(false)
-                          updateLockData()
-                          setExtendVisible(false)
-                        })
-                        .catch((err: Error) => {
-                          console.error(err)
-                          setIsExtending(false)
-                        })
-                    } else if (tokenContract && lockContract && lockTokenData) {
-                      //
-                      setIsExtending(true)
-                      tokenContract
-                        .approve(lockContract.address, utils.parseUnits(depositTokens, lockTokenData.decimals))
-                        .then((tx: any) => {
-                          return tx.wait()
-                        })
-                        .then(() => {
-                          setIsExtendApproved(true)
-                          setIsExtending(false)
-                        })
-                        .catch((err: Error) => {
-                          console.error(err)
-                          setIsExtending(false)
-                        })
-                    }
-                  }}
-                >
-                  {isExtending ? (
-                    <FontAwesomeIcon icon={faCircleNotch} fixedWidth spin className="opacity-50" />
-                  ) : isExtendApproved ? (
-                    'Submit'
-                  ) : (
-                    'Approve'
-                  )}
-                </PrimaryButton>
-              </Section>
+                    <PrimaryButton
+                      disabled={!canSubmitExtend || isExtending}
+                      onClick={() => {
+                        if (isExtendApproved) {
+                          setIsExtending(true)
+                          lockContract
+                            .deposit(utils.parseUnits(depositTokens || '0', lockTokenData.decimals), extendedUnlockTime)
+                            .then((tx: any) => tx.wait())
+                            .then(() => {
+                              setIsExtending(false)
+                              updateLockData()
+                              setExtendVisible(false)
+                            })
+                            .catch((err: Error) => {
+                              console.error(err)
+                              setIsExtending(false)
+                            })
+                        } else if (tokenContract && lockContract && lockTokenData) {
+                          setIsExtending(true)
+                          tokenContract
+                            .approve(lockContract.address, utils.parseUnits(depositTokens, lockTokenData.decimals))
+                            .then((tx: any) => tx.wait())
+                            .then(() => {
+                              setIsExtendApproved(true)
+                              setIsExtending(false)
+                            })
+                            .catch((err: Error) => {
+                              console.error(err)
+                              setIsExtending(false)
+                            })
+                        }
+                      }}
+                    >
+                      {isExtending ? (
+                        <FontAwesomeIcon icon={faCircleNotch} fixedWidth spin className="opacity-50" />
+                      ) : isExtendApproved ? (
+                        'Submit'
+                      ) : (
+                        'Approve'
+                      )}
+                    </PrimaryButton>
+                  </Section>
+                )}
+              </>
             )}
           </>
         )}

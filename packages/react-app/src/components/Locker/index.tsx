@@ -109,7 +109,7 @@ const Locker: React.FC = () => {
         <SectionInner>
           {account ? (
             <div className="flex flex-col justify-center w-full items-center gap-4">
-              {idToUse && sortedLocks[0] ? (
+              {typeof idToUse !== 'undefined' && sortedLocks[0] && parseInt(idToUse) === sortedLocks[0].id ? (
                 <div className="w-full md:max-w-md">
                   <Lock key={sortedLocks[0].contractAddress} lock={sortedLocks[0]} />
                 </div>
