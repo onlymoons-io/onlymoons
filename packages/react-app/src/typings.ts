@@ -13,6 +13,7 @@ export interface TokenLockData {
   id: number
   contractAddress: string
   token: string
+  isLpToken: boolean
   createdBy: string
   createdAt: number
   unlockTime: number
@@ -21,6 +22,7 @@ export interface TokenLockData {
 }
 
 export interface LPLockData {
+  hasLpData: boolean
   id: number
   token0: string
   token1: string

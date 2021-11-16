@@ -35,12 +35,16 @@ contract TokenLockerManagerV1 is Ownable {
     _creationEnabled = true;
   }
 
+
   bool private _creationEnabled;
 
   uint40 private _tokenLockerCount;
 
+  /** @dev main mapping for lock data */
   mapping(uint40 => TokenLockerV1) private _tokenLockers;
-  mapping(address => uint40[]) private _accountTokenLockers;
+
+  /** @dev this mapping makes it possible to search for locks */
+  mapping(address => uint40[]) private _tokenLockersForAddress;
 
   function tokenLockerCount() external view returns (uint40) {
     return _tokenLockerCount;
@@ -73,7 +77,26 @@ contract TokenLockerManagerV1 is Ownable {
     IERC20 token = IERC20(tokenAddress_);
     token.transferFrom(msg.sender, address(_tokenLockers[id]), amount_);
 
-    _accountTokenLockers[msg.sender].push(id);
+    // add the creator to the token locker mapping, so it's
+    // able to be searched.
+    // NOTE that if the ownership is transferred, the new
+    // owner will NOT be searchable with this setup.
+    _tokenLockersForAddress[msg.sender].push(id);
+
+    // add the locked token to the token lockers mapping
+    _tokenLockersForAddress[tokenAddress_].push(id);
+    // add the locker contract to this mapping as well, so it's
+    // searchable in the same way as tokens within the locker.
+    _tokenLockersForAddress[address(_tokenLockers[id])].push(id);
+
+    // if this is an lp token, also add the paired tokens to the mapping
+    {
+      (bool hasLpData,,address token0Address,address token1Address,,,,) = _tokenLockers[id].getLpData();
+      if (hasLpData) {
+        _tokenLockersForAddress[token0Address].push(id);
+        _tokenLockersForAddress[token1Address].push(id);
+      }
+    }
 
     emit TokenLockerCreated(id, msg.sender, tokenAddress_, _tokenLockers[id].balance(), unlockTime_);
   }
@@ -86,6 +109,7 @@ contract TokenLockerManagerV1 is Ownable {
   }
 
   function getTokenLockData(uint40 id_) external view returns (
+    bool isLpToken,
     uint40 id,
     address contractAddress,
     address owner,
@@ -100,6 +124,7 @@ contract TokenLockerManagerV1 is Ownable {
   }
 
   function getLpData(uint40 id_) external view returns (
+    bool hasLpData,
     uint40 id,
     address token0,
     address token1,
@@ -111,7 +136,8 @@ contract TokenLockerManagerV1 is Ownable {
     return _tokenLockers[id_].getLpData();
   }
 
-  function getTokenLockersForAccount(address account_) external view returns (uint40[] memory) {
-    return _accountTokenLockers[account_];
+  /** @return an array of locker ids matching the given search address */
+  function getTokenLockersForAddress(address address_) external view returns (uint40[] memory) {
+    return _tokenLockersForAddress[address_];
   }
 }

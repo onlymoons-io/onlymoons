@@ -238,7 +238,7 @@ const Lock: React.FC<Props> = ({ lock }) => {
   }, [account, lockContract, lockTokenData, isExtending, depositTokens, tokenContract, extendedUnlockTime, lockData])
 
   useEffect(() => {
-    if (!lockContract) {
+    if (!lockContract || !lockData || !lockData.isLpToken) {
       setLpLockData(undefined)
       return
     }
@@ -247,13 +247,13 @@ const Lock: React.FC<Props> = ({ lock }) => {
       .getLpData()
       .then((result: LPLockData) => setLpLockData(result))
       .catch((err: Error) => {
-        console.error(err)
+        // console.error(err)
         setLpLockData(undefined)
       })
-  }, [lockContract])
+  }, [lockContract, lockData])
 
   useEffect(() => {
-    if (!lpLockData || !getTokenData) {
+    if (!lpLockData || !getTokenData || !lpLockData.hasLpData) {
       setLpToken0Data(undefined)
       setLpToken1Data(undefined)
       return

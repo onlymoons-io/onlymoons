@@ -48,13 +48,21 @@ library Util {
   function isLpToken(address address_) external view returns (bool) {
     IUniswapV2Pair pair = IUniswapV2Pair(address_);
 
-    return pair.token0() != address(0) && pair.token1() != address(0);
+    try pair.token0() returns (address tokenAddress_) {
+      // any address returned successfully should be valid?
+      // but we might as well check that it's not 0
+      return tokenAddress_ != address(0);
+    } catch Error(string memory /* reason */) {
+      return false;
+    } catch (bytes memory /* lowLevelData */) {
+      return false;
+    }
   }
 
   /**
-   * @dev like isLpToken, this function also errors when it's called
-   * on something other than an lp token, which makes isLpToken kind of pointless
-   * since we can call this and assume it's not an lp token if it throws an error.
+   * @dev this function will revert the transaction if it's called
+   * on a token that isn't an LP token. so, it's recommended to be
+   * sure that it's being called on an LP token, or expect the error.
    */
   function getLpData(address address_) external view returns (
     address token0,
@@ -69,11 +77,8 @@ library Util {
     token0 = _pair.token0();
     token1 = _pair.token1();
 
-    IERC20 erc0 = IERC20(token0);
-    IERC20 erc1 = IERC20(token1);
-
-    balance0 = erc0.balanceOf(address(_pair));
-    balance1 = erc1.balanceOf(address(_pair));
+    balance0 = IERC20(token0).balanceOf(address(_pair));
+    balance1 = IERC20(token1).balanceOf(address(_pair));
 
     price0 = _pair.price0CumulativeLast();
     price1 = _pair.price1CumulativeLast();

@@ -36,8 +36,17 @@ contract TokenLockerV1 is Ownable {
     _createdBy = owner_;
     _createdAt = uint40(block.timestamp);
     _unlockTime = unlockTime_;
+
+    try Util.isLpToken(tokenAddress_) returns (bool isLpToken_) {
+      _isLpToken = isLpToken_;
+    } catch Error(string memory /* reason */) {
+      _isLpToken = false;
+    } catch (bytes memory /* lowLevelData */) {
+      _isLpToken = false;
+    }
   }
-  
+
+  bool private _isLpToken;
   uint40 private _id;
   IERC20 private _token;
   address private _createdBy;
@@ -52,7 +61,12 @@ contract TokenLockerV1 is Ownable {
     return _balance();
   }
 
-  function _getLockData() private view returns (
+  function getIsLpToken() external view returns (bool) {
+    return _isLpToken;
+  }
+
+  function getLockData() external view returns (
+    bool isLpToken,
     uint40 id,
     address contractAddress,
     address owner,
@@ -63,6 +77,7 @@ contract TokenLockerV1 is Ownable {
     uint256 tokenBalance,
     uint256 totalSupply
   ){
+    isLpToken = _isLpToken;
     id = _id;
     contractAddress = address(this);
     owner = _getOwner();
@@ -74,21 +89,8 @@ contract TokenLockerV1 is Ownable {
     totalSupply = _token.totalSupply();
   }
 
-  function getLockData() external view returns (
-    uint40 id,
-    address contractAddress,
-    address owner,
-    address token,
-    address createdBy,
-    uint40 createdAt,
-    uint40 unlockTime,
-    uint256 tokenBalance,
-    uint256 totalSupply
-  ) {
-    return _getLockData();
-  }
-
   function getLpData() external view returns (
+    bool hasLpData,
     uint40 id,
     address token0,
     address token1,
@@ -97,16 +99,35 @@ contract TokenLockerV1 is Ownable {
     uint256 price0,
     uint256 price1
   ) {
+    // always return the id
     id = _id;
 
-    (
-      token0,
-      token1,
-      balance0,
-      balance1,
-      price0,
-      price1
-    ) = Util.getLpData(address(_token));
+    if (!_isLpToken) {
+      // if this isn't an lp token, don't even bother calling getLpData
+      hasLpData = false;
+    } else {
+      // this is an lp token, so let's get some data
+      try Util.getLpData(address(_token)) returns (
+        address token0_,
+        address token1_,
+        uint256 balance0_,
+        uint256 balance1_,
+        uint256 price0_,
+        uint256 price1_
+      ){
+        hasLpData = true;
+        token0 = token0_;
+        token1 = token1_;
+        balance0 = balance0_;
+        balance1 = balance1_;
+        price0 = price0_;
+        price1 = price1_;
+      } catch Error(string memory /* reason */) {
+        hasLpData = false;
+      } catch (bytes memory /* lowLevelData */) {
+        hasLpData = false;
+      }
+    }
   }
 
   /**

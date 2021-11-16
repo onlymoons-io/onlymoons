@@ -301,7 +301,7 @@
           ]
         },
         "TokenLockerManagerV1": {
-          "address": "0x8F7e0184519B14571837bcB39De935cB7D291a87",
+          "address": "0xfC2De49CFc298008b2da1163eFD8b89d18369C1b",
           "abi": [
             {
               "inputs": [],
@@ -411,6 +411,11 @@
               "name": "getLpData",
               "outputs": [
                 {
+                  "internalType": "bool",
+                  "name": "hasLpData",
+                  "type": "bool"
+                },
+                {
                   "internalType": "uint40",
                   "name": "id",
                   "type": "uint40"
@@ -492,6 +497,11 @@
               "name": "getTokenLockData",
               "outputs": [
                 {
+                  "internalType": "bool",
+                  "name": "isLpToken",
+                  "type": "bool"
+                },
+                {
                   "internalType": "uint40",
                   "name": "id",
                   "type": "uint40"
@@ -544,11 +554,11 @@
               "inputs": [
                 {
                   "internalType": "address",
-                  "name": "account_",
+                  "name": "address_",
                   "type": "address"
                 }
               ],
-              "name": "getTokenLockersForAccount",
+              "name": "getTokenLockersForAddress",
               "outputs": [
                 {
                   "internalType": "uint40[]",
@@ -601,7 +611,7 @@
           ]
         },
         "TokenLockerV1": {
-          "address": "0xad99A4c4D668b99dbeEEF656e5505C5D6a1CD710",
+          "address": "0x7a25220671BBE344ED4eF2d8127381e7B1A82AB5",
           "abi": [
             {
               "inputs": [
@@ -713,8 +723,26 @@
             },
             {
               "inputs": [],
+              "name": "getIsLpToken",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
               "name": "getLockData",
               "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "isLpToken",
+                  "type": "bool"
+                },
                 {
                   "internalType": "uint40",
                   "name": "id",
@@ -768,6 +796,11 @@
               "inputs": [],
               "name": "getLpData",
               "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "hasLpData",
+                  "type": "bool"
+                },
                 {
                   "internalType": "uint40",
                   "name": "id",
@@ -867,7 +900,7 @@
           ]
         },
         "Util": {
-          "address": "0x82D4983A9bc8a165e3011026F830064D074796bA",
+          "address": "0x8802886220255d51d07a36Df195F0E637395818e",
           "abi": [
             {
               "inputs": [

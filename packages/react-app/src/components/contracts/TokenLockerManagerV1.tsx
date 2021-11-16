@@ -13,7 +13,7 @@ export interface ITokenLockerManagerV1ContractContext {
   tokenLockerCount: number
 
   createTokenLocker?: (tokenAddress: string, amount: BigNumber, unlockTime: number) => Promise<number>
-  getTokenLockersForAccount?: (account: string) => Promise<Array<number>>
+  getTokenLockersForAddress?: (address: string) => Promise<Array<number>>
   getTokenLockData?: (id: number) => Promise<TokenLockData>
   getLpData?: (id: number) => Promise<LPLockData>
 }
@@ -48,14 +48,14 @@ const TokenLockerManagerV1ContractContextProvider: React.FC = ({ children }) => 
     [contract],
   )
 
-  const getTokenLockersForAccount = useCallback(
-    async (account: string) => {
+  const getTokenLockersForAddress = useCallback(
+    async (address: string) => {
       //
       if (!contract) {
         throw new Error('Token locker contract is not loaded')
       }
 
-      return await contract.getTokenLockersForAccount(account)
+      return await contract.getTokenLockersForAddress(address)
     },
     [contract],
   )
@@ -148,7 +148,7 @@ const TokenLockerManagerV1ContractContextProvider: React.FC = ({ children }) => 
         address,
         tokenLockerCount,
         createTokenLocker,
-        getTokenLockersForAccount,
+        getTokenLockersForAddress,
         getTokenLockData,
         getLpData,
       }}

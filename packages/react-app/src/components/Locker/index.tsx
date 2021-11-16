@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState, useCallback } from 'react'
 import tw from 'tailwind-styled-components'
 import { useParams } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
+import { utils } from 'ethers'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons'
 import { motion } from 'framer-motion'
@@ -10,6 +11,8 @@ import Lock from './Lock'
 import NotConnected from '../NotConnected'
 import { TokenLockData } from '../../typings'
 import Header from './Header'
+
+const { isAddress } = utils
 
 const Outer = tw.div`
   
@@ -54,11 +57,12 @@ const LocksLoading = tw.div`
 const Locker: React.FC = () => {
   const { account: accountToCheck, chainId: chainIdToUse, id: idToUse } = useParams()
   const { account, chainId } = useWeb3React()
-  const { contract, getTokenLockersForAccount, getTokenLockData, tokenLockerCount } = useContext(
+  const { contract, getTokenLockersForAddress, getTokenLockData, tokenLockerCount } = useContext(
     TokenLockerManagerV1ContractContext,
   )
   const [tokenLocks, setTokenLocks] = useState<Array<TokenLockData>>([])
   const [sortedLocks, setSortedLocks] = useState<Array<TokenLockData>>([])
+  const [filterInputValue, setFilterInputValue] = useState<string>()
 
   useEffect(() => {
     if (chainId && chainIdToUse && chainId !== parseInt(chainIdToUse)) {
@@ -68,7 +72,7 @@ const Locker: React.FC = () => {
   }, [chainId, chainIdToUse])
 
   const setupLocks = useCallback(() => {
-    if (!contract || !account || !tokenLockerCount || !getTokenLockData || !getTokenLockersForAccount) {
+    if (!contract || !account || !tokenLockerCount || !getTokenLockData || !getTokenLockersForAddress) {
       setTokenLocks([])
       return
     }
@@ -78,17 +82,35 @@ const Locker: React.FC = () => {
         .then(result => setTokenLocks([result]))
         .catch(console.error)
     } else if (accountToCheck) {
-      getTokenLockersForAccount(accountToCheck).then((ids: Array<number>) =>
+      getTokenLockersForAddress(accountToCheck).then((ids: Array<number>) =>
         Promise.all(ids.map(id => getTokenLockData(id)))
           .then((results: Array<TokenLockData>) => setTokenLocks(results))
           .catch(console.error),
       )
+    } else if (filterInputValue) {
+      setTokenLocks([])
+      if (isAddress(filterInputValue)) {
+        getTokenLockersForAddress(filterInputValue).then((ids: Array<number>) =>
+          Promise.all(ids.map(id => getTokenLockData(id)))
+            .then((results: Array<TokenLockData>) => setTokenLocks(results))
+            .catch(console.error),
+        )
+      }
     } else {
       Promise.all(new Array(tokenLockerCount).fill(null).map((val, index) => getTokenLockData(index)))
         .then((results: Array<TokenLockData>) => setTokenLocks(results))
         .catch(console.error)
     }
-  }, [contract, idToUse, account, accountToCheck, getTokenLockData, getTokenLockersForAccount, tokenLockerCount])
+  }, [
+    contract,
+    idToUse,
+    account,
+    accountToCheck,
+    getTokenLockData,
+    getTokenLockersForAddress,
+    tokenLockerCount,
+    filterInputValue,
+  ])
 
   useEffect(setupLocks, [setupLocks])
 
@@ -103,7 +125,7 @@ const Locker: React.FC = () => {
 
   return (
     <Outer>
-      <Header filterEnabled={idToUse ? false : true} />
+      <Header filterEnabled={idToUse || accountToCheck ? false : true} onFilterInput={setFilterInputValue} />
 
       <MidSection>
         <SectionInner>

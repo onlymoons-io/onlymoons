@@ -25,9 +25,10 @@ const Title = tw.h2`
 
 interface Props {
   filterEnabled?: boolean
+  onFilterInput?: (value: string) => void
 }
 
-const Header: React.FC<Props> = ({ filterEnabled = true }) => {
+const Header: React.FC<Props> = ({ filterEnabled = true, onFilterInput }) => {
   const { account } = useWeb3React()
 
   return (
@@ -53,11 +54,11 @@ const Header: React.FC<Props> = ({ filterEnabled = true }) => {
           </div>
 
           <Input
-            // disabled={!account || !filterEnabled}
-            disabled={true}
+            disabled={!account || !filterEnabled}
             color="dark"
-            placeholder="Filter by name or address"
+            placeholder="Filter by address"
             style={{ minWidth: '260px' }}
+            onInput={e => onFilterInput && onFilterInput(e.currentTarget.value)}
           />
         </div>
       </SectionInner>
