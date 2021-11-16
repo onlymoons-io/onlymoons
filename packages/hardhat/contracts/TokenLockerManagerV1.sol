@@ -25,9 +25,12 @@ import { TokenLockerV1 } from "./TokenLockerV1.sol";
 contract TokenLockerManagerV1 is Ownable {
   event TokenLockerCreated(
     uint40 id,
-    address indexed owner,
-    address indexed tokenAddress,
-    uint256 amount,
+    address indexed token,
+    /** @dev LP token pair addresses - these will be address(0) for regular tokens */
+    address indexed token0,
+    address indexed token1,
+    address createdBy,
+    uint256 balance,
     uint40 unlockTime
   );
 
@@ -43,7 +46,15 @@ contract TokenLockerManagerV1 is Ownable {
   /** @dev main mapping for lock data */
   mapping(uint40 => TokenLockerV1) private _tokenLockers;
 
-  /** @dev this mapping makes it possible to search for locks */
+  /**
+   * @dev this mapping makes it possible to search for locks,
+   * at the cost of paying higher gas fees to store the data.
+   * we could potentially filter events for this as well, but
+   * it really doesn't work well at all. as of now, bsc has a
+   * limit of filtering through 5000 blocks at a time. :(
+   * despite this - we still want to emit events so applications
+   * can track the data in realtime.
+   */
   mapping(address => uint40[]) private _tokenLockersForAddress;
 
   function tokenLockerCount() external view returns (uint40) {
@@ -81,6 +92,7 @@ contract TokenLockerManagerV1 is Ownable {
     // able to be searched.
     // NOTE that if the ownership is transferred, the new
     // owner will NOT be searchable with this setup.
+    // the locker would need to notify the manager of the ownership change.
     _tokenLockersForAddress[msg.sender].push(id);
 
     // add the locked token to the token lockers mapping
@@ -89,16 +101,24 @@ contract TokenLockerManagerV1 is Ownable {
     // searchable in the same way as tokens within the locker.
     _tokenLockersForAddress[address(_tokenLockers[id])].push(id);
 
+    // get lp data
+    (bool hasLpData,,address token0Address,address token1Address,,,,) = _tokenLockers[id].getLpData();
+
     // if this is an lp token, also add the paired tokens to the mapping
-    {
-      (bool hasLpData,,address token0Address,address token1Address,,,,) = _tokenLockers[id].getLpData();
-      if (hasLpData) {
-        _tokenLockersForAddress[token0Address].push(id);
-        _tokenLockersForAddress[token1Address].push(id);
-      }
+    if (hasLpData) {
+      _tokenLockersForAddress[token0Address].push(id);
+      _tokenLockersForAddress[token1Address].push(id);
     }
 
-    emit TokenLockerCreated(id, msg.sender, tokenAddress_, token.balanceOf(address(_tokenLockers[id])), unlockTime_);
+    emit TokenLockerCreated(
+      id,
+      tokenAddress_,
+      token0Address,
+      token1Address,
+      msg.sender,
+      token.balanceOf(address(_tokenLockers[id])),
+      unlockTime_
+    );
   }
 
   /**

@@ -301,7 +301,7 @@
           ]
         },
         "TokenLockerManagerV1": {
-          "address": "0x4DD483932E02BF9590E57801f88e31A43d95395A",
+          "address": "0x038aaF3FbB6341B6318cd38e457e3421c61BE9f4",
           "abi": [
             {
               "inputs": [],
@@ -339,19 +339,31 @@
                 {
                   "indexed": true,
                   "internalType": "address",
-                  "name": "owner",
+                  "name": "token",
                   "type": "address"
                 },
                 {
                   "indexed": true,
                   "internalType": "address",
-                  "name": "tokenAddress",
+                  "name": "token0",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "token1",
+                  "type": "address"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "address",
+                  "name": "createdBy",
                   "type": "address"
                 },
                 {
                   "indexed": false,
                   "internalType": "uint256",
-                  "name": "amount",
+                  "name": "balance",
                   "type": "uint256"
                 },
                 {
@@ -611,7 +623,7 @@
           ]
         },
         "TokenLockerV1": {
-          "address": "0x066C6D05EC75311b701A5170a85aDF01ED567aF3",
+          "address": "0x1740D22D7CF0084CEAeBDa6BcB2d9Cd34C6E68a8",
           "abi": [
             {
               "inputs": [

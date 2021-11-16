@@ -130,8 +130,10 @@ contract TokenLockerV1 is Ownable {
     }
 
     if (newUnlockTime_ != 0) {
-      require(newUnlockTime_ >= _unlockTime, "New unlock time must be beyond the previous");
-      require(newUnlockTime_ >= uint40(block.timestamp), "New unlock time must be in the future");
+      require(
+        newUnlockTime_ >= _unlockTime && newUnlockTime_ >= uint40(block.timestamp),
+        "New unlock time must be a future time beyond the previous value"
+      );
       _unlockTime = newUnlockTime_;
       emit Extended(_unlockTime);
     }
