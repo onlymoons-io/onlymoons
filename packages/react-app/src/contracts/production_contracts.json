@@ -301,7 +301,7 @@
           ]
         },
         "TokenLockerManagerV1": {
-          "address": "0xFd0Ea5f07fb16cA9f1109adB00582685601f94f2",
+          "address": "0x4DD483932E02BF9590E57801f88e31A43d95395A",
           "abi": [
             {
               "inputs": [],
@@ -538,7 +538,7 @@
                 },
                 {
                   "internalType": "uint256",
-                  "name": "tokenBalance",
+                  "name": "balance",
                   "type": "uint256"
                 },
                 {

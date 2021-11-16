@@ -117,7 +117,7 @@ contract TokenLockerManagerV1 is Ownable {
     address createdBy,
     uint40 createdAt,
     uint40 unlockTime,
-    uint256 tokenBalance,
+    uint256 balance,
     uint256 totalSupply
   ){
     return _tokenLockers[id_].getLockData();
