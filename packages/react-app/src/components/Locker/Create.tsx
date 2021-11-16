@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import tw from 'tailwind-styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleNotch } from '@fortawesome/free-solid-svg-icons'
+import { faCircleNotch, faExchangeAlt } from '@fortawesome/free-solid-svg-icons'
 import { BigNumber, Contract, utils, providers } from 'ethers'
 import { useWeb3React } from '@web3-react/core'
 import { Primary as PrimaryButton } from '../Button'
@@ -23,7 +23,9 @@ const Outer = tw.div``
 
 const MidSection = tw.section`
   bg-blue-500
-  p-10
+  py-10
+  px-5
+  md:px-5
 `
 
 const SectionInner = tw.div`
@@ -256,10 +258,11 @@ const Create: React.FC = () => {
                     <div className="text-2xl font-extralight text-center">
                       {tokenData.name} ({tokenData.symbol})
                       {lpToken0Data && lpToken1Data && (
-                        <>
-                          <br />
-                          {lpToken0Data.symbol} / {lpToken1Data.symbol}
-                        </>
+                        <div className="flex gap-1 justify-center items-center">
+                          <span>{lpToken0Data.symbol}</span>
+                          <FontAwesomeIcon icon={faExchangeAlt} size="sm" fixedWidth opacity={0.5} />
+                          <span>{lpToken1Data.symbol}</span>
+                        </div>
                       )}
                     </div>
 

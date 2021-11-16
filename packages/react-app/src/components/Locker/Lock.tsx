@@ -7,7 +7,7 @@ import { BigNumber, Contract, providers, utils } from 'ethers'
 import { CircularProgressbarWithChildren as CircularProgressbar, buildStyles } from 'react-circular-progressbar'
 import 'react-circular-progressbar/dist/styles.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faLockOpen, faCheck, faCircleNotch } from '@fortawesome/free-solid-svg-icons'
+import { faLockOpen, faCheck, faCircleNotch, faExchangeAlt } from '@fortawesome/free-solid-svg-icons'
 import humanizeDuration from 'humanize-duration'
 import { UtilContractContext } from '../contracts/Util'
 import { TokenLockerManagerV1ContractContext } from '../contracts/TokenLockerManagerV1'
@@ -347,7 +347,7 @@ const Lock: React.FC<Props> = ({ lock }) => {
 
             {lpToken0Data && lpToken1Data && (
               <motion.div
-                className="px-4 flex gap-1 bg-yellow-100 border-b border-gray-200 absolute left-0 right-0"
+                className="px-4 flex items-center gap-1 bg-yellow-100 border-b border-gray-200 absolute left-0 right-0"
                 initial={{ scaleY: 0, y: '-100%', opacity: 0 }}
                 animate={{ scaleY: 1, y: 0, opacity: 1 }}
               >
@@ -360,7 +360,7 @@ const Lock: React.FC<Props> = ({ lock }) => {
                 >
                   {lpToken0Data.symbol}
                 </a>
-                <span>/</span>
+                <FontAwesomeIcon icon={faExchangeAlt} fixedWidth size="sm" opacity={0.5} />
                 <a
                   target="_blank"
                   rel="noopener noreferrer"

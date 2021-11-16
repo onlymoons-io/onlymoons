@@ -20,12 +20,16 @@ const Outer = tw.div`
 
 const MidSection = tw.section`
   bg-blue-500
-  p-10
+  py-10
+  px-5
+  md:px-10
 `
 
 const BottomSection = tw.section`
   bg-blue-600
-  p-10
+  py-10
+  px-5
+  md:px-10
   flex-grow
 `
 

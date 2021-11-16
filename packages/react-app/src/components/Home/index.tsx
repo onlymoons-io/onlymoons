@@ -34,7 +34,9 @@ const HeroOuter = tw.div`
   flex
   justify-center
   items-center
-  p-10
+  py-10
+  px-5
+  md:px-10
   -mt-16
 `
 

@@ -9,7 +9,8 @@ import logoSrc from '../../images/logo-white.svg'
 const Outer = tw.nav`
   z-10
   h-16
-  px-8
+  px-5
+  md:px-10
   bg-gray-900
   overflow-hidden
   fixed

@@ -28,7 +28,7 @@ const Content = tw.div`
 `
 
 const RoadmapSection = tw.div`
-  py-10
+  p-10
   flex
   flex-col
   md:flex-row

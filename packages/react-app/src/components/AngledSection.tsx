@@ -39,7 +39,8 @@ const InnerCSS = styled.div`
 `
 
 const Section = tw.section`
-  px-10
+  px-5
+  md:px-10
 `
 
 const Inner = tw(InnerCSS)`

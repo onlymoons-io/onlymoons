@@ -6,14 +6,16 @@ import { Primary as PrimaryButton, Dark as DarkButton } from '../Button'
 import Input from '../Input'
 
 const TopSection = tw.section`
-  p-10
+  py-10
+  px-5
+  md:px-10
   bg-gray-900
 `
 
 const SectionInner = tw.div`
   container
   m-auto
-  md:flex
+  lg:flex
   justify-between
   items-center
 `
@@ -38,15 +40,17 @@ const Header: React.FC<Props> = ({ filterEnabled = true, onFilterInput }) => {
           <Link to="/locker">Token Locker V1</Link>
         </Title>
 
-        <div className="my-2 flex flex-col md:flex-row items-start md:items-center gap-3">
-          <div className="flex items-center gap-3">
+        <div className="my-2 flex flex-col md:flex-row justify-between items-start lg:items-center gap-3">
+          <div className="grid grid-cols-2 w-full md:flex items-center gap-3">
             <Link to="/locker/create">
-              <PrimaryButton disabled={!account}>Create lock</PrimaryButton>
+              <PrimaryButton className="w-full" disabled={!account}>
+                Create lock
+              </PrimaryButton>
             </Link>
 
             {account ? (
               <Link to={`/locker/account/${account}`}>
-                <DarkButton>Your locks</DarkButton>
+                <DarkButton className="w-full">Your locks</DarkButton>
               </Link>
             ) : (
               <DarkButton disabled={true}>Your locks</DarkButton>
@@ -57,7 +61,9 @@ const Header: React.FC<Props> = ({ filterEnabled = true, onFilterInput }) => {
             disabled={!account || !filterEnabled}
             color="dark"
             placeholder="Filter by address"
-            style={{ minWidth: '260px' }}
+            className="w-full md:w-auto"
+            style={{ maxWidth: '100%' }}
+            size={48}
             onInput={e => onFilterInput && onFilterInput(e.currentTarget.value)}
           />
         </div>
