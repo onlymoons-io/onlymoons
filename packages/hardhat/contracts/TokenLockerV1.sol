@@ -36,14 +36,7 @@ contract TokenLockerV1 is Ownable {
     _createdBy = owner_;
     _createdAt = uint40(block.timestamp);
     _unlockTime = unlockTime_;
-
-    try Util.isLpToken(tokenAddress_) returns (bool isLpToken_) {
-      _isLpToken = isLpToken_;
-    } catch Error(string memory /* reason */) {
-      _isLpToken = false;
-    } catch (bytes memory /* lowLevelData */) {
-      _isLpToken = false;
-    }
+    _isLpToken = Util.isLpToken(tokenAddress_);
   }
 
   bool private _isLpToken;

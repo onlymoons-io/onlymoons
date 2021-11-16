@@ -301,7 +301,7 @@
           ]
         },
         "TokenLockerManagerV1": {
-          "address": "0xfC2De49CFc298008b2da1163eFD8b89d18369C1b",
+          "address": "0x1afA9a09FC4E22F704f0E34C3c64116A2Cd4c734",
           "abi": [
             {
               "inputs": [],
@@ -611,7 +611,7 @@
           ]
         },
         "TokenLockerV1": {
-          "address": "0x7a25220671BBE344ED4eF2d8127381e7B1A82AB5",
+          "address": "0xc1228Aad5acF5c61b27A576e82Be3dC5c7fa1EeB",
           "abi": [
             {
               "inputs": [
@@ -900,7 +900,7 @@
           ]
         },
         "Util": {
-          "address": "0x8802886220255d51d07a36Df195F0E637395818e",
+          "address": "0x245BB5d7bEBa33e97B0CC50a75bC3d9aD9BA4AFe",
           "abi": [
             {
               "inputs": [
