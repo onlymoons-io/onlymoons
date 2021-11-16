@@ -17,7 +17,7 @@ export interface TokenLockData {
   createdBy: string
   createdAt: number
   unlockTime: number
-  tokenBalance: BigNumber
+  balance: BigNumber
   totalSupply: BigNumber
 }
 

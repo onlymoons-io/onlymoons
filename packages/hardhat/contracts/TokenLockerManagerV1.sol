@@ -98,7 +98,7 @@ contract TokenLockerManagerV1 is Ownable {
       }
     }
 
-    emit TokenLockerCreated(id, msg.sender, tokenAddress_, _tokenLockers[id].balance(), unlockTime_);
+    emit TokenLockerCreated(id, msg.sender, tokenAddress_, token.balanceOf(address(_tokenLockers[id])), unlockTime_);
   }
 
   /**

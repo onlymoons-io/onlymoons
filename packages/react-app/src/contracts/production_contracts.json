@@ -301,7 +301,7 @@
           ]
         },
         "TokenLockerManagerV1": {
-          "address": "0x1afA9a09FC4E22F704f0E34C3c64116A2Cd4c734",
+          "address": "0xFd0Ea5f07fb16cA9f1109adB00582685601f94f2",
           "abi": [
             {
               "inputs": [],
@@ -611,7 +611,7 @@
           ]
         },
         "TokenLockerV1": {
-          "address": "0xc1228Aad5acF5c61b27A576e82Be3dC5c7fa1EeB",
+          "address": "0x066C6D05EC75311b701A5170a85aDF01ED567aF3",
           "abi": [
             {
               "inputs": [
@@ -691,19 +691,6 @@
               "type": "event"
             },
             {
-              "inputs": [],
-              "name": "balance",
-              "outputs": [
-                {
-                  "internalType": "uint256",
-                  "name": "",
-                  "type": "uint256"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
               "inputs": [
                 {
                   "internalType": "uint256",
@@ -780,7 +767,7 @@
                 },
                 {
                   "internalType": "uint256",
-                  "name": "tokenBalance",
+                  "name": "balance",
                   "type": "uint256"
                 },
                 {

@@ -50,10 +50,6 @@ contract TokenLockerV1 is Ownable {
     return _token.balanceOf(address(this));
   }
 
-  function balance() external view returns (uint256) {
-    return _balance();
-  }
-
   function getIsLpToken() external view returns (bool) {
     return _isLpToken;
   }
@@ -67,7 +63,7 @@ contract TokenLockerV1 is Ownable {
     address createdBy,
     uint40 createdAt,
     uint40 unlockTime,
-    uint256 tokenBalance,
+    uint256 balance,
     uint256 totalSupply
   ){
     isLpToken = _isLpToken;
@@ -78,7 +74,7 @@ contract TokenLockerV1 is Ownable {
     createdBy = _createdBy;
     createdAt = _createdAt;
     unlockTime = _unlockTime;
-    tokenBalance = _balance();
+    balance = _balance();
     totalSupply = _token.totalSupply();
   }
 

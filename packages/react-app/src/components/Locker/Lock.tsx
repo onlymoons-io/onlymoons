@@ -314,16 +314,15 @@ const Lock: React.FC<Props> = ({ lock }) => {
                       return 100 - (progress / duration) * 100
                     })()}
                     styles={
-                      BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) &&
-                      !lockData.tokenBalance.eq(0)
+                      BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) && !lockData.balance.eq(0)
                         ? progressStylesUnlocked
                         : progressStyles
                     }
                     children={
                       BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) ? (
                         <FontAwesomeIcon
-                          className={`text-2xl ${lockData.tokenBalance.eq(0) ? 'text-gray-400' : 'text-gray-700'}`}
-                          icon={lockData.tokenBalance.eq(0) ? faCheck : faLockOpen}
+                          className={`text-2xl ${lockData.balance.eq(0) ? 'text-gray-400' : 'text-gray-700'}`}
+                          icon={lockData.balance.eq(0) ? faCheck : faLockOpen}
                           fixedWidth
                         />
                       ) : (
@@ -341,11 +340,7 @@ const Lock: React.FC<Props> = ({ lock }) => {
                 </div>
 
                 <Tooltip id={`lock-status-${lockData.id}`}>
-                  {lockData.unlockTime > Date.now() / 1000
-                    ? 'Locked'
-                    : lockData.tokenBalance.gt(0)
-                    ? 'Unlocked'
-                    : 'Empty'}
+                  {lockData.unlockTime > Date.now() / 1000 ? 'Locked' : lockData.balance.gt(0) ? 'Unlocked' : 'Empty'}
                 </Tooltip>
               </div>
             </Section>
@@ -408,11 +403,11 @@ const Lock: React.FC<Props> = ({ lock }) => {
                   />
                   <LockDetail
                     label="Tokens locked"
-                    value={utils.commify(utils.formatUnits(lockData.tokenBalance, lockTokenData?.decimals || 18))}
+                    value={utils.commify(utils.formatUnits(lockData.balance, lockTokenData?.decimals || 18))}
                   />
                   <LockDetail
                     label="Percent of supply"
-                    value={`${utils.formatUnits(lockData.tokenBalance.mul(10000000).div(lockData.totalSupply), 5)}%`}
+                    value={`${utils.formatUnits(lockData.balance.mul(10000000).div(lockData.totalSupply), 5)}%`}
                   />
                   <LockDetail
                     label={lockData.unlockTime > Date.now() / 1000 ? 'Unlocks at' : `Unlocked at`}
@@ -432,7 +427,7 @@ const Lock: React.FC<Props> = ({ lock }) => {
                     className="flex-grow relative flex justify-center items-center"
                     disabled={
                       isWithdrawing ||
-                      lockData.tokenBalance.eq(0) ||
+                      lockData.balance.eq(0) ||
                       BigNumber.from(lockData.unlockTime).gt(BigNumber.from(Math.ceil(Date.now() / 1000)))
                     }
                     onClick={() => {
