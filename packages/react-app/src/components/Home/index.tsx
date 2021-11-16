@@ -15,7 +15,6 @@ import {
 } from '@fortawesome/free-brands-svg-icons'
 
 import Anchor from '../Anchor'
-
 import About from './About'
 // import Contract from './Contract'
 import Roadmap from './Roadmap'
@@ -195,14 +194,16 @@ const Home: React.FC = () => {
 
           {/* moon logo section */}
           <HeroSection className="flex justify-end">
-            <motion.img
-              className="w-96 h-96 bg-blue-500 rounded-full object-cover pointer-events-none"
-              src={logoSrc}
-              style={{ maxWidth: '30vw', maxHeight: '30vw' }}
-              initial={{ opacity: 0, translateY: 20 }}
-              animate={{ opacity: 1, translateY: 0 }}
-              transition={{ duration: 1 }}
-            />
+            <motion.div initial={{ translateY: 20 }} animate={{ translateY: 0 }} transition={{ duration: 1 }}>
+              <motion.img
+                className="w-96 h-96 bg-blue-500 rounded-full object-cover pointer-events-none"
+                src={logoSrc}
+                style={{ maxWidth: '30vw', maxHeight: '30vw' }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1 }}
+              />
+            </motion.div>
           </HeroSection>
         </HeroContent>
       </HeroOuter>
