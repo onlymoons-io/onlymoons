@@ -1,10 +1,13 @@
 import React from 'react'
+import { useMount } from 'react-use'
 import { HashRouter as Router, Routes, Route } from 'react-router-dom'
 
 import tw from 'tailwind-styled-components'
 
 import UtilContractContextProvider from './components/contracts/Util'
 import TokenLockerManagerV1ContractContextProvider from './components/contracts/TokenLockerManagerV1'
+
+import FullscreenLoading from './components/FullscreenLoading'
 
 import NavBar from './components/NavBar'
 import Home from './components/Home'
@@ -30,6 +33,9 @@ const Outer = tw.div`
   mt-16
 `
 
+/** this will always be true on localhost, because we don't care about https */
+const IS_HTTPS = window.location.hostname === 'localhost' || window.location.protocol.startsWith('https')
+
 const AppContent: React.FC = () => {
   return (
     <Outer>
@@ -47,7 +53,15 @@ const AppContent: React.FC = () => {
 }
 
 const App: React.FC = () => {
-  return (
+  useMount(() => {
+    if (!IS_HTTPS) {
+      const url = new URL(window.location.href)
+      url.protocol = 'https:'
+      window.location.assign(url.href)
+    }
+  })
+
+  return IS_HTTPS ? (
     <Web3ReactProvider getLibrary={getLibrary}>
       <Router>
         <UtilContractContextProvider>
@@ -57,6 +71,8 @@ const App: React.FC = () => {
         </UtilContractContextProvider>
       </Router>
     </Web3ReactProvider>
+  ) : (
+    <FullscreenLoading children="Redirecting to HTTPS..." />
   )
 }
 
