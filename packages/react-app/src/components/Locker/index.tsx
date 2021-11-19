@@ -26,15 +26,6 @@ const MidSection = tw.section`
   md:px-10
 `
 
-const BottomSection = tw.section`
-  bg-blue-600
-  dark:bg-gray-800
-  py-10
-  px-5
-  md:px-10
-  flex-grow
-`
-
 const SectionInner = tw.div`
   container
   m-auto
