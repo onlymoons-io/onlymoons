@@ -96,9 +96,10 @@ contract TokenLockerManagerV1 is ITokenLockerManagerV1, Ownable {
 
     uint40 id = _tokenLockerCount++;
     _tokenLockers[id] = new TokenLockerV1(address(this), id, _msgSender(), tokenAddress_, unlockTime_);
+    address lockerAddress = address(_tokenLockers[id]);
 
     IERC20 token = IERC20(tokenAddress_);
-    token.transferFrom(_msgSender(), address(_tokenLockers[id]), amount_);
+    token.transferFrom(_msgSender(), lockerAddress, amount_);
 
     // add the creator to the token locker mapping, so it's
     // able to be searched.
@@ -125,7 +126,7 @@ contract TokenLockerManagerV1 is ITokenLockerManagerV1, Ownable {
       token0Address,
       token1Address,
       _msgSender(),
-      token.balanceOf(address(_tokenLockers[id])),
+      token.balanceOf(lockerAddress),
       unlockTime_
     );
   }
