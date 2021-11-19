@@ -5,7 +5,7 @@
       "chainId": "97",
       "contracts": {
         "ERC20": {
-          "address": "0xe789768a40Ac016332EC75DEDb6356E3D2011Eb9",
+          "address": "0x46A34be2ceF63480bDfD04f948Ef10BA8b5a6A95",
           "abi": [
             {
               "inputs": [
@@ -301,7 +301,7 @@
           ]
         },
         "TokenLockerManagerV1": {
-          "address": "0x038aaF3FbB6341B6318cd38e457e3421c61BE9f4",
+          "address": "0x25795258d39Ad771641E108174db8d1b22526D3e",
           "abi": [
             {
               "inputs": [],
@@ -467,19 +467,6 @@
               "type": "function"
             },
             {
-              "inputs": [],
-              "name": "getOwner",
-              "outputs": [
-                {
-                  "internalType": "address",
-                  "name": "",
-                  "type": "address"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
               "inputs": [
                 {
                   "internalType": "uint40",
@@ -584,6 +571,47 @@
             {
               "inputs": [
                 {
+                  "internalType": "uint40",
+                  "name": "id_",
+                  "type": "uint40"
+                },
+                {
+                  "internalType": "address",
+                  "name": "newOwner_",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "previousOwner_",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "createdBy_",
+                  "type": "address"
+                }
+              ],
+              "name": "notifyLockerOwnerChange",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "owner",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
                   "internalType": "bool",
                   "name": "value_",
                   "type": "bool"
@@ -623,10 +651,15 @@
           ]
         },
         "TokenLockerV1": {
-          "address": "0x1740D22D7CF0084CEAeBDa6BcB2d9Cd34C6E68a8",
+          "address": "0x934356175D30D603286ab7e217DA6991a7B25196",
           "abi": [
             {
               "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "manager_",
+                  "type": "address"
+                },
                 {
                   "internalType": "uint40",
                   "name": "id_",
@@ -841,7 +874,7 @@
             },
             {
               "inputs": [],
-              "name": "getOwner",
+              "name": "owner",
               "outputs": [
                 {
                   "internalType": "address",
@@ -899,7 +932,7 @@
           ]
         },
         "Util": {
-          "address": "0x245BB5d7bEBa33e97B0CC50a75bC3d9aD9BA4AFe",
+          "address": "0x6E4453ED4A7AD83D1C9d00157d868f8c48a765f5",
           "abi": [
             {
               "inputs": [

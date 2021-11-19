@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="bg-blue-600 text-gray-100">
+<html lang="en" class=" bg-gray-800 text-gray-100">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
@@ -22,8 +22,16 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>OnlyMoons</title>
+
+    <script>
+      document.documentElement.classList.toggle(
+        'dark',
+        window.localStorage.getItem('OM_DARKMODE_ENABLED') === null ||
+          window.localStorage.getItem('OM_DARKMODE_ENABLED') === '1',
+      )
+    </script>
   </head>
-  <body>
+  <body className="dark:bg-gray-800">
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!--

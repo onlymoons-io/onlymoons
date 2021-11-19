@@ -20,6 +20,7 @@ const Outer = tw.div`
 
 const MidSection = tw.section`
   bg-blue-500
+  dark:bg-blue-900
   py-10
   px-5
   md:px-10
@@ -27,6 +28,7 @@ const MidSection = tw.section`
 
 const BottomSection = tw.section`
   bg-blue-600
+  dark:bg-gray-800
   py-10
   px-5
   md:px-10

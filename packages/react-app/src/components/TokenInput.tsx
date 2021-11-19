@@ -22,10 +22,10 @@ const TokenInput: React.FC<Props> = ({ tokenData, inputRef, placeholder, onChang
   useEffect(() => onChange && onChange(amount), [amount, onChange])
 
   return (
-    <div className="flex gap-2 bg-white rounded">
+    <div className="flex gap-2 bg-white dark:bg-gray-700 rounded">
       <input
         type="text"
-        className="flex-grow text-right bg-transparent text-gray-800 p-3 rounded text-xl outline-none"
+        className="flex-grow text-right bg-transparent text-gray-800 dark:text-gray-200 p-3 rounded text-xl outline-none"
         placeholder={placeholder}
         ref={inputRef}
         onInput={e => setAmount(e.currentTarget.value)}

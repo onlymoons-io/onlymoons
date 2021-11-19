@@ -56,6 +56,8 @@ const ContractInfo = tw.div`
 const ContractInfoSection = tw.div`
   bg-blue-200
   text-gray-900
+  dark:bg-blue-900
+  dark:text-gray-200
   rounded
   p-16
   w-full
@@ -72,9 +74,13 @@ const ContractInfoSectionContent = tw.div`
   text-center
 `
 
-const BlackLink = styled(Anchor)`
-  color: black !important;
-  text-decoration: underline;
+const LiqLinkCSS = styled(Anchor)`
+  color: black;
+`
+
+const LiqLink = tw(LiqLinkCSS)`
+  dark:text-indigo-300
+  underline
 `
 
 interface AboutItemComponentProps {
@@ -155,22 +161,22 @@ const About: React.FC = () => {
             <br />
             Additional liquidity was added and locked post-launch.
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-              <BlackLink
+              <LiqLink
                 href="https://bscscan.com/token/0xea03d63fad4c799e3868902bff689fd44ccdd21f#balances"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-lg"
               >
                 BscScan
-              </BlackLink>
-              <BlackLink
+              </LiqLink>
+              <LiqLink
                 href="https://dxsale.app/app/v3/dxlockview?id=0&add=0x8aBE50bDc089D381c68CE65EF9554D911c7CC403&type=lplock&chain=BSC"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-lg"
               >
                 DXSale Lock
-              </BlackLink>
+              </LiqLink>
             </div>
           </ContractInfoSectionContent>
         </ContractInfoSectionComponent>

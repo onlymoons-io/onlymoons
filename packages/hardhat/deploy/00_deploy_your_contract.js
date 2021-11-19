@@ -37,19 +37,6 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   //   log: true
   // })
 
-  // deploy the token locker contracts so we can get their ABI with scaffold.
-  // there must be an alternative to actually deploying the contracts?
-  {
-    const tokenLockerV1 = await deploy("TokenLockerV1", {
-      from: deployer,
-      args: [0, deployer, testToken.address, 99999999999],
-      libraries: {
-        Util: utilLibrary.address,
-      },
-      log: true,
-    });
-  }
-
   const tokenLockerManagerV1 = await deploy("TokenLockerManagerV1", {
     from: deployer,
     // args: [],
@@ -57,6 +44,24 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     libraries: {
       Util: utilLibrary.address,
     },
+  });
+
+  // NOTE: we don't actually need to deploy this for any reason
+  // other than verifying the contract so future instances
+  // will automatically be verified on scan sites.
+  const tokenLockerV1 = await deploy("TokenLockerV1", {
+    from: deployer,
+    args: [
+      tokenLockerManagerV1.address,
+      0,
+      deployer,
+      testToken.address,
+      99999999999,
+    ],
+    libraries: {
+      Util: utilLibrary.address,
+    },
+    log: true,
   });
 
   // const launchpaidToken = await deploy("Launchpaid", {

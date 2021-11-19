@@ -23,6 +23,7 @@ const Outer = tw.div``
 
 const MidSection = tw.section`
   bg-blue-500
+  dark:bg-blue-900
   py-10
   px-5
   md:px-5
@@ -37,13 +38,21 @@ const SectionInner = tw.div`
 `
 
 const FormOuter = tw.div`
+  dark:bg-gray-800
+  rounded
   p-4
   flex-grow
   max-w-lg
 `
 
-const AddressInput = styled(Input)`
+const AddressInputCSS = styled(Input)`
   padding: 1.25rem;
+`
+
+const AddressInput = tw(AddressInputCSS)`
+  bg-white
+  dark:bg-gray-700
+  dark:text-gray-200
 `
 
 const Create: React.FC = () => {
@@ -236,7 +245,7 @@ const Create: React.FC = () => {
             <FormOuter>
               <div className="flex justify-between items-center">
                 <AddressInput
-                  className="flex-grow bg-white"
+                  className="flex-grow"
                   placeholder="Enter liquidity pair or token address"
                   onInput={onInputAddress}
                 />
@@ -296,11 +305,11 @@ const Create: React.FC = () => {
                       </PrimaryButton>
                     </div> */}
 
-                    <div className="flex bg-gray-100 text-gray-800 rounded items-center">
+                    <div className="flex bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded items-center">
                       <div className="p-3 flex-shrink-0">Unlock time</div>
                       <input
                         type="datetime-local"
-                        className="flex-grow p-3 outline-none bg-white rounded-r"
+                        className="flex-grow p-3 outline-none bg-white dark:bg-gray-700 rounded-r"
                         defaultValue={timestampToDateTimeLocal(unlockTime)}
                         onInput={e => setUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))}
                       />

@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import tw from 'tailwind-styled-components'
 import { Link } from 'react-router-dom'
 import ConnectButton from '../ConnectButton'
+import DarkModeToggle from '../DarkModeToggle'
 
 import logoSrc from '../../images/logo-white.svg'
 
@@ -70,7 +71,7 @@ const LogoText = tw.div`
 
 const Right = tw.div`
   flex
-  gap-4
+  gap-3
   items-center
 `
 
@@ -108,6 +109,8 @@ const NavBar: React.FC = () => {
             {/* <RightLink to="/launches">Launches</RightLink> */}
             <RightLink to="/locker">Locker</RightLink>
           </RightLinks>
+
+          <DarkModeToggle />
 
           <ConnectButton />
         </Right>

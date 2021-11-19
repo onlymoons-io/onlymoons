@@ -9,6 +9,7 @@ const OuterCSS = styled.section`
 const Outer = tw(OuterCSS)`
   relative
   bg-blue-500
+  dark:bg-blue-800
   pb-16
 `
 
@@ -32,6 +33,7 @@ const AngledInnerCSS = styled.div`
 const AngledInner = tw(AngledInnerCSS)`
   absolute
   bg-blue-500
+  dark:bg-blue-800
 `
 
 const InnerCSS = styled.div`

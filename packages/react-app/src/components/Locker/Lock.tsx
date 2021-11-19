@@ -7,7 +7,7 @@ import { BigNumber, Contract, providers, utils } from 'ethers'
 import { CircularProgressbarWithChildren as CircularProgressbar, buildStyles } from 'react-circular-progressbar'
 import 'react-circular-progressbar/dist/styles.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faLockOpen, faCheck, faCircleNotch, faExchangeAlt } from '@fortawesome/free-solid-svg-icons'
+import { faExclamation, faCheck, faCircleNotch, faExchangeAlt } from '@fortawesome/free-solid-svg-icons'
 import humanizeDuration from 'humanize-duration'
 import { UtilContractContext } from '../contracts/Util'
 import { TokenLockerManagerV1ContractContext } from '../contracts/TokenLockerManagerV1'
@@ -50,6 +50,8 @@ const Outer = tw(motion.div)`
 const Inner = tw.div`
   bg-gray-200
   text-gray-900
+  dark:bg-gray-800
+  dark:text-gray-200
   rounded
 `
 
@@ -321,8 +323,10 @@ const Lock: React.FC<Props> = ({ lock }) => {
                     children={
                       BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) ? (
                         <FontAwesomeIcon
-                          className={`text-2xl ${lockData.balance.eq(0) ? 'text-gray-400' : 'text-gray-700'}`}
-                          icon={lockData.balance.eq(0) ? faCheck : faLockOpen}
+                          className={`text-2xl ${
+                            lockData.balance.eq(0) ? 'text-gray-400' : 'text-gray-700 dark:text-gray-300'
+                          }`}
+                          icon={lockData.balance.eq(0) ? faCheck : faExclamation}
                           fixedWidth
                         />
                       ) : (
@@ -340,14 +344,14 @@ const Lock: React.FC<Props> = ({ lock }) => {
                 </div>
 
                 <Tooltip id={`lock-status-${lockData.id}`}>
-                  {lockData.unlockTime > Date.now() / 1000 ? 'Locked' : lockData.balance.gt(0) ? 'Unlocked' : 'Empty'}
+                  {lockData.unlockTime > Date.now() / 1000 ? 'Locked' : lockData.balance.gt(0) ? 'Unlocked!' : 'Empty'}
                 </Tooltip>
               </div>
             </Section>
 
             {lpToken0Data && lpToken1Data && (
               <motion.div
-                className="px-4 flex items-center gap-1 bg-yellow-100 border-b border-gray-200 absolute left-0 right-0"
+                className="px-4 flex items-center gap-1 bg-yellow-100 dark:bg-gray-800 border-b border-gray-200 dark:border-transparent absolute left-0 right-0"
                 initial={{ scaleY: 0, y: '-100%', opacity: 0 }}
                 animate={{ scaleY: 1, y: 0, opacity: 1 }}
               >
@@ -372,7 +376,7 @@ const Lock: React.FC<Props> = ({ lock }) => {
               </motion.div>
             )}
 
-            <Section className="bg-gray-100 rounded-b">
+            <Section className="bg-gray-100 dark:bg-gray-900 rounded-b">
               <Details className="mt-3">
                 <div className="flex-grow flex flex-col gap-2">
                   <LockDetail
@@ -492,11 +496,11 @@ const Lock: React.FC<Props> = ({ lock }) => {
                       onChange={value => setDepositTokens(value)}
                     />
 
-                    <div className="flex bg-gray-100 text-gray-800 rounded items-center">
+                    <div className="flex bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded items-center">
                       <div className="p-3 flex-shrink-0">Unlock time</div>
                       <input
                         type="datetime-local"
-                        className="flex-grow p-3 outline-none bg-white rounded-r"
+                        className="flex-grow p-3 outline-none bg-white dark:bg-gray-700 rounded-r"
                         defaultValue={timestampToDateTimeLocal(lockData.unlockTime)}
                         onInput={e =>
                           setExtendedUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))

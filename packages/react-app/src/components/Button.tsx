@@ -33,3 +33,15 @@ export const Light = tw(Button)`
   ${props => (props.disabled ? '' : 'hover:bg-gray-700')}
   text-gray-900
 `
+
+export const Success = tw(Button)`
+  bg-green-700
+  text-gray-100
+  ${props => (props.disabled ? '' : 'hover:bg-green-600')}
+`
+
+export const Ghost = tw(Button)`
+  text-gray-800
+  dark:text-gray-200
+  dark:hover:bg-gray-700
+`

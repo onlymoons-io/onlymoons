@@ -18,6 +18,7 @@
 
 pragma solidity ^0.8.0;
 
+import { ITokenLockerManagerV1 } from "./ITokenLockerManagerV1.sol";
 import { Ownable } from "./Ownable.sol";
 import { IUniswapV2Pair } from "./library/Dex.sol";
 import { IERC20 } from "./library/IERC20.sol";
@@ -28,23 +29,35 @@ contract TokenLockerV1 is Ownable {
   event Deposited(uint256 amount);
   event Withdrew();
 
-  constructor(uint40 id_, address owner_, address tokenAddress_, uint40 unlockTime_) Ownable(owner_) {
+  constructor(address manager_, uint40 id_, address owner_, address tokenAddress_, uint40 unlockTime_) Ownable(owner_) {
     require(unlockTime_ > uint40(block.timestamp), "Unlock time must be in the future");
 
+    _manager = ITokenLockerManagerV1(manager_);
     _id = id_;
     _token = IERC20(tokenAddress_);
     _createdBy = owner_;
     _createdAt = uint40(block.timestamp);
     _unlockTime = unlockTime_;
     _isLpToken = Util.isLpToken(tokenAddress_);
+    
   }
 
+  ITokenLockerManagerV1 private _manager;
   bool private _isLpToken;
   uint40 private _id;
   IERC20 private _token;
   address private _createdBy;
   uint40 private _createdAt;
   uint40 private _unlockTime;
+
+  bool private _transferLocked;
+
+  modifier transferLocked() {
+    require(!_transferLocked, "Transfering is locked. Wait for the previous transaction to complete");
+    _transferLocked = true;
+    _;
+    _transferLocked = false;
+  }
 
   function _balance() private view returns (uint256) {
     return _token.balanceOf(address(this));
@@ -69,7 +82,7 @@ contract TokenLockerV1 is Ownable {
     isLpToken = _isLpToken;
     id = _id;
     contractAddress = address(this);
-    owner = _getOwner();
+    owner = _owner();
     token = address(_token);
     createdBy = _createdBy;
     createdAt = _createdAt;
@@ -122,13 +135,7 @@ contract TokenLockerV1 is Ownable {
   /**
    * @dev deposit and extend duration in one call
    */
-  function deposit(uint256 amount_, uint40 newUnlockTime_) external onlyOwner() {
-    if (amount_ != 0) {
-      uint256 oldBalance = _balance();
-      _token.transferFrom(msg.sender, address(this), amount_);
-      emit Deposited(_balance() - oldBalance);
-    }
-
+  function deposit(uint256 amount_, uint40 newUnlockTime_) external onlyOwner transferLocked {
     if (newUnlockTime_ != 0) {
       require(
         newUnlockTime_ >= _unlockTime && newUnlockTime_ >= uint40(block.timestamp),
@@ -137,15 +144,21 @@ contract TokenLockerV1 is Ownable {
       _unlockTime = newUnlockTime_;
       emit Extended(_unlockTime);
     }
+
+    if (amount_ != 0) {
+      uint256 oldBalance = _balance();
+      _token.transferFrom(_msgSender(), address(this), amount_);
+      emit Deposited(_balance() - oldBalance);
+    }
   }
 
   /**
    * @dev withdraw all of the deposited token
    */
-  function withdraw() external onlyOwner() {
+  function withdraw() external onlyOwner transferLocked {
     require(uint40(block.timestamp) >= _unlockTime, "Wait until unlockTime to withdraw");
 
-    _token.transfer(_getOwner(), _balance());
+    _token.transfer(_owner(), _balance());
 
     emit Withdrew();
   }
@@ -155,24 +168,34 @@ contract TokenLockerV1 is Ownable {
    * just in case this contract winds up with additional tokens (from dividends, etc).
    * attempting to withdraw the locked token will revert.
    */
-  function withdrawToken(address address_) external onlyOwner() {
+  function withdrawToken(address address_) external onlyOwner transferLocked {
     require(address_ != address(_token), "Use 'withdraw' to withdraw the primary locked token");
 
     IERC20 theToken = IERC20(address_);
-    theToken.transfer(_getOwner(), theToken.balanceOf(address(this)));
+    theToken.transfer(_owner(), theToken.balanceOf(address(this)));
   }
 
   /**
    * @dev recovery function -
    * just in case this contract winds up with eth in it (from dividends etc)
    */
-  function withdrawEth() external onlyOwner() {
-    address payable receiver = payable(_getOwner());
+  function withdrawEth() external onlyOwner transferLocked {
+    address payable receiver = payable(_owner());
     receiver.transfer(address(this).balance);
+  }
+
+  function _transferOwnership(address newOwner_) override internal onlyOwner {
+    address previousOwner = _owner();
+    super._transferOwnership(newOwner_);
+
+    // we need to notify the manager contract that we transferred
+    // ownership, so that the new owner is searchable.
+    _manager.notifyLockerOwnerChange(_id, newOwner_, previousOwner, _createdBy);
   }
 
   receive() external payable {
     // we need this function to receive eth,
     // which might happen from dividend tokens.
+    // use `withdrawEth` to remove eth from the contract.
   }
 }

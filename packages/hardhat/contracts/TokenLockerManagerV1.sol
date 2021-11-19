@@ -18,11 +18,12 @@
 
 pragma solidity ^0.8.0;
 
+import { ITokenLockerManagerV1 } from "./ITokenLockerManagerV1.sol";
 import { Ownable } from "./Ownable.sol";
 import { IERC20 } from "./library/IERC20.sol";
 import { TokenLockerV1 } from "./TokenLockerV1.sol";
 
-contract TokenLockerManagerV1 is Ownable {
+contract TokenLockerManagerV1 is ITokenLockerManagerV1, Ownable {
   event TokenLockerCreated(
     uint40 id,
     address indexed token,
@@ -34,10 +35,9 @@ contract TokenLockerManagerV1 is Ownable {
     uint40 unlockTime
   );
 
-  constructor() Ownable(msg.sender) {
+  constructor() Ownable(_msgSender()) {
     _creationEnabled = true;
   }
-
 
   bool private _creationEnabled;
 
@@ -49,13 +49,25 @@ contract TokenLockerManagerV1 is Ownable {
   /**
    * @dev this mapping makes it possible to search for locks,
    * at the cost of paying higher gas fees to store the data.
-   * we could potentially filter events for this as well, but
-   * it really doesn't work well at all. as of now, bsc has a
-   * limit of filtering through 5000 blocks at a time. :(
-   * despite this - we still want to emit events so applications
-   * can track the data in realtime.
    */
   mapping(address => uint40[]) private _tokenLockersForAddress;
+
+  mapping(address => bool) private _addressCreationLocks;
+
+  modifier allowCreation() {
+    require(_creationEnabled, "Locker creation is disabled");
+    _;
+  }
+
+  modifier lockCreation() {
+    require(
+      !_addressCreationLocks[_msgSender()],
+      "Creation from this address is locked, wait until the previous transaction completes"
+    );
+    _addressCreationLocks[_msgSender()] = true;
+    _;
+    _addressCreationLocks[_msgSender()] = false;
+  }
 
   function tokenLockerCount() external view returns (uint40) {
     return _tokenLockerCount;
@@ -71,7 +83,7 @@ contract TokenLockerManagerV1 is Ownable {
    * with the older versions. this will not prevent extending, depositing,
    * or withdrawing from old locks - it only stops new locks from being created.
    */
-  function setCreationEnabled(bool value_) external onlyOwner() {
+  function setCreationEnabled(bool value_) external onlyOwner {
     _creationEnabled = value_;
   }
 
@@ -79,21 +91,18 @@ contract TokenLockerManagerV1 is Ownable {
     address tokenAddress_,
     uint256 amount_,
     uint40 unlockTime_
-  ) external {
+  ) external allowCreation lockCreation {
     require(_creationEnabled, "Locker creation is disabled");
 
     uint40 id = _tokenLockerCount++;
-    _tokenLockers[id] = new TokenLockerV1(id, msg.sender, tokenAddress_, unlockTime_);
+    _tokenLockers[id] = new TokenLockerV1(address(this), id, _msgSender(), tokenAddress_, unlockTime_);
 
     IERC20 token = IERC20(tokenAddress_);
-    token.transferFrom(msg.sender, address(_tokenLockers[id]), amount_);
+    token.transferFrom(_msgSender(), address(_tokenLockers[id]), amount_);
 
     // add the creator to the token locker mapping, so it's
     // able to be searched.
-    // NOTE that if the ownership is transferred, the new
-    // owner will NOT be searchable with this setup.
-    // the locker would need to notify the manager of the ownership change.
-    _tokenLockersForAddress[msg.sender].push(id);
+    _tokenLockersForAddress[_msgSender()].push(id);
 
     // add the locked token to the token lockers mapping
     _tokenLockersForAddress[tokenAddress_].push(id);
@@ -115,7 +124,7 @@ contract TokenLockerManagerV1 is Ownable {
       tokenAddress_,
       token0Address,
       token1Address,
-      msg.sender,
+      _msgSender(),
       token.balanceOf(address(_tokenLockers[id])),
       unlockTime_
     );
@@ -159,5 +168,51 @@ contract TokenLockerManagerV1 is Ownable {
   /** @return an array of locker ids matching the given search address */
   function getTokenLockersForAddress(address address_) external view returns (uint40[] memory) {
     return _tokenLockersForAddress[address_];
+  }
+
+  /**
+   * @dev this gets called from TokenLockerV1.
+   * it notifies this contract of the owner change so we can modify the search index
+   */
+  function notifyLockerOwnerChange(uint40 id_, address newOwner_, address previousOwner_, address createdBy_) external {
+    require(
+      _msgSender() == address(_tokenLockers[id_]),
+      "Only the locker contract can call this function"
+    );
+
+    // remove the previous owner from the locker address mapping,
+    // only if it's not the same address as the creator.
+    if (previousOwner_ != createdBy_) {
+      for (uint256 i = 0; i < _tokenLockersForAddress[previousOwner_].length; i++) {
+        // continue searching for id_ in the array until we find a match
+        if (_tokenLockersForAddress[previousOwner_][i] != id_) continue;
+        // replace the old item at this index with the last value.
+        // we don't care about the order.
+        _tokenLockersForAddress[previousOwner_][i] = _tokenLockersForAddress[
+          previousOwner_][_tokenLockersForAddress[previousOwner_].length - 1
+        ];
+        // remove the last item in the array, since we just moved it
+        _tokenLockersForAddress[previousOwner_].pop();
+        // and we're done
+        break;
+      }
+    }
+
+    // push the new owner to the lockers address mapping so the new owner is searchable,
+    // only if they don't already have this id in the lockers address mapping.
+    bool hasId = false;
+
+    // look for the id in the new owners address mapping
+    for (uint256 i = 0; i < _tokenLockersForAddress[newOwner_].length; i++) {
+      if (_tokenLockersForAddress[newOwner_][i] == id_) {
+        hasId = true;
+        break;
+      }
+    }
+
+    // only add the id if they didn't already have it
+    if (!hasId) {
+      _tokenLockersForAddress[newOwner_].push(id_);
+    }
   }
 }

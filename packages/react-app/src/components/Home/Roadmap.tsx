@@ -5,6 +5,7 @@ import tw from 'tailwind-styled-components'
 
 const Outer = tw.footer`
   bg-blue-600
+  dark:bg-gray-800
   py-10
 `
 
