@@ -160,10 +160,6 @@ const Locker: React.FC = () => {
           )}
         </SectionInner>
       </MidSection>
-
-      <BottomSection>
-        <SectionInner></SectionInner>
-      </BottomSection>
     </Outer>
   )
 }
