@@ -9,7 +9,7 @@ export interface TokenData {
 }
 
 export interface TokenLockData {
-  owner: string
+  lockOwner: string
   id: number
   contractAddress: string
   token: string

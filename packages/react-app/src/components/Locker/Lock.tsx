@@ -290,11 +290,11 @@ const Lock: React.FC<Props> = ({ lock }) => {
                     <Link to={`/locker/account/${lockData.createdBy}`} className="mt-2 text-indigo-500">
                       {getShortAddress(lockData.createdBy)}
                     </Link>
-                    {lockData.owner !== lockData.createdBy && (
+                    {lockData.lockOwner !== lockData.createdBy && (
                       <>
                         , owned by{' '}
-                        <Link to={`/locker/account/${lockData.owner}`} className="mt-2 text-indigo-500">
-                          {getShortAddress(lockData.owner)}
+                        <Link to={`/locker/account/${lockData.lockOwner}`} className="mt-2 text-indigo-500">
+                          {getShortAddress(lockData.lockOwner)}
                         </Link>
                       </>
                     )}
@@ -421,7 +421,7 @@ const Lock: React.FC<Props> = ({ lock }) => {
               </Details>
             </Section>
 
-            {lockData.owner === account && lockContract && (
+            {lockData.lockOwner === account && lockContract && (
               <>
                 <Section className="text-gray-100 grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <PrimaryButton className="flex-grow" onClick={() => setExtendVisible(!extendVisible)}>

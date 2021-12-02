@@ -32,7 +32,7 @@ interface ITokenLockerManagerV1 {
     bool isLpToken,
     uint40 id,
     address contractAddress,
-    address owner,
+    address lockOwner,
     address token,
     address createdBy,
     uint40 createdAt,

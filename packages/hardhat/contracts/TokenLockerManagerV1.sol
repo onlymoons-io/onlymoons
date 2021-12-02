@@ -52,28 +52,16 @@ contract TokenLockerManagerV1 is ITokenLockerManagerV1, Ownable {
    */
   mapping(address => uint40[]) private _tokenLockersForAddress;
 
-  mapping(address => bool) private _addressCreationLocks;
-
   modifier allowCreation() {
     require(_creationEnabled, "Locker creation is disabled");
     _;
   }
 
-  modifier lockCreation() {
-    require(
-      !_addressCreationLocks[_msgSender()],
-      "Creation from this address is locked, wait until the previous transaction completes"
-    );
-    _addressCreationLocks[_msgSender()] = true;
-    _;
-    _addressCreationLocks[_msgSender()] = false;
-  }
-
-  function tokenLockerCount() external view returns (uint40) {
+  function tokenLockerCount() external view override returns (uint40) {
     return _tokenLockerCount;
   }
 
-  function creationEnabled() external view returns (bool) {
+  function creationEnabled() external view override returns (bool) {
     return _creationEnabled;
   }
 
@@ -83,7 +71,7 @@ contract TokenLockerManagerV1 is ITokenLockerManagerV1, Ownable {
    * with the older versions. this will not prevent extending, depositing,
    * or withdrawing from old locks - it only stops new locks from being created.
    */
-  function setCreationEnabled(bool value_) external onlyOwner {
+  function setCreationEnabled(bool value_) external override onlyOwner {
     _creationEnabled = value_;
   }
 
@@ -91,9 +79,7 @@ contract TokenLockerManagerV1 is ITokenLockerManagerV1, Ownable {
     address tokenAddress_,
     uint256 amount_,
     uint40 unlockTime_
-  ) external allowCreation lockCreation {
-    require(_creationEnabled, "Locker creation is disabled");
-
+  ) external override allowCreation {
     uint40 id = _tokenLockerCount++;
     _tokenLockers[id] = new TokenLockerV1(address(this), id, _msgSender(), tokenAddress_, unlockTime_);
     address lockerAddress = address(_tokenLockers[id]);
@@ -109,7 +95,7 @@ contract TokenLockerManagerV1 is ITokenLockerManagerV1, Ownable {
     _tokenLockersForAddress[tokenAddress_].push(id);
     // add the locker contract to this mapping as well, so it's
     // searchable in the same way as tokens within the locker.
-    _tokenLockersForAddress[address(_tokenLockers[id])].push(id);
+    _tokenLockersForAddress[lockerAddress].push(id);
 
     // get lp data
     (bool hasLpData,,address token0Address,address token1Address,,,,) = _tokenLockers[id].getLpData();
@@ -134,15 +120,15 @@ contract TokenLockerManagerV1 is ITokenLockerManagerV1, Ownable {
   /**
    * @return the address of a locker contract with the given id
    */
-  function getTokenLockAddress(uint40 id_) external view returns (address) {
+  function getTokenLockAddress(uint40 id_) external view override returns (address) {
     return address(_tokenLockers[id_]);
   }
 
-  function getTokenLockData(uint40 id_) external view returns (
+  function getTokenLockData(uint40 id_) external view override returns (
     bool isLpToken,
     uint40 id,
     address contractAddress,
-    address owner,
+    address lockOwner,
     address token,
     address createdBy,
     uint40 createdAt,
@@ -153,7 +139,7 @@ contract TokenLockerManagerV1 is ITokenLockerManagerV1, Ownable {
     return _tokenLockers[id_].getLockData();
   }
 
-  function getLpData(uint40 id_) external view returns (
+  function getLpData(uint40 id_) external view override returns (
     bool hasLpData,
     uint40 id,
     address token0,
@@ -167,7 +153,7 @@ contract TokenLockerManagerV1 is ITokenLockerManagerV1, Ownable {
   }
 
   /** @return an array of locker ids matching the given search address */
-  function getTokenLockersForAddress(address address_) external view returns (uint40[] memory) {
+  function getTokenLockersForAddress(address address_) external view override returns (uint40[] memory) {
     return _tokenLockersForAddress[address_];
   }
 
@@ -175,7 +161,7 @@ contract TokenLockerManagerV1 is ITokenLockerManagerV1, Ownable {
    * @dev this gets called from TokenLockerV1.
    * it notifies this contract of the owner change so we can modify the search index
    */
-  function notifyLockerOwnerChange(uint40 id_, address newOwner_, address previousOwner_, address createdBy_) external {
+  function notifyLockerOwnerChange(uint40 id_, address newOwner_, address previousOwner_, address createdBy_) external override {
     require(
       _msgSender() == address(_tokenLockers[id_]),
       "Only the locker contract can call this function"

@@ -27,6 +27,11 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     log: true,
   });
 
+  const onlyMoons = await deploy("OnlyMoons", {
+    from: deployer,
+    log: true,
+  });
+
   // const tokenData = await deploy("TokenData", {
   //   from: deployer,
   //   log: true,

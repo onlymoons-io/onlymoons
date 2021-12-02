@@ -39,7 +39,6 @@ contract TokenLockerV1 is Ownable {
     _createdAt = uint40(block.timestamp);
     _unlockTime = unlockTime_;
     _isLpToken = Util.isLpToken(tokenAddress_);
-    
   }
 
   ITokenLockerManagerV1 private _manager;
@@ -71,7 +70,7 @@ contract TokenLockerV1 is Ownable {
     bool isLpToken,
     uint40 id,
     address contractAddress,
-    address owner,
+    address lockOwner,
     address token,
     address createdBy,
     uint40 createdAt,
@@ -82,7 +81,7 @@ contract TokenLockerV1 is Ownable {
     isLpToken = _isLpToken;
     id = _id;
     contractAddress = address(this);
-    owner = _owner();
+    lockOwner = _owner();
     token = address(_token);
     createdBy = _createdBy;
     createdAt = _createdAt;
