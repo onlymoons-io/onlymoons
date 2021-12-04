@@ -124,7 +124,7 @@ const Home: React.FC = () => {
               <MainAnchor
                 target="_blank"
                 rel="noreferrer noopener"
-                href="https://www.dextools.io/app/bsc/pair-explorer/0xea03d63fad4c799e3868902bff689fd44ccdd21f"
+                href="https://www.dextools.io/app/bsc/pair-explorer/0x6882a6A51D4C8509D2b771E73545230f529C014B"
               >
                 Chart
               </MainAnchor>
