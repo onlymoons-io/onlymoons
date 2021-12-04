@@ -168,7 +168,7 @@ const About: React.FC = () => {
             <br />
             <br />
             <AuditLink href="https://solidity.finance/audits/OnlyMoons/" target="_blank" rel="noopener noreferrer">
-              OnlyMoons token
+              OnlyMoons Token
             </AuditLink>
             <br />
             <AuditLink
@@ -190,7 +190,7 @@ const About: React.FC = () => {
             Liquidity is locked right here in our own <LinkTailwind to="/locker">locker</LinkTailwind>.
             <br />
             <br />
-            <LiqLink to="/locker/56/1">PancakeSwap LP lock</LiqLink>
+            <LiqLink to="/locker">PancakeSwap LP lock</LiqLink>
             {/* Initial LP tokens were burned.
             <br />
             <br />
