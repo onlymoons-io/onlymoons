@@ -116,7 +116,7 @@ const Home: React.FC = () => {
               <MainAnchor
                 target="_blank"
                 rel="noreferrer noopener"
-                href="https://pancakeswap.finance/swap?outputCurrency=0x1b3d161e0696e5688e0207a182bc5fa48fd0815d"
+                href="https://pancakeswap.finance/swap?outputCurrency=0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
               >
                 Buy
               </MainAnchor>
