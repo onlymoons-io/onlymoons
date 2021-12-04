@@ -179,18 +179,18 @@ const Lock: React.FC<Props> = ({ lock }) => {
 
   useEffect(() => {
     switch (chainId) {
+      // bsc testnet
+      case 56:
+        setLockAbi(contracts['56'].bsc.contracts.TokenLockerV1.abi)
+        break
+      case 97:
+        setLockAbi(contracts['97'].bsctest.contracts.TokenLockerV1.abi)
+        break
       // localhost
       // case 31337:
       //   setLockAbi(contracts['31337'].localhost.contracts[_tokenOrLp === 'token' ? 'TokenLockerV1' : 'LPLockerV1'].abi)
       //   break
-      // bsc mainnet
-      // case 56:
-      //   setLockAbi(contracts['56'].bsc.contracts[_tokenOrLp === 'token' ? 'TokenLockerV1' : 'LPLockerV1'].abi)
-      //   break
-      // bsc testnet
-      case 97:
-        setLockAbi(contracts['97'].bsctest.contracts.TokenLockerV1.abi)
-        break
+
       default:
         setLockAbi(undefined)
     }

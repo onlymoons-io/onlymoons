@@ -1,20 +1,19 @@
 import React, { HTMLAttributes } from 'react'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import tw from 'tailwind-styled-components'
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconDefinition } from '@fortawesome/fontawesome-common-types'
-// import { faLock } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faLock, faPeopleCarry } from '@fortawesome/free-solid-svg-icons'
 import { useInView } from 'react-intersection-observer'
-import Tooltip from '../Tooltip'
+// import Tooltip from '../Tooltip'
 import Anchor from '../Anchor'
 import AngledSection from '../AngledSection'
 import { motion } from 'framer-motion'
 
 const AboutContent = tw.div`
-  grid
-  md:grid-cols-2
-  lg:grid-cols-4
-  gap-4
+  flex
+  justify-center
   max-w-5xl
   m-auto
 `
@@ -74,13 +73,30 @@ const ContractInfoSectionContent = tw.div`
   text-center
 `
 
-const LiqLinkCSS = styled(Anchor)`
+const LinkCSS = styled(Link)`
   color: black;
 `
 
-const LiqLink = tw(LiqLinkCSS)`
+const LinkTailwind = tw(LinkCSS)`
   dark:text-indigo-300
   underline
+`
+
+const LiqLink = tw(LinkTailwind)`
+  text-lg
+`
+
+const AnchorCSS = styled(Anchor)`
+  color: black;
+`
+
+const AnchorTailwind = tw(AnchorCSS)`
+  dark:text-indigo-300
+  underline
+`
+
+const AuditLink = tw(AnchorTailwind)`
+  text-lg
 `
 
 interface AboutItemComponentProps {
@@ -138,25 +154,44 @@ const About: React.FC = () => {
   return (
     <AngledSection>
       <AboutContent>
-        <AboutItemComponent title="Total supply" content="1,000,000,000,000" />
-        <>
-          <AboutItemComponent title="Burned" content="54% ⓘ" tip={true} for="burned" />
-          <Tooltip id="burned" offset={{ top: -10 }}>
-            44% in a traditional 0x00 dead wallet, with an additional
-            <br />
-            10% permanently locked in the token contract.
-          </Tooltip>
-        </>
-        <AboutItemComponent title="Reflection rate" content="3% per transaction" />
-        <AboutItemComponent title="Burn rate" content="3% per transaction" />
+        <AboutItemComponent title="Total supply" content="500,000,000" />
       </AboutContent>
 
       <ContractInfo>
         <ContractInfoSectionComponent direction="right" style={{ marginTop: 0 }}>
-          <ContractInfoSectionTitle>Liquidity locked</ContractInfoSectionTitle>
+          <ContractInfoSectionTitle>
+            <FontAwesomeIcon icon={faCheck} className="text-green-500" /> Contracts audited
+          </ContractInfoSectionTitle>
 
           <ContractInfoSectionContent>
-            Initial LP tokens were burned.
+            Audits were performed by Solidity Finance and can be viewed here:
+            <br />
+            <br />
+            <AuditLink href="https://solidity.finance/audits/OnlyMoons/" target="_blank" rel="noopener noreferrer">
+              OnlyMoons token
+            </AuditLink>
+            <br />
+            <AuditLink
+              href="https://solidity.finance/audits/OnlyMoonsTokenLockerV1/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              OnlyMoons Token Locker
+            </AuditLink>
+          </ContractInfoSectionContent>
+        </ContractInfoSectionComponent>
+
+        <ContractInfoSectionComponent direction="left">
+          <ContractInfoSectionTitle>
+            <FontAwesomeIcon icon={faLock} className="text-gray-500" /> Liquidity locked
+          </ContractInfoSectionTitle>
+
+          <ContractInfoSectionContent>
+            Liquidity is locked right here in our own <LinkTailwind to="/locker">locker</LinkTailwind>.
+            <br />
+            <br />
+            <LiqLink to="/locker/56/1">PancakeSwap LP lock</LiqLink>
+            {/* Initial LP tokens were burned.
             <br />
             <br />
             Additional liquidity was added and locked post-launch.
@@ -177,12 +212,14 @@ const About: React.FC = () => {
               >
                 DXSale Lock
               </LiqLink>
-            </div>
+            </div> */}
           </ContractInfoSectionContent>
         </ContractInfoSectionComponent>
 
-        <ContractInfoSectionComponent direction="left">
-          <ContractInfoSectionTitle>No team wallet</ContractInfoSectionTitle>
+        <ContractInfoSectionComponent direction="right">
+          <ContractInfoSectionTitle>
+            <FontAwesomeIcon icon={faPeopleCarry} className="text-gray-500" /> No team wallet
+          </ContractInfoSectionTitle>
 
           <ContractInfoSectionContent>
             No tokens were distributed to team wallets. Any tokens held by team members were purchased after launch.

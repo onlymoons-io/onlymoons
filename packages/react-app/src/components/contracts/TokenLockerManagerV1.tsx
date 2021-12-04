@@ -99,6 +99,12 @@ const TokenLockerManagerV1ContractContextProvider: React.FC = ({ children }) => 
         setAbi(contracts['97'].bsctest.contracts.TokenLockerManagerV1.abi)
         break
 
+      // bsc mainnet
+      case 56:
+        setAddress(contracts['56'].bsc.contracts.TokenLockerManagerV1.address)
+        setAbi(contracts['56'].bsc.contracts.TokenLockerManagerV1.abi)
+        break
+
       default:
         setAddress(undefined)
         setAbi(undefined)
