@@ -27,10 +27,12 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     log: true,
   });
 
-  const onlyMoons = await deploy("OnlyMoons", {
-    from: deployer,
-    log: true,
-  });
+  // leave this commented because we never want to deploy it again on any network.
+  // the exception might be a testnet somewhere
+  // const onlyMoons = await deploy("OnlyMoons", {
+  //   from: deployer,
+  //   log: true,
+  // });
 
   // const tokenData = await deploy("TokenData", {
   //   from: deployer,
@@ -68,69 +70,6 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     },
     log: true,
   });
-
-  // const launchpaidToken = await deploy("Launchpaid", {
-  //   // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
-  //   from: deployer,
-  //   args: [
-  //     // name
-  //     "Launchpaid",
-  //     // symbol
-  //     "LAUNCH",
-  //     // decimals
-  //     18,
-  //     // total supply
-  //     500000000,
-  //   ],
-  //   log: true,
-  // });
-
-  // const launchpaidStaking = await deploy("LaunchpaidStaking", {
-  //   // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
-  //   from: deployer,
-  //   args: [launchpaidToken.address],
-  //   log: true,
-  //   libraries: {
-  //     Math: mathLibrary.address,
-  //   },
-  // });
-
-  // const launchpaidFeatured = await deploy("LaunchpaidFeatured", {
-  //   from: deployer,
-  //   log: true,
-  // });
-
-  // // // we need to deploy the launch contract so we
-  // // // get the ABI automatically in the frontend.
-  // // // maybe there's another way, since we don't
-  // // // actually need to deploy this now.
-  // // await deploy("LaunchpaidLaunch", {
-  // //   from: deployer,
-  // //   log: true,
-  // // });
-
-  // await deploy("LaunchpaidLauncher", {
-  //   // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
-  //   from: deployer,
-  //   args: [
-  //     launchpaidToken.address,
-  //     launchpaidStaking.address,
-  //     // launchpaidFeatured.address,
-  //   ],
-  //   log: true,
-  //   libraries: {
-  //     Math: mathLibrary.address,
-  //     // SafeMath: safeMathLibrary.address,
-  //     Util: utilLibrary.address,
-  //   },
-  // });
-
-  // await deploy("YourContract", {
-  //   // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
-  //   from: deployer,
-  //   //args: [ "Hello", ethers.utils.parseEther("1.5") ],
-  //   log: true,
-  // });
 
   /*
     // Getting a previously deployed contract
