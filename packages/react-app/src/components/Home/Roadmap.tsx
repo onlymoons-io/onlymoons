@@ -88,7 +88,9 @@ const Roadmap: React.FC = () => {
                 <li style={{ textDecoration: 'line-through' }}>Begin development of launchpad platform</li>
                 <li style={{ textDecoration: 'line-through' }}>Token locker V1 release</li>
                 <li style={{ textDecoration: 'line-through' }}>OnlyMoons token relaunch</li>
-                <li>Begin marketing campaign</li>
+                <li>Small scale marketing</li>
+                <li>Multilingual support</li>
+                <li>Early tool adopters</li>
                 <li>Website V2 update</li>
                 <li>List on CoinGecko</li>
                 <li>List on CoinMarketCap</li>
@@ -103,9 +105,8 @@ const Roadmap: React.FC = () => {
               <ul className="list-disc">
                 <li>Beta launchpad release</li>
                 <li>Website V3 update</li>
-                <li>Crypto Academy Price Prediction</li>
-                <li>Work with influencers</li>
                 <li>Launchpad full release</li>
+                <li>Full marketing campaign</li>
               </ul>
             </RoadmapSectionContent>
           </RoadmapSection>
