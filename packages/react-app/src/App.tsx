@@ -4,8 +4,11 @@ import { HashRouter as Router, Routes, Route } from 'react-router-dom'
 
 import tw from 'tailwind-styled-components'
 
+import NotificationCatcherContextProvider from './components/NotificationCatcher'
+
 import UtilContractContextProvider from './components/contracts/Util'
 import TokenLockerManagerV1ContractContextProvider from './components/contracts/TokenLockerManagerV1'
+import StakingManagerV1ContractContextProvider from './components/contracts/StakingManagerV1'
 
 import FullscreenLoading from './components/FullscreenLoading'
 
@@ -14,6 +17,8 @@ import Home from './components/Home'
 import Locker from './components/Locker'
 import ManageLockers from './components/Locker/Account'
 import CreateLocker from './components/Locker/Create'
+import Staking from './components/Staking'
+import CreateStaking from './components/Staking/Create'
 
 import './App.css'
 
@@ -46,6 +51,8 @@ const AppContent: React.FC = () => {
         <Route path="/locker/create" element={<CreateLocker />} />
         <Route path="/locker/:chainId/:id" element={<Locker />} />
         <Route path="/locker" element={<Locker />} />
+        <Route path="/staking/create" element={<CreateStaking />} />
+        <Route path="/staking" element={<Staking />} />
         <Route path="/" element={<Home />} />
       </Routes>
     </Outer>
@@ -64,11 +71,15 @@ const App: React.FC = () => {
   return IS_HTTPS ? (
     <Web3ReactProvider getLibrary={getLibrary}>
       <Router>
-        <UtilContractContextProvider>
-          <TokenLockerManagerV1ContractContextProvider>
-            <AppContent />
-          </TokenLockerManagerV1ContractContextProvider>
-        </UtilContractContextProvider>
+        <NotificationCatcherContextProvider>
+          <UtilContractContextProvider>
+            <TokenLockerManagerV1ContractContextProvider>
+              <StakingManagerV1ContractContextProvider>
+                <AppContent />
+              </StakingManagerV1ContractContextProvider>
+            </TokenLockerManagerV1ContractContextProvider>
+          </UtilContractContextProvider>
+        </NotificationCatcherContextProvider>
       </Router>
     </Web3ReactProvider>
   ) : (

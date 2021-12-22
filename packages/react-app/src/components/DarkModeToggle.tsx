@@ -12,7 +12,6 @@ const DarkModeToggle: React.FC = () => {
   )
 
   useEffect(() => {
-    console.log('what')
     document.documentElement.classList.toggle('dark', darkModeEnabled)
 
     window.localStorage.setItem('OM_DARKMODE_ENABLED', darkModeEnabled ? '1' : '0')

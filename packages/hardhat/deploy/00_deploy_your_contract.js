@@ -6,10 +6,15 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  // const mathLibrary = await deploy("Math", {
-  //   from: deployer,
-  //   log: true,
-  // });
+  const mathLibrary = await deploy("Math", {
+    from: deployer,
+    log: true,
+  });
+
+  const safeERC20Library = await deploy("SafeERC20", {
+    from: deployer,
+    log: true,
+  });
 
   // // const safeMathLibrary = await deploy("SafeMath", {
   // //   from: deployer,
@@ -69,6 +74,34 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
       Util: utilLibrary.address,
     },
     log: true,
+  });
+
+  const stakingManagerV1 = await deploy("StakingManagerV1", {
+    from: deployer,
+    log: true,
+    // args: [],
+    libraries: {
+      Math: mathLibrary.address,
+    },
+  });
+
+  const stakingV1 = await deploy("StakingV1", {
+    from: deployer,
+    log: true,
+    args: [
+      // address owner_,
+      deployer,
+      // address tokenAddress_,
+      testToken.address,
+      // string memory name_,
+      "Solo",
+      // uint16 lockDurationDays_
+      0,
+    ],
+    libraries: {
+      Math: mathLibrary.address,
+      SafeERC20: safeERC20Library.address,
+    },
   });
 
   /*

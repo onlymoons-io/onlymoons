@@ -1,10 +1,11 @@
-import { FC, useCallback } from 'react'
+import { FC, useCallback, useContext } from 'react'
 import { useMount } from 'react-use'
 import { useWeb3React } from '@web3-react/core'
 import { InjectedConnector } from '@web3-react/injected-connector'
 import Tooltip from './Tooltip'
 import { getShortAddress } from '../util'
 import { Dark, Light, Primary, Secondary } from './Button'
+import { NotificationCatcherContext } from './NotificationCatcher'
 import contracts from '../contracts/production_contracts.json'
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 
 const ConnectButton: FC<Props> = ({ color = 'dark' }) => {
   const w3 = useWeb3React()
+  const { push: pushNotification } = useContext(NotificationCatcherContext)
 
   const getButton = () => {
     switch (color) {
@@ -52,15 +54,29 @@ const ConnectButton: FC<Props> = ({ color = 'dark' }) => {
           console.error(err)
 
           // open the error modal
+          pushNotification &&
+            pushNotification({
+              message: err.message,
+              level: 'error',
+            })
         })
     }
-  }, [w3, connect])
+  }, [w3, connect, pushNotification])
 
   // this auto connect should maybe not be in the button component.
   // it makes more sense to live in App.tsx or something.
   useMount(() => {
     if (window.localStorage.getItem('ONLYMOONS_AUTO_CONNECT') === '1') {
-      connect().catch(console.error)
+      connect().catch(err => {
+        console.error(err)
+
+        // open the error modal
+        pushNotification &&
+          pushNotification({
+            message: err.message,
+            level: 'error',
+          })
+      })
     }
   })
 

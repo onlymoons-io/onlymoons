@@ -107,6 +107,7 @@ const NavBar: React.FC = () => {
         <Right>
           <RightLinks>
             {/* <RightLink to="/launches">Launches</RightLink> */}
+            <RightLink to="/staking">Staking</RightLink>
             <RightLink to="/locker">Locker</RightLink>
           </RightLinks>
 
