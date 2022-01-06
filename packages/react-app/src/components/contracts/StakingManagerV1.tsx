@@ -1,8 +1,8 @@
 import React, { createContext, useEffect, useState, useCallback } from 'react'
 import { useWeb3React } from '@web3-react/core'
-import { Contract, providers } from 'ethers'
+import { BigNumber, Contract, providers } from 'ethers'
 import contracts from '../../contracts/production_contracts.json'
-import { StakingData, StakingDataForAccount, GlobalStakingData } from '../../typings'
+import { StakingData, GlobalStakingData, SplitStakingRewardsData } from '../../typings'
 
 const { Web3Provider } = providers
 
@@ -13,18 +13,24 @@ export interface IStakingManagerV1ContractContext {
   count: number
   owner?: string
   globalStakingData?: GlobalStakingData
+  canDistribute: boolean
 
   createStaking?: (tokenAddress: string, name: string, lockDurationDays: number) => Promise<number>
   getStakingData?: (id: number) => Promise<StakingData>
-  // getStakingDataForAccount?: (id: number, account: string) => Promise<StakingDataForAccount>
   setSoloStakingId?: (id: number) => Promise<void>
   setLpStakingId?: (id: number) => Promise<void>
   getGlobalStakingData?: () => Promise<GlobalStakingData>
+  distribute?: () => Promise<void>
+  getRewardsRatio?: () => Promise<number>
+  getStakingRewards?: () => Promise<SplitStakingRewardsData>
+  getAllRewardsForAddress?: (account: string) => Promise<BigNumber>
+  claimAll?: () => Promise<void>
 }
 
 export const StakingManagerV1ContractContext = createContext<IStakingManagerV1ContractContext>({
   //
   count: 0,
+  canDistribute: false,
 })
 
 const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
@@ -35,6 +41,7 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
   const [count, setCount] = useState<number>(0)
   const [owner, setOwner] = useState<string>()
   const [globalStakingData, setGlobalStakingData] = useState<GlobalStakingData>()
+  const [canDistribute, setCanDistribute] = useState<boolean>(false)
 
   const setSoloStakingId = useCallback(
     async (id: number) => {
@@ -42,9 +49,7 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
         throw new Error('Staking contract is not loaded')
       }
 
-      const tx = await contract.setSoloStakingId(id)
-
-      await tx.wait()
+      await (await contract.setSoloStakingId(id)).wait()
     },
     [contract],
   )
@@ -55,9 +60,7 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
         throw new Error('Staking contract is not loaded')
       }
 
-      const tx = await contract.setLpStakingId(id)
-
-      await tx.wait()
+      await (await contract.setLpStakingId(id)).wait()
     },
     [contract],
   )
@@ -69,9 +72,7 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
         throw new Error('Staking contract is not loaded')
       }
 
-      const tx = await contract.createStaking(tokenAddress, name, lockDurationDays)
-
-      const result = await tx.wait()
+      const result = await (await contract.createStaking(tokenAddress, name, lockDurationDays)).wait()
 
       const createdEvent = result.events.find((e: any) => e.event === 'StakingCreated')
 
@@ -91,23 +92,55 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
     [contract],
   )
 
-  // const getStakingDataForAccount = useCallback(
-  //   async (id: number, account: string) => {
-  //     if (!contract) {
-  //       throw new Error('Staking contract is not loaded')
-  //     }
-
-  //     return await contract.getStakingDataForAccount(id, account)
-  //   },
-  //   [contract],
-  // )
-
   const getGlobalStakingData = useCallback(async () => {
     if (!contract) {
       throw new Error('Staking contract is not loaded')
     }
 
     return await contract.getGlobalStakingData()
+  }, [contract])
+
+  const distribute = useCallback(async () => {
+    if (!contract) {
+      throw new Error('Staking contract is not loaded')
+    }
+
+    await (await contract.distribute()).wait()
+  }, [contract])
+
+  const getStakingRewards = useCallback(async () => {
+    if (!contract) {
+      throw new Error('Staking contract is not loaded')
+    }
+
+    return await contract.getStakingRewards()
+  }, [contract])
+
+  const claimAll = useCallback(async () => {
+    if (!contract) {
+      throw new Error('Staking contract is not loaded')
+    }
+
+    await (await contract.claimAll()).wait()
+  }, [contract])
+
+  const getAllRewardsForAddress = useCallback(
+    async (account: string) => {
+      if (!contract) {
+        throw new Error('Staking contract is not loaded')
+      }
+
+      return await contract.getAllRewardsForAddress(account)
+    },
+    [contract],
+  )
+
+  const getRewardsRatio = useCallback(async () => {
+    if (!contract) {
+      throw new Error('Staking contract is not loaded')
+    }
+
+    return await contract.getRewardsRatio()
   }, [contract])
 
   useEffect(() => {
@@ -164,7 +197,7 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
 
     Promise.all([contract.count(), contract.owner()])
       .then(([_count, _owner]) => {
-        setCount(_count)
+        setCount(_count.toNumber())
         setOwner(_owner)
       })
       .catch((err: Error) => {
@@ -183,10 +216,23 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
     getGlobalStakingData()
       .then(setGlobalStakingData)
       .catch(err => {
-        //
         console.error(err)
       })
   }, [contract, getGlobalStakingData])
+
+  useEffect(() => {
+    if (!contract) {
+      setCanDistribute(false)
+      return
+    }
+
+    contract
+      .canDistribute()
+      .then(setCanDistribute)
+      .catch((err: Error) => {
+        console.error(err)
+      })
+  }, [contract])
 
   return (
     <StakingManagerV1ContractContext.Provider
@@ -201,8 +247,13 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
         setLpStakingId,
         createStaking,
         getStakingData,
-        // getStakingDataForAccount,
         getGlobalStakingData,
+        distribute,
+        getStakingRewards,
+        canDistribute,
+        claimAll,
+        getAllRewardsForAddress,
+        getRewardsRatio,
       }}
     >
       {children}

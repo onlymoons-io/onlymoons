@@ -19,14 +19,14 @@
 pragma solidity ^0.8.0;
 
 import { ILaunchManagerV1 } from "./ILaunchManagerV1.sol";
-import { Ownable } from "./Ownable.sol";
+import { Authorizable } from "./Authorizable.sol";
 import { Pausable } from "./Pausable.sol";
 import { IDCounter } from "./IDCounter.sol";
 import { LaunchV1 } from "./LaunchV1.sol";
 import { IERC20 } from "./library/IERC20.sol";
 import { FeeCollector } from "./FeeCollector.sol";
 
-contract LaunchManagerV1 is ILaunchManagerV1, Ownable, Pausable, IDCounter, FeeCollector {
+contract LaunchManagerV1 is ILaunchManagerV1, Authorizable, Pausable, IDCounter, FeeCollector {
   event LaunchCreated(
     uint40 indexed id,
     address indexed launchAddress,
@@ -36,7 +36,7 @@ contract LaunchManagerV1 is ILaunchManagerV1, Ownable, Pausable, IDCounter, FeeC
     uint40 endsAt
   );
 
-  constructor() Ownable(_msgSender()) {
+  constructor() Authorizable(_msgSender()) {
     //
   }
 
@@ -51,7 +51,7 @@ contract LaunchManagerV1 is ILaunchManagerV1, Ownable, Pausable, IDCounter, FeeC
     uint256 hardCap_,
     uint256 amount_
   ) external override onlyNotPaused {
-    uint40 id = _next();
+    uint40 id = uint40(_next());
 
     _launches[id] = new LaunchV1(
       _msgSender(),

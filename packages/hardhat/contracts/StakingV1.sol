@@ -18,8 +18,10 @@
 
 pragma solidity ^0.8.0;
 
-import { Ownable } from "./Ownable.sol";
+import { Address } from "./library/Address.sol";
+import { Authorizable } from "./Authorizable.sol";
 import { Pausable } from "./Pausable.sol";
+import { IDCounter } from "./IDCounter.sol";
 import { IERC20 } from "./library/IERC20.sol";
 import { ReentrancyGuard } from "./library/ReentrancyGuard.sol";
 import { SafeERC20 } from "./library/SafeERC20.sol";
@@ -27,26 +29,36 @@ import { Util } from "./Util.sol";
 import { Math } from "./Math.sol";
 
 struct StakerData {
-  uint160 lastClaimData;
+  /** contains id (uint64), block number (uint64), block timestamp (uint64) */
+  uint192 lastClaimData;
+  /** amount currently staked */
   uint256 amount;
+  /** total amount of eth claimed */
   uint256 totalClaimed;
 }
 
 struct DepositData {
   uint256 amount;
   uint256 totalStaked;
-  uint80 timeData;
 }
 
-contract StakingV1 is Ownable, Pausable, ReentrancyGuard {
+contract StakingV1 is Authorizable, Pausable, IDCounter, ReentrancyGuard {
+  /** libraries */
+  using Address for address payable;
   using SafeERC20 for IERC20;
+
+  /** events */
+  event DepositedEth(address indexed account, uint256 amount);
+  event DepositedTokens(address indexed account, uint256 amount);
+  event WithdrewTokens(address indexed account, uint256 amount);
+  event ClaimedRewards(address indexed account, uint256 amount);
 
   constructor(
     address owner_,
     address tokenAddress_,
     string memory name_,
     uint16 lockDurationDays_
-  ) Ownable(owner_) {
+  ) Authorizable(owner_) {
     //
     _token = IERC20(tokenAddress_);
     _name = name_;
@@ -54,25 +66,85 @@ contract StakingV1 is Ownable, Pausable, ReentrancyGuard {
     _lockDurationDays = lockDurationDays_;
   }
 
+  /** @dev reference to the staked token */
   IERC20 private immutable _token;
 
+  /** @dev name of this staking instance */
   string private _name;
+
+  /** @dev cached copy of the staked token decimals value */
   uint8 private immutable _decimals;
 
-  // the lock duration for this staking contract should always remain the same
-  uint16 private immutable _lockDurationDays;
+  uint16 private _lockDurationDays;
 
   uint256 private _totalStaked;
   uint256 private _totalRewards;
   uint256 private _totalClaimed;
 
-  uint256[] private _blocksWithDeposit;
-  mapping(uint256 => uint256) private _blocksWithDepositIndexMap;
+  /** @dev current number of stakers */
+  uint64 private _currentNumStakers;
 
+  /** @dev total number of stakers - not reduced when a staker withdraws all */
+  uint64 private _totalNumStakers;
+
+  /** @dev maximum number of stakers allowed. only impacts new stakers deposits */
+  uint64 private _maxStakers = 10000;
+
+  /** @dev used to limit the amount of gas spent during auto claim */
+  uint256 private _autoClaimGasLimit = 200000;
+
+  /** @dev current index used for auto claim iteration */
+  uint64 private _autoClaimIndex;
+
+  /** @dev account => staker data */
   mapping(address => StakerData) private _stakers;
 
-  mapping(uint256 => DepositData[]) private _deposits;
+  /** @dev id => deposit data */
+  mapping(uint64 => DepositData) private _deposits;
 
+  /** @dev this is essentially an index in the order that new users are added. */
+  mapping(uint64 => address) private _autoClaimQueue;
+  /** @dev reverse lookup for _autoClaimQueue. allows getting index by address */
+  mapping(address => uint64) private _autoClaimQueueReverse;
+
+  modifier autoClaimAfter {
+    _;
+    _autoClaim();
+  }
+
+  /**
+   * @dev allow removing the lock duration, but not setting it directly.
+   * this removes the possibility of creating a long lock duration after
+   * people have deposited their tokens, essentially turning the staking
+   * contract into a honeypot.
+   *
+   * removing the lock is necessary in case of emergencies,
+   * like migrating to a new staking contract.
+   */
+  function removeLockDuration() external onlyAuthorized {
+    _lockDurationDays = 0;
+  }
+
+  function setMaxStakers(uint64 value) external onlyAuthorized {
+    _maxStakers = value;
+  }
+
+  function getPlaceInQueue(address account) external view returns (uint256) {
+    if (_autoClaimQueueReverse[account] >= _autoClaimIndex)
+      return _autoClaimQueueReverse[account] - _autoClaimIndex;
+
+    return _totalNumStakers - (_autoClaimIndex - _autoClaimQueueReverse[account]);
+  }
+
+  function autoClaimGasLimit() external view returns (uint256) {
+    return _autoClaimGasLimit;
+  }
+
+  function setAutoClaimGasLimit(uint256 value) external onlyAuthorized {
+    _autoClaimGasLimit = value;
+  }
+
+  /** @return the address of the staked token */
   function token() external view returns (address) {
     return address(_token);
   }
@@ -95,175 +167,216 @@ contract StakingV1 is Ownable, Pausable, ReentrancyGuard {
 
   function getStakingDataForAccount(address account) external view returns (
     uint256 amount,
-    uint40 lastClaimedBlock,
-    uint40 lastClaimedAt,
-    uint40 lastClaimedDepositBlock,
-    uint40 lastClaimedDepositNum,
-    uint256 pending,
+    uint64 lastClaimedBlock,
+    uint64 lastClaimedAt,
+    uint256 pendingRewards,
     uint256 totalClaimed
   ) {
     amount = _stakers[account].amount;
-    lastClaimedBlock = _lastClaimedBlock(account);
-    lastClaimedAt = _lastClaimedAt(account);
-    lastClaimedDepositBlock = _lastClaimedDepositBlock(account);
-    lastClaimedDepositNum = _lastClaimedDepositNum(account);
-    pending = _pending(account);
+    lastClaimedBlock = _lastClaimBlock(account);
+    lastClaimedAt = _lastClaimTime(account);
+    pendingRewards = _pending(account);
     totalClaimed = _stakers[account].totalClaimed;
   }
 
   function _pending(address account) private view returns (uint256) {
     if (_stakers[account].amount == 0) return 0;
-    if (_blocksWithDeposit.length == 0) return 0;
-
-    uint40 lastClaimedDepositBlock = _lastClaimedDepositBlock(account);
-    uint40 lastClaimedDepositNum = _lastClaimedDepositNum(account);
 
     uint256 pendingAmount = 0;
 
-    for (uint256 b = _blocksWithDepositIndexMap[lastClaimedDepositBlock]; b < _blocksWithDeposit.length; b++) {
-      for (uint256 d = 0; d < _deposits[_blocksWithDeposit[b]].length; d++) {
-        // there could be more than 1 deposit in a single block, with a withdrawal
-        // happening in between them, so we need to check deposit number/id.
-        // skip this check if we're processing a block newer than the last claim
-        if (
-          uint40(_deposits[_blocksWithDeposit[b]][d].timeData) > lastClaimedDepositBlock
-          && uint40(_deposits[_blocksWithDeposit[b]][d].timeData >> 40) <= lastClaimedDepositNum
-        ){
-          continue;
-        }
-
-        // calculate the amount of rewards for this deposit
-        // based on the accounts weight in the staking pool at the time
-        pendingAmount += Math.mulScale(
-          _deposits[_blocksWithDeposit[b]][d].amount,
-          Math.percent(
-            _stakers[account].amount,
-            _deposits[_blocksWithDeposit[b]][d].totalStaked,
-            18
-          ),
-          10 ** 18
-        );
-      }
+    // NOTE if we need to iterate through too many deposits,
+    // we'll run out of gas and revert. do something about that!
+    for (uint64 i = _lastClaimId(account); i < _count; i++) {
+      pendingAmount += Math.mulScale(
+        _deposits[i].amount,
+        Math.percent(
+          _stakers[account].amount,
+          _deposits[i].totalStaked,
+          18
+        ),
+        10 ** 18
+      );
     }
 
     return pendingAmount;
   }
 
-  function _claim() private returns (bool) {
-    uint256 pendingRewards = _pending(_msgSender());
+  function pending(address account) external view returns (uint256) {
+    return _pending(account);
+  }
 
-    _stakers[_msgSender()].lastClaimData = uint160(block.number);
-    _stakers[_msgSender()].lastClaimData |= uint160(block.timestamp) << 40;
-    _stakers[_msgSender()].lastClaimData |= uint160(
-      _blocksWithDeposit.length == 0
-        ? 0
-        : _blocksWithDeposit[_blocksWithDeposit.length - 1]
-    ) << 80;
-    _stakers[_msgSender()].lastClaimData |= uint160(
-      _blocksWithDeposit.length == 0
-        ? 0
-        : uint40(
-          _deposits[
-            _blocksWithDeposit[_blocksWithDeposit.length - 1]
-          ][
-            _deposits[
-              _blocksWithDeposit[_blocksWithDeposit.length - 1]
-            ].length - 1
-          ].timeData >> 40
-        )
-    ) << 120;
+  function _generateClaimData() private view returns (uint192) {
+    uint192 claimData = uint192(uint64(_count));
+    claimData |= uint192(uint64(block.number)) << 64;
+    claimData |= uint192(uint64(block.timestamp)) << 128;
+
+    return claimData;
+  }
+
+  function _claim(address account, uint192 claimData) private returns (bool) {
+    uint256 pendingRewards = _pending(account);
+
+    _stakers[account].lastClaimData = claimData;
 
     // if we have no pending rewards, skip
     if (pendingRewards == 0) return false;
     
-    _stakers[_msgSender()].totalClaimed += pendingRewards;
+    _stakers[account].totalClaimed += pendingRewards;
     _totalClaimed += pendingRewards;
 
-    payable(_msgSender()).transfer(pendingRewards);
+    payable(account).sendValue(pendingRewards);
+
+    emit ClaimedRewards(account, pendingRewards);
 
     return true;
   }
 
-  function claim() external nonReentrant {
-    require(_claim(), "Claim failed");
+  function claimFor(address account) external nonReentrant autoClaimAfter {
+    require(_claim(account, _generateClaimData()), "Claim failed");
+  }
+
+  function claim() external nonReentrant autoClaimAfter {
+    require(_claim(_msgSender(), _generateClaimData()), "Claim failed");
+  }
+
+  function _deposit(address account, uint256 amount) private onlyNotPaused {
+    require(amount != 0, "Deposit amount cannot be 0");
+
+    // claim before depositing
+    _claim(account, _generateClaimData());
+
+    if (_autoClaimQueueReverse[account] == 0) {
+      require(_currentNumStakers < _maxStakers, "Too many stakers");
+
+      _totalNumStakers++;
+      _currentNumStakers++;
+      _autoClaimQueueReverse[account] = _totalNumStakers;
+      _autoClaimQueue[_totalNumStakers] = account;
+    }
+
+    _stakers[account].amount += amount;
+    _totalStaked += amount;
+
+    // store previous balance to determine actual amount transferred
+    uint256 oldBalance = _token.balanceOf(address(this));
+    // make the transfer
+    _token.safeTransferFrom(account, address(this), amount);
+    // check for lost tokens - this is an unsupported situation currently.
+    // tokens could be lost during transfer if the token has tax.
+    require(
+      amount == _token.balanceOf(address(this)) - oldBalance,
+      "Lost tokens during transfer"
+    );
+
+    emit DepositedTokens(account, amount);
   }
 
   /**
    * @dev deposit amount of tokens to the staking pool.
    * reverts if tokens are lost during transfer.
    */
-  function deposit(uint256 amount) external nonReentrant onlyNotPaused {
-    require(amount != 0, "Deposit amount cannot be 0");
-
-    // claim before depositing
-    _claim();
-
-    _stakers[_msgSender()].amount += amount;
-    _totalStaked += amount;
-
-    // store previous balance to determine actual amount transferred
-    uint256 oldBalance = _token.balanceOf(address(this));
-    // make the transfer
-    _token.safeTransferFrom(_msgSender(), address(this), amount);
-    require(
-      amount == _token.balanceOf(address(this)) - oldBalance,
-      "Lost tokens during transfer"
-    );
+  function deposit(uint256 amount) external nonReentrant {
+    _deposit(_msgSender(), amount);
   }
 
-  /**
-   * @dev currently only supports full withdrawals.
-   */
-  function withdraw() external nonReentrant {
-    require(_stakers[_msgSender()].amount != 0, "Staked amount is 0");
+  function _getUnlockTime(address account) private view returns (uint64) {
+    return _lockDurationDays == 0 ? 0 : _lastClaimTime(account) + (uint64(_lockDurationDays) * 86400);
+  }
+
+  function getUnlockTime(address account) external view returns (uint64) {
+    return _getUnlockTime(account);
+  }
+
+  function _withdraw(address account, uint256 amount) private {
+    require(
+      _stakers[account].amount != 0 && _stakers[account].amount >= amount,
+      "Attempting to withdraw too many tokens"
+    );
 
     if (_lockDurationDays != 0) {
       require(
-        uint40(block.timestamp) > _lastClaimedAt(_msgSender()) + (uint40(_lockDurationDays) * 86400),
+        block.timestamp > _getUnlockTime(account),
         "Wait for tokens to unlock before withdrawing"
       );
     }
 
-    _claim();
+    _claim(account, _generateClaimData());
 
-    uint256 amountToWithdraw = _stakers[_msgSender()].amount;
-    _stakers[_msgSender()].amount = 0;
-    _totalStaked -= amountToWithdraw;
-    _token.safeTransfer(_msgSender(), amountToWithdraw);
-  }
-
-  function _lastClaimedBlock(address account) private view returns (uint40) {
-    return uint40(_stakers[account].lastClaimData);
-  }
-
-  function _lastClaimedAt(address account) private view returns (uint40) {
-    return uint40(_stakers[account].lastClaimData >> 40);
-  }
-
-  function _lastClaimedDepositBlock(address account) private view returns (uint40) {
-    return uint40(_stakers[account].lastClaimData >> 80);
-  }
-
-  function _lastClaimedDepositNum(address account) private view returns (uint40) {
-    return uint40(_stakers[account].lastClaimData >> 120);
-  }
-
-  receive() external payable onlyNotPaused {
-    require(msg.value != 0, "Receive value cannot be 0");
-
-    _totalRewards += msg.value;
-
-    if (_deposits[block.number].length == 0) {
-      _blocksWithDeposit.push(block.number);
-      _blocksWithDepositIndexMap[block.number] = _blocksWithDeposit.length - 1;
+    _stakers[account].amount -= amount;
+    _totalStaked -= amount;
+    if (_stakers[account].amount == 0) {
+      // decrement current number of stakers
+      _currentNumStakers--;
+      // remove account from auto claim queue
+      _autoClaimQueue[_autoClaimQueueReverse[account]] = address(0);
+      _autoClaimQueueReverse[account] = 0;
     }
+    // transfer eth after modifying internal state
+    _token.safeTransfer(account, amount);
 
-    _deposits[block.number].push(
-      DepositData({
-        amount: msg.value,
-        totalStaked: _totalStaked,
-        timeData: uint80(block.number) | (uint80(_deposits[block.number].length + 1) << 40)
-      })
-    );
+    emit WithdrewTokens(account, amount);
+  }
+
+  function withdraw(uint256 amount) external nonReentrant {
+    _withdraw(_msgSender(), amount);
+  }
+
+  function _lastClaimId(address account) private view returns (uint64) {
+    return uint64(_stakers[account].lastClaimData);
+  }
+
+  function _lastClaimBlock(address account) private view returns (uint64) {
+    return uint64(_stakers[account].lastClaimData >> 64);
+  }
+
+  function _lastClaimTime(address account) private view returns (uint64) {
+    return uint64(_stakers[account].lastClaimData >> 128);
+  }
+
+  function _depositEth(address account, uint256 amount) private onlyNotPaused {
+    require(amount != 0, "Receive value cannot be 0");
+
+    _totalRewards += amount;
+
+    _deposits[uint64(_next())] = DepositData({
+      amount: amount,
+      totalStaked: _totalStaked
+    });
+
+    emit DepositedEth(account, amount);
+  }
+
+  /** NOTE DANGER WARNING ALERT this is for debug only! delete it! */
+  function fakeDeposits(uint256 numDeposits) external onlyOwner {
+    for (uint256 i = 0; i < numDeposits; i++) {
+      _depositEth(_msgSender(), 10 ** 18);
+    }
+  }
+
+  function _autoClaim() private {
+    uint256 startingGas = gasleft();
+    uint192 claimData = _generateClaimData();
+    uint64 index;
+    uint256 iterations = 0;
+
+    while (startingGas - gasleft() < _autoClaimGasLimit && iterations++ < _totalNumStakers) {
+      unchecked {
+        index = _autoClaimIndex++;
+      }
+
+      _claim(
+        _autoClaimQueue[1 + (index % _totalNumStakers)],
+        claimData
+      );
+    }
+  }
+
+  /** @dev allow anyone to process autoClaim functionality manually */
+  function processAutoClaim() external nonReentrant {
+    _autoClaim();
+  }
+
+  receive() external payable nonReentrant autoClaimAfter {
+    _depositEth(_msgSender(), msg.value);
   }
 }

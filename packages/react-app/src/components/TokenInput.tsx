@@ -42,7 +42,7 @@ const TokenInput: React.FC<Props> = ({ tokenData, maxValue, inputRef, placeholde
         >
           {humanNumber(parseFloat(utils.formatUnits(maxValue || tokenData.balance, tokenData.decimals)), n =>
             n.toLocaleString('en', { maximumFractionDigits: 2 }),
-          ).toLowerCase()}
+          )}
         </div>
       </div>
 

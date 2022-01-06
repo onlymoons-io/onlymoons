@@ -55,7 +55,7 @@ export interface INotification {
 
 export interface INotificationCatcherContext {
   //
-  push?: (notification: INotification) => void
+  push?: (notification: INotification | Error | string) => void
 }
 
 export const NotificationCatcherContext = createContext<INotificationCatcherContext>({})
@@ -95,8 +95,23 @@ const NotificationCatcherContextProvider: React.FC<NotificationCatcherContextPro
   return (
     <NotificationCatcherContext.Provider
       value={{
-        push(notification: INotification) {
-          notifications.push(notification)
+        push(notification: INotification | Error | string) {
+          if (notification instanceof Error) {
+            console.error(notification)
+            notifications.push({
+              message: notification.message,
+              level: 'error',
+            })
+          } else if (typeof notification === 'string') {
+            console.log(notification)
+            notifications.push({
+              message: notification,
+              level: 'info',
+            })
+          } else {
+            console.log(notification)
+            notifications.push(notification)
+          }
 
           !activeNotification && nextNotification()
         },

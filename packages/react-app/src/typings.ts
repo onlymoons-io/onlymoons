@@ -57,9 +57,12 @@ export interface StakingDataForAccount {
   lastClaimedBlock: number
   /** uint40 lastClaimedAt */
   lastClaimedAt: number
-  lastClaimedDeposit: number
+  // uint40 lastClaimedDepositBlock,
+  lastClaimedDepositBlock: number
+  // uint40 lastClaimedDepositNum,
+  lastClaimedDepositNum: number
   /** uint256 pending */
-  pending: BigNumber
+  pendingRewards: BigNumber
   /** uint256 totalClaimed */
   totalClaimed: BigNumber
 }
@@ -75,4 +78,21 @@ export interface GlobalStakingData {
   lpStakingId: number
   // uint16 rewardsRatio
   rewardsRatio: number
+}
+
+export interface SplitStakingRewardsData {
+  // uint256 combinedRewards,
+  combinedRewards: BigNumber
+  // uint256 soloStakingRewards,
+  soloStakingRewards: BigNumber
+  // uint256 lpStakingRewards,
+  lpStakingRewards: BigNumber
+  // uint256 distributorReward,
+  distributorReward: BigNumber
+  // uint256 totalRewards,
+  totalRewards: BigNumber
+  // uint256 waitingRewards,
+  waitingRewards: BigNumber
+  // uint256 lastDistributionAt
+  lastDistributionAt: BigNumber
 }

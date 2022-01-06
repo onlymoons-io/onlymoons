@@ -18,9 +18,9 @@
 
 pragma solidity ^0.8.0;
 
-import { Ownable } from "./Ownable.sol";
+import { Authorizable } from "./Authorizable.sol";
 
-abstract contract Pausable is Ownable {
+abstract contract Pausable is Authorizable {
   bool internal _paused;
 
   modifier onlyNotPaused() {
@@ -32,7 +32,11 @@ abstract contract Pausable is Ownable {
     return _paused;
   }
 
-  function setPaused(bool value) public virtual onlyOwner {
+  function _setPaused(bool value) internal virtual {
     _paused = value;
+  }
+
+  function setPaused(bool value) external onlyAuthorized {
+    _setPaused(value);
   }
 }

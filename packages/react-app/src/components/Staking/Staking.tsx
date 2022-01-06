@@ -17,6 +17,7 @@ import DetailsCard, { Detail, Title } from '../DetailsCard'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faCircleNotch } from '@fortawesome/free-solid-svg-icons'
 import TokenInput from '../TokenInput'
+import { Web3Provider as Web3ProviderClass } from '@ethersproject/providers'
 
 const { Web3Provider } = providers
 
@@ -25,10 +26,18 @@ export interface StakingProps {
   startExpanded?: boolean
   className?: string
   style?: CSSProperties
+  onClaimed?: () => void
 }
 
-const Staking: React.FC<StakingProps> = ({ stakingData, startExpanded = false, className = '', style = {} }) => {
+const Staking: React.FC<StakingProps> = ({
+  stakingData,
+  startExpanded = false,
+  className = '',
+  style = {},
+  onClaimed,
+}) => {
   const { account, chainId, connector } = useWeb3React()
+  const [provider, setProvider] = useState<Web3ProviderClass>()
   const { push: pushNotification } = useContext(NotificationCatcherContext)
   const { getTokenData } = useContext(UtilContractContext)
   const { contract, owner, setSoloStakingId, setLpStakingId } = useContext(StakingManagerV1ContractContext)
@@ -42,6 +51,8 @@ const Staking: React.FC<StakingProps> = ({ stakingData, startExpanded = false, c
   const [settingStakingToken, setSettingStakingToken] = useState<boolean>(false)
   const depositInputRef = useRef<HTMLInputElement>(null)
   const withdrawInputRef = useRef<HTMLInputElement>(null)
+  const [depositInputValue, setDepositInputValue] = useState<string>()
+  const [withdrawInputValue, setWithdrawInputValue] = useState<string>()
   const [depositApproved, setDepositApproved] = useState<boolean>(false)
   const [depositLoading, setDepositLoading] = useState<boolean>(false)
   const [withdrawLoading, setWithdrawLoading] = useState<boolean>(false)
@@ -133,7 +144,7 @@ const Staking: React.FC<StakingProps> = ({ stakingData, startExpanded = false, c
       })
   }, [contract, _stakingData, connector, stakingAbi])
 
-  useEffect(() => {
+  const updateStakingDataForAccount = useCallback(() => {
     if (!account || !stakingContract) {
       setStakingDataForAccount(undefined)
       return
@@ -150,9 +161,132 @@ const Staking: React.FC<StakingProps> = ({ stakingData, startExpanded = false, c
       })
   }, [account, stakingContract])
 
+  useEffect(updateStakingDataForAccount, [updateStakingDataForAccount])
+
+  useEffect(() => {
+    if (!connector) {
+      setProvider(undefined)
+      return
+    }
+
+    connector
+      .getProvider()
+      .then(_provider => {
+        setProvider(new Web3Provider(_provider))
+      })
+      .catch((err: Error) => {
+        console.error(err)
+        setProvider(undefined)
+      })
+  }, [connector])
+
+  useEffect(() => {
+    if (!account || !stakingContract) {
+      return
+    }
+
+    const _stakingContract = stakingContract
+    const _updateStakingDataForAccount = updateStakingDataForAccount
+
+    // event DepositedEth(address indexed account, uint256 amount);
+    // event DepositedTokens(address indexed account, uint256 amount);
+    // event WithdrewTokens(address indexed account, uint256 amount);
+    // event ClaimedRewards(address indexed account, uint256 amount);
+
+    const onDepositedEth = (_account: string, amount: BigNumber) => {
+      //
+      console.log(`${_account} deposited ${utils.formatEther(amount)} eth`)
+
+      _updateStakingDataForAccount()
+    }
+
+    const onDepositedTokens = (_account: string, amount: BigNumber) => {
+      //
+      console.log(`${_account} deposited ${utils.formatUnits(amount, 18)} ${stakingTokenData?.symbol || 'tokens'}`)
+
+      // _updateStakingDataForAccount()
+    }
+
+    const onWithdrewTokens = (_account: string, amount: BigNumber) => {
+      //
+      console.log(`${_account} withdrew ${utils.formatUnits(amount, 18)} ${stakingTokenData?.symbol || 'tokens'}`)
+
+      // _updateStakingDataForAccount()
+    }
+
+    const onClaimedRewards = (_account: string, amount: BigNumber) => {
+      //
+      console.log(`${_account} claimed ${utils.formatEther(amount)} ${getNativeCoin(chainId || 0)}`)
+
+      _updateStakingDataForAccount()
+
+      onClaimed && onClaimed()
+    }
+
+    const claimedRewardsFilter = _stakingContract.filters['ClaimedRewards'](account)
+
+    _stakingContract.on('DepositedEth', onDepositedEth)
+    _stakingContract.on('DepositedTokens', onDepositedTokens)
+    _stakingContract.on('WithdrewTokens', onWithdrewTokens)
+    _stakingContract.on(claimedRewardsFilter, onClaimedRewards)
+
+    return () => {
+      _stakingContract.off('DepositedEth', onDepositedEth)
+      _stakingContract.off('DepositedTokens', onDepositedTokens)
+      _stakingContract.off('WithdrewTokens', onWithdrewTokens)
+      _stakingContract.off(claimedRewardsFilter, onClaimedRewards)
+    }
+  }, [account, stakingContract, chainId, updateStakingDataForAccount, onClaimed, stakingTokenData])
+
   useEffect(() => {
     console.log('staking data for account', stakingDataForAccount)
   }, [stakingDataForAccount])
+
+  useEffect(() => {
+    if (!account || !tokenContract || !stakingTokenData) {
+      return
+    }
+
+    const _account = account
+    const _tokenContract = tokenContract
+    const _stakingTokenData = stakingTokenData
+    const _updateStakingDataForAccount = updateStakingDataForAccount
+
+    //
+    const transferListener = (from: string, to: string, amount: BigNumber) => {
+      console.log(
+        `${from} transferred ${utils.formatUnits(amount, _stakingTokenData.decimals)} ${
+          _stakingTokenData.symbol
+        } to ${to}`,
+      )
+
+      _updateStakingDataForAccount()
+    }
+
+    const transferFromFilter = _tokenContract.filters['Transfer'](_account)
+    const transferToFilter = _tokenContract.filters['Transfer'](null, _account)
+
+    _tokenContract.on(transferFromFilter, transferListener)
+    _tokenContract.on(transferToFilter, transferListener)
+
+    return () => {
+      _tokenContract.off(transferFromFilter, transferListener)
+      _tokenContract.off(transferToFilter, transferListener)
+    }
+  }, [account, tokenContract, stakingTokenData, updateStakingDataForAccount])
+
+  // useEffect(() => {
+  //   if (!stakingContract) return
+
+  //   const numDeposits = 300
+
+  //   stakingContract
+  //     .fakeDeposits(numDeposits)
+  //     .then(() => {
+  //       console.log(`ran ${numDeposits} deposits`)
+  //     })
+  //     .catch(console.error)
+  // }, [stakingContract])
 
   return (
     <DetailsCard
@@ -197,11 +331,12 @@ const Staking: React.FC<StakingProps> = ({ stakingData, startExpanded = false, c
                   tokenData={stakingTokenData}
                   maxValue={stakingTokenData.balance}
                   inputRef={depositInputRef}
+                  onChange={setDepositInputValue}
                 />
 
                 <PrimaryButton
                   className="self-end flex-grow h-11"
-                  disabled={!stakingContract || !tokenContract || depositLoading}
+                  disabled={!stakingContract || !tokenContract || !depositInputValue || depositLoading}
                   onClick={async () => {
                     if (!stakingContract || !depositInputRef.current || !tokenContract) return
 
@@ -249,17 +384,29 @@ const Staking: React.FC<StakingProps> = ({ stakingData, startExpanded = false, c
                   placeholder="Tokens to withdraw"
                   className="w-2/3 flex-shrink-0"
                   tokenData={stakingTokenData}
-                  maxValue={BigNumber.from(0)}
+                  maxValue={stakingDataForAccount?.amount}
                   inputRef={withdrawInputRef}
+                  onChange={setWithdrawInputValue}
                 />
 
                 <PrimaryButton
                   className="self-end flex-grow h-11"
-                  disabled={true}
-                  onClick={() => {
-                    if (!stakingContract || !depositInputRef.current) return
+                  disabled={!stakingDataForAccount || !withdrawInputValue || stakingDataForAccount.amount.eq(0)}
+                  onClick={async () => {
+                    if (!stakingContract || !withdrawInputRef.current) return
 
-                    //
+                    setWithdrawLoading(true)
+
+                    try {
+                      const tx = await stakingContract.withdraw(
+                        utils.parseUnits(withdrawInputRef.current.value, stakingTokenData.decimals),
+                      )
+                      await tx.wait()
+                    } catch (err) {
+                      console.error(err)
+                    }
+
+                    setWithdrawLoading(false)
                   }}
                 >
                   <div className="">Withdraw</div>
@@ -267,7 +414,7 @@ const Staking: React.FC<StakingProps> = ({ stakingData, startExpanded = false, c
               </div>
 
               <PrimaryButton
-                disabled={!stakingDataForAccount || stakingDataForAccount.amount.eq(0)}
+                disabled={!stakingDataForAccount || stakingDataForAccount.pendingRewards.eq(0)}
                 onClick={() => {
                   if (!stakingContract) return
 
@@ -278,7 +425,7 @@ const Staking: React.FC<StakingProps> = ({ stakingData, startExpanded = false, c
                       console.error(err)
                     })
                 }}
-              >{`Claim ${utils.formatEther(stakingDataForAccount?.pending || 0)} ${
+              >{`Claim ${utils.formatEther(stakingDataForAccount?.pendingRewards || 0)} ${
                 getNativeCoin(chainId || 0).symbol
               }`}</PrimaryButton>
 

@@ -4,13 +4,13 @@
 
 pragma solidity ^0.8;
 
-import { Ownable } from "./Ownable.sol";
+import { Authorizable } from "./Authorizable.sol";
 import { Pausable } from "./Pausable.sol";
 import { ReentrancyGuard } from "./library/ReentrancyGuard.sol";
 import { IERC20 } from "./library/IERC20.sol";
 import { SafeERC20 } from "./library/SafeERC20.sol";
 
-contract StakingRewards is Ownable, Pausable, ReentrancyGuard {
+contract StakingRewards is Authorizable, Pausable, ReentrancyGuard {
   using SafeERC20 for IERC20;
 
   IERC20 public stakingToken;
@@ -29,7 +29,7 @@ contract StakingRewards is Ownable, Pausable, ReentrancyGuard {
   uint256 private _totalSupply;
   mapping(address => uint256) private _balances;
 
-  constructor(address _stakingToken) Ownable(_msgSender()) {
+  constructor(address _stakingToken) Authorizable(_msgSender()) {
     stakingToken = IERC20(_stakingToken);
 
     _finishedAt = MAXINT;

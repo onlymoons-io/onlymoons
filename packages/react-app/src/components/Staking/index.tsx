@@ -1,37 +1,59 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react'
+import React, { useContext, useEffect, useState, useCallback, useRef } from 'react'
+import { useUnmount } from 'react-use'
 import { useParams } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
-// import { utils } from 'ethers'
+import { BigNumber, Contract, utils, providers } from 'ethers'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCircleNotch,
   faBalanceScale,
   faBalanceScaleLeft,
   faBalanceScaleRight,
-  faChevronLeft,
-  faChevronRight,
 } from '@fortawesome/free-solid-svg-icons'
 import { motion } from 'framer-motion'
 import { StakingManagerV1ContractContext } from '../contracts/StakingManagerV1'
 import Staking from './Staking'
 import NotConnected from '../NotConnected'
-import { StakingData /*StakingDataForAccount*/ } from '../../typings'
-import Header from './Header'
+import { StakingData, SplitStakingRewardsData } from '../../typings'
 import Button, { Primary as PrimaryButton } from '../Button'
 import { Outer, MidSection, SectionInner, Grid, Loading } from '../Layout'
+import { NotificationCatcherContext } from '../NotificationCatcher'
+import { getExplorerContractLink, getNativeCoin, getShortAddress } from '../../util'
+import humanNumber from 'human-number'
+import { Web3Provider as Web3ProviderClass } from '@ethersproject/providers'
+import { ERC20ABI } from '../../contracts/external_contracts'
 
-// const { isAddress } = utils
+const { Web3Provider } = providers
 
 const StakingComponent: React.FC = () => {
   const { account: accountToCheck, chainId: chainIdToUse, id: idToUse } = useParams()
-  const { account, chainId } = useWeb3React()
-  const { contract, count, globalStakingData, getStakingData } = useContext(StakingManagerV1ContractContext)
+  const { account, chainId, connector } = useWeb3React()
+  const {
+    contract,
+    count,
+    globalStakingData,
+    getStakingData,
+    distribute,
+    canDistribute,
+    claimAll,
+    getAllRewardsForAddress,
+    getStakingRewards,
+    getRewardsRatio,
+  } = useContext(StakingManagerV1ContractContext)
+  const [tokenContract, setTokenContract] = useState<Contract>()
+  const { push: pushNotification } = useContext(NotificationCatcherContext)
   const [stakingInstances, setStakingInstances] = useState<Array<StakingData>>([])
   const [sortedStakingInstances, setSortedStakingInstances] = useState<Array<StakingData>>([])
-  const [filterInputValue, setFilterInputValue] = useState<string>()
   const [soloStakingData, setSoloStakingData] = useState<StakingData>()
   const [lpStakingData, setLpStakingData] = useState<StakingData>()
   const [viewMode, setViewMode] = useState<'split' | 'all'>('split')
+  const [allRewardsAmount, setAllRewardsAmount] = useState<BigNumber>(BigNumber.from(0))
+  const [splitStakingRewards, setSplitStakingRewards] = useState<SplitStakingRewardsData>()
+  const [provider, setProvider] = useState<Web3ProviderClass>()
+  const [distributing, setDistributing] = useState<boolean>(false)
+  const [claimingAll, setClaimingAll] = useState<boolean>(false)
+  const [rewardsRatio, setRewardsRatio] = useState<number>(5000)
+  const timerRef = useRef<NodeJS.Timeout>()
 
   useEffect(() => {
     if (chainId && chainIdToUse && chainId !== parseInt(chainIdToUse)) {
@@ -56,21 +78,12 @@ const StakingComponent: React.FC = () => {
       //     .then((results: Array<StakingData>) => setStakingInstances(results))
       //     .catch(console.error),
       // )
-    } else if (filterInputValue) {
-      setStakingInstances([])
-      // if (isAddress(filterInputValue)) {
-      //   getTokenLockersForAddress(filterInputValue).then((ids: Array<number>) =>
-      //     Promise.all(ids.map(id => getStakingData(id)))
-      //       .then((results: Array<StakingData>) => setStakingInstances(results))
-      //       .catch(console.error),
-      //   )
-      // }
     } else if (viewMode === 'all') {
       Promise.all(new Array(count).fill(null).map((val, index) => getStakingData(index)))
         .then((results: Array<StakingData>) => setStakingInstances(results))
         .catch(console.error)
     }
-  }, [contract, idToUse, account, accountToCheck, getStakingData, count, filterInputValue, viewMode])
+  }, [contract, idToUse, account, accountToCheck, getStakingData, count, viewMode])
 
   useEffect(setupAllStaking, [setupAllStaking])
 
@@ -90,9 +103,6 @@ const StakingComponent: React.FC = () => {
       return
     }
 
-    // console.log(globalStakingData)
-
-    //
     Promise.all([getStakingData(globalStakingData.soloStakingId), getStakingData(globalStakingData.lpStakingId)])
       .then(([_soloStakingData, _lpStakingData]) => {
         setSoloStakingData(_soloStakingData)
@@ -103,14 +113,164 @@ const StakingComponent: React.FC = () => {
       })
   }, [getStakingData, globalStakingData])
 
+  const updateAllRewardsAmount = useCallback(() => {
+    if (!account || !getAllRewardsForAddress) {
+      setAllRewardsAmount(BigNumber.from(0))
+      return
+    }
+
+    getAllRewardsForAddress(account)
+      .then(setAllRewardsAmount)
+      .catch((err: Error) => {
+        // ignore this error for now
+        // TODO - fix error reporting here
+        // this gets called before the staking manager contract
+        // is ready, and always shows the error on first load
+      })
+  }, [account, getAllRewardsForAddress])
+
+  useEffect(updateAllRewardsAmount, [updateAllRewardsAmount])
+
+  const updateSplitStakingRewards = useCallback(() => {
+    if (!getStakingRewards) {
+      setSplitStakingRewards(undefined)
+      return
+    }
+
+    //
+    getStakingRewards()
+      .then(setSplitStakingRewards)
+      .catch((err: Error) => {
+        console.error(err)
+        setSplitStakingRewards(undefined)
+      })
+  }, [getStakingRewards])
+
+  useEffect(updateSplitStakingRewards, [updateSplitStakingRewards])
+
+  useEffect(() => {
+    if (!connector) {
+      setProvider(undefined)
+      return
+    }
+
+    connector
+      .getProvider()
+      .then((_provider: any) => setProvider(new Web3Provider(_provider)))
+      .catch((err: Error) => {
+        console.error(err)
+        setProvider(undefined)
+      })
+  }, [connector])
+
+  useEffect(() => {
+    if (!provider) {
+      return
+    }
+
+    const newBlockListener = (blockNumber: any) => {
+      timerRef.current && clearTimeout(timerRef.current)
+
+      timerRef.current = setTimeout(() => {
+        updateSplitStakingRewards()
+      }, 250)
+    }
+
+    provider.on('block', newBlockListener)
+
+    // reference needed for cleanup
+    const _provider = provider
+
+    // cleanup
+    return () => {
+      console.log(_provider)
+      _provider?.off('block', newBlockListener)
+    }
+  }, [provider, updateSplitStakingRewards])
+
+  useUnmount(() => timerRef.current && clearTimeout(timerRef.current))
+
+  useEffect(() => {
+    //
+    if (!contract) {
+      return
+    }
+
+    const _contract = contract
+    const _updateAllRewardsAmount = updateAllRewardsAmount
+
+    // event DistributedRewards(address indexed account, uint256 soloStakingRewards, uint256 lpStakingRewards);
+    _contract.on('DistributedRewards', _updateAllRewardsAmount)
+
+    return () => {
+      _contract.off('DistributedRewards', _updateAllRewardsAmount)
+    }
+  }, [contract, updateAllRewardsAmount])
+
+  const updateRewardsRatio = useCallback(() => {
+    if (!globalStakingData || !getRewardsRatio) {
+      setRewardsRatio(5000)
+      return
+    }
+
+    getRewardsRatio()
+      .then(result => {
+        setRewardsRatio(result)
+      })
+      .catch((err: Error) => {
+        pushNotification && pushNotification(err)
+        console.error(err)
+      })
+  }, [globalStakingData, getRewardsRatio, pushNotification])
+
+  useEffect(() => {
+    if (!globalStakingData || !connector) {
+      setTokenContract(undefined)
+      return
+    }
+
+    // set initial rewards ratio
+    setRewardsRatio(globalStakingData.rewardsRatio)
+
+    connector
+      .getProvider()
+      .then(provider =>
+        setTokenContract(new Contract(globalStakingData.mainToken, ERC20ABI, new Web3Provider(provider).getSigner())),
+      )
+      .catch((err: Error) => {
+        console.error(err)
+        setTokenContract(undefined)
+      })
+  }, [globalStakingData, connector])
+
+  useEffect(() => {
+    if (!account || !tokenContract) {
+      return
+    }
+
+    const _tokenContract = tokenContract
+    const _updateRewardsRatio = updateRewardsRatio
+
+    const transferFromFilter = _tokenContract.filters['Transfer'](account)
+    const transferToFilter = _tokenContract.filters['Transfer'](null, account)
+
+    _tokenContract.on(transferFromFilter, _updateRewardsRatio)
+    _tokenContract.on(transferToFilter, _updateRewardsRatio)
+
+    return () => {
+      _tokenContract.off(transferFromFilter, _updateRewardsRatio)
+      _tokenContract.off(transferToFilter, _updateRewardsRatio)
+    }
+  }, [account, tokenContract, updateRewardsRatio])
+
   return (
     <Outer>
-      {/* <Header filterEnabled={idToUse || accountToCheck ? false : true} onFilterInput={setFilterInputValue} /> */}
-
-      <div className="dark:bg-gray-800 p-2 flex justify-center items-center">
+      <div className="bg-gray-200 dark:bg-gray-800 p-2 flex justify-center items-center">
         <Button
           className={`rounded-l-none rounded-r-none border-b-2 ${
-            viewMode === 'split' ? 'text-indigo-400 border-indigo-400' : 'text-gray-400 border-transparent'
+            viewMode === 'split'
+              ? 'text-indigo-600 dark:text-indigo-400 border-indigo-400'
+              : 'text-gray-600 dark:text-gray-400 border-transparent'
           }`}
           onClick={() => setViewMode('split')}
         >
@@ -118,7 +278,9 @@ const StakingComponent: React.FC = () => {
         </Button>
         <Button
           className={`rounded-l-none rounded-r-none border-b-2 ${
-            viewMode === 'all' ? 'text-indigo-400 border-indigo-400' : 'text-gray-400 border-transparent'
+            viewMode === 'all'
+              ? 'text-indigo-600 dark:text-indigo-400 border-indigo-400'
+              : 'text-gray-600 dark:text-gray-400 border-transparent'
           }`}
           onClick={() => setViewMode('all')}
         >
@@ -134,7 +296,7 @@ const StakingComponent: React.FC = () => {
               sortedStakingInstances[0] &&
               parseInt(idToUse) === sortedStakingInstances[0].id ? (
                 <div className="w-full md:max-w-md">
-                  <Staking key={sortedStakingInstances[0].name} stakingData={sortedStakingInstances[0]} />
+                  <Staking key={sortedStakingInstances[0].contractAddress} stakingData={sortedStakingInstances[0]} />
                 </div>
               ) : !globalStakingData ? (
                 <Loading>
@@ -145,69 +307,205 @@ const StakingComponent: React.FC = () => {
               ) : viewMode === 'all' ? (
                 <Grid>
                   {sortedStakingInstances.map((stakingData: StakingData) => (
-                    <Staking key={stakingData.name} stakingData={stakingData} />
+                    <Staking key={stakingData.contractAddress} stakingData={stakingData} />
                   ))}
                 </Grid>
               ) : viewMode === 'split' ? (
                 <>
-                  <div className="text-2xl">Split staking</div>
-
-                  <p className="text-center">
-                    Rewards ratio for split staking is automated depending on what's most needed.
-                    <br />
-                    Below 10% liquidity to market cap ratio favors LP staking, above 10% favors solo staking.
-                  </p>
-
-                  {globalStakingData?.ready ? (
+                  {contract && globalStakingData?.ready ? (
                     soloStakingData && lpStakingData ? (
-                      <div className="w-full lg:grid-flow-col-dense grid gap-4 max-w-5xl mt-4">
-                        <Staking
-                          // className={`${
-                          //   globalStakingData.rewardsRatio > 5000
-                          //     ? 'border-green-500 lg:border-r-4'
-                          //     : 'border-transparent'
-                          // } border-b-4 lg:border-b-0`}
-                          stakingData={soloStakingData}
-                          startExpanded={false}
-                        />
+                      <>
+                        <div className="w-full flex flex-col lg:flex-row gap-4 rounded text-gray-800 dark:text-gray-200">
+                          <div className="w-full bg-gray-200 dark:bg-gray-800 grid grid-cols-1 lg:grid-cols-5 gap-6 justify-between items-start text-center p-4 rounded">
+                            <div className="flex flex-col justify-center items-center gap-2">
+                              <div className="font-extralight w-full">
+                                <div>
+                                  <div className="opacity-60">Staking contract</div>
+                                  <div className="text-xl">
+                                    <a
+                                      rel="noopener noreferrer"
+                                      target="_blank"
+                                      className="text-indigo-600 dark:text-indigo-400"
+                                      href={getExplorerContractLink(chainId || 0, contract.address)}
+                                    >
+                                      {getShortAddress(contract.address)}
+                                    </a>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
 
-                        {/* <div className="flex items-center justify-center mx-8 my-4">
-                          <div className="flex flex-col gap-3 items-center">
-                            <FontAwesomeIcon
-                              opacity={0.5}
-                              className="text-4xl md:text-3xl lg:text-5xl"
-                              icon={
-                                globalStakingData.rewardsRatio < 5000
-                                  ? faBalanceScaleRight
-                                  : globalStakingData.rewardsRatio > 5000
-                                  ? faBalanceScaleLeft
-                                  : faBalanceScale
-                              }
-                            />
+                            <div className="flex flex-col justify-center items-center gap-2">
+                              <div className="font-extralight w-full">
+                                <div>
+                                  <div className="opacity-60">Total rewards</div>
+                                  <div className="text-xl">
+                                    {humanNumber(
+                                      parseFloat(
+                                        utils.formatEther(splitStakingRewards?.totalRewards || BigNumber.from(0)),
+                                      ),
+                                      n => n.toLocaleString('en', { maximumFractionDigits: 5 }),
+                                    )}{' '}
+                                    {getNativeCoin(chainId || 0).symbol}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
 
-                            {globalStakingData.rewardsRatio !== 5000 && (
-                              <>
-                                <span className="text-center">
-                                  Favors {globalStakingData.rewardsRatio < 5000 ? 'LP' : 'Solo'} by{' '}
-                                </span>
-                                <span className="text-center text-xl">
-                                  {(Math.abs(5000 - globalStakingData.rewardsRatio) / 10 ** 2) * 2}%
-                                </span>
-                              </>
-                            )}
+                            <div className="flex flex-col justify-center items-center gap-2">
+                              <div className="font-extralight w-full">
+                                <div>
+                                  <div className="opacity-60">Rewards balance</div>
+                                  <div className="text-xl">
+                                    {humanNumber(
+                                      parseFloat(
+                                        utils.formatEther(splitStakingRewards?.waitingRewards || BigNumber.from(0)),
+                                      ),
+                                      n => n.toLocaleString('en', { maximumFractionDigits: 5 }),
+                                    )}{' '}
+                                    {getNativeCoin(chainId || 0).symbol}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col justify-center items-center gap-2">
+                              <div className="font-extralight w-full">
+                                <div>
+                                  <div className="opacity-60">Bounty</div>
+                                  <div className="text-xl">
+                                    ~
+                                    {humanNumber(
+                                      parseFloat(
+                                        utils.formatEther(splitStakingRewards?.distributorReward || BigNumber.from(0)),
+                                      ),
+                                      n => n.toLocaleString('en', { maximumFractionDigits: 5 }),
+                                    )}{' '}
+                                    {getNativeCoin(chainId || 0).symbol}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <PrimaryButton
+                                className="w-full"
+                                disabled={
+                                  !distribute ||
+                                  !splitStakingRewards ||
+                                  !(!splitStakingRewards.combinedRewards.eq(0) && canDistribute) ||
+                                  distributing
+                                }
+                                onClick={() => {
+                                  if (!distribute) return
+
+                                  setDistributing(true)
+                                  distribute()
+                                    .catch((err: Error) => pushNotification && pushNotification(err))
+                                    .then(() => setDistributing(false))
+                                }}
+                              >
+                                {distributing ? (
+                                  <>Distributing</>
+                                ) : (
+                                  <>
+                                    Distribute{' '}
+                                    {humanNumber(
+                                      parseFloat(
+                                        utils.formatEther(splitStakingRewards?.combinedRewards || BigNumber.from(0)),
+                                      ),
+                                      n => n.toLocaleString('en', { maximumFractionDigits: 5 }),
+                                    )}{' '}
+                                    {getNativeCoin(chainId || 0).symbol}
+                                  </>
+                                )}
+                              </PrimaryButton>
+                            </div>
+
+                            <div className="flex flex-col justify-center items-center gap-2">
+                              <div className="font-extralight w-full">
+                                <div>
+                                  <div className="opacity-60">Your rewards</div>{' '}
+                                  <div className="text-xl">
+                                    {humanNumber(parseFloat(utils.formatEther(allRewardsAmount)), n =>
+                                      n.toLocaleString('en', { maximumFractionDigits: 5 }),
+                                    )}{' '}
+                                    {getNativeCoin(chainId || 0).symbol}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <PrimaryButton
+                                className="w-full"
+                                disabled={!claimAll || allRewardsAmount.eq(0) || claimingAll}
+                                onClick={() => {
+                                  if (!claimAll) return
+
+                                  setClaimingAll(true)
+
+                                  claimAll()
+                                    .catch((err: Error) => pushNotification && pushNotification(err))
+                                    .then(() => {
+                                      updateAllRewardsAmount()
+                                      setClaimingAll(false)
+                                    })
+                                }}
+                              >
+                                {claimingAll ? <>Claiming</> : <>Claim all</>}
+                              </PrimaryButton>
+                            </div>
                           </div>
-                        </div> */}
+                        </div>
 
-                        <Staking
-                          // className={`${
-                          //   globalStakingData.rewardsRatio < 5000
-                          //     ? 'border-green-500 lg:border-l-4'
-                          //     : 'border-transparent'
-                          // } border-t-4 lg:border-t-0`}
-                          stakingData={lpStakingData}
-                          startExpanded={false}
-                        />
-                      </div>
+                        <div className="w-full lg:grid-flow-col-dense grid px-4 rounded bg-gray-200 dark:bg-gray-800">
+                          <div className="flex flex-col">
+                            <div className="text-3xl py-4 self-center">Solo staking</div>
+
+                            <hr className="opacity-10" />
+
+                            <Staking
+                              stakingData={soloStakingData}
+                              startExpanded={false}
+                              onClaimed={updateAllRewardsAmount}
+                            />
+                          </div>
+
+                          <div className="flex flex-col gap-2 items-center justify-center text-gray-900 dark:text-gray-200">
+                            <div className="flex flex-col gap-3 items-center">
+                              <FontAwesomeIcon
+                                opacity={0.5}
+                                className="text-4xl md:text-3xl lg:text-5xl"
+                                icon={
+                                  rewardsRatio < 5000
+                                    ? faBalanceScaleRight
+                                    : rewardsRatio > 5000
+                                    ? faBalanceScaleLeft
+                                    : faBalanceScale
+                                }
+                              />
+
+                              {rewardsRatio !== 5000 && (
+                                <>
+                                  <span className="text-center">Favors {rewardsRatio < 5000 ? 'LP' : 'Solo'} by </span>
+                                  <span className="text-center text-xl">
+                                    {(Math.abs(5000 - rewardsRatio) / 10 ** 2) * 2}%
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col">
+                            <div className="text-3xl py-4 self-center">LP staking</div>
+
+                            <hr className="opacity-10" />
+
+                            <Staking
+                              stakingData={lpStakingData}
+                              startExpanded={false}
+                              onClaimed={updateAllRewardsAmount}
+                            />
+                          </div>
+                        </div>
+                      </>
                     ) : (
                       <div>Staking data is loading</div>
                     )

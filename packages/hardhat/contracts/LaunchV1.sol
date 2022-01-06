@@ -18,7 +18,7 @@
 
 pragma solidity ^0.8.0;
 
-import { Ownable } from "./Ownable.sol";
+import { Authorizable } from "./Authorizable.sol";
 import { IERC20 } from "./library/IERC20.sol";
 import { ILaunchManagerV1 } from "./ILaunchManagerV1.sol";
 import { SafeERC20 } from "./library/SafeERC20.sol";
@@ -28,7 +28,7 @@ struct Contribution {
   uint256 amount;
 }
 
-contract LaunchV1 is Ownable {
+contract LaunchV1 is Authorizable {
   using SafeERC20 for IERC20;
 
   constructor(
@@ -39,7 +39,7 @@ contract LaunchV1 is Ownable {
     uint256 maxContribution_,
     uint256 softCap_,
     uint256 hardCap_
-  ) Ownable(owner_) {
+  ) Authorizable(owner_) {
     //
     _creator = ILaunchManagerV1(_msgSender());
 
