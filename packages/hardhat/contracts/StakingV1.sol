@@ -18,6 +18,7 @@
 
 pragma solidity ^0.8.0;
 
+import { IStakingV1 } from "./IStakingV1.sol";
 import { Address } from "./library/Address.sol";
 import { Authorizable } from "./Authorizable.sol";
 import { Pausable } from "./Pausable.sol";
@@ -29,29 +30,20 @@ import { Util } from "./Util.sol";
 import { Math } from "./Math.sol";
 
 struct StakerData {
-  /** contains id (uint64), block number (uint64), block timestamp (uint64) */
-  uint192 lastClaimData;
+  bool autoClaimOptOut;
   /** amount currently staked */
   uint256 amount;
   /** total amount of eth claimed */
   uint256 totalClaimed;
+  uint256 totalExcluded;
+  uint256 lastDeposit;
+  uint256 lastClaim;
 }
 
-struct DepositData {
-  uint256 amount;
-  uint256 totalStaked;
-}
-
-contract StakingV1 is Authorizable, Pausable, IDCounter, ReentrancyGuard {
+contract StakingV1 is IStakingV1, Authorizable, Pausable, ReentrancyGuard {
   /** libraries */
   using Address for address payable;
   using SafeERC20 for IERC20;
-
-  /** events */
-  event DepositedEth(address indexed account, uint256 amount);
-  event DepositedTokens(address indexed account, uint256 amount);
-  event WithdrewTokens(address indexed account, uint256 amount);
-  event ClaimedRewards(address indexed account, uint256 amount);
 
   constructor(
     address owner_,
@@ -67,49 +59,85 @@ contract StakingV1 is Authorizable, Pausable, IDCounter, ReentrancyGuard {
   }
 
   /** @dev reference to the staked token */
-  IERC20 private immutable _token;
+  IERC20 internal immutable _token;
 
   /** @dev name of this staking instance */
-  string private _name;
+  string internal _name;
 
   /** @dev cached copy of the staked token decimals value */
-  uint8 private immutable _decimals;
+  uint8 internal immutable _decimals;
 
-  uint16 private _lockDurationDays;
+  uint16 internal _lockDurationDays;
 
-  uint256 private _totalStaked;
-  uint256 private _totalRewards;
-  uint256 private _totalClaimed;
+  uint256 internal _totalStaked;
+  uint256 internal _totalClaimed;
+
+  uint256 internal _lastBalance;
+  uint256 internal _rewardsPerToken;
+  uint256 internal _accuracy = 10 ** 18;
 
   /** @dev current number of stakers */
-  uint64 private _currentNumStakers;
+  uint64 internal _currentNumStakers;
 
   /** @dev total number of stakers - not reduced when a staker withdraws all */
-  uint64 private _totalNumStakers;
-
-  /** @dev maximum number of stakers allowed. only impacts new stakers deposits */
-  uint64 private _maxStakers = 10000;
+  uint64 internal _totalNumStakers;
 
   /** @dev used to limit the amount of gas spent during auto claim */
-  uint256 private _autoClaimGasLimit = 200000;
+  uint256 internal _autoClaimGasLimit = 200000;
 
   /** @dev current index used for auto claim iteration */
-  uint64 private _autoClaimIndex;
+  uint64 internal _autoClaimIndex;
+
+  /** @dev should autoClaim be run automatically on deposit? */
+  bool internal _autoClaimOnDeposit = true;
+
+  /** @dev should autoClaim be run automatically on manual claim? */
+  bool internal _autoClaimOnClaim = true;
 
   /** @dev account => staker data */
-  mapping(address => StakerData) private _stakers;
-
-  /** @dev id => deposit data */
-  mapping(uint64 => DepositData) private _deposits;
+  mapping(address => StakerData) internal _stakers;
 
   /** @dev this is essentially an index in the order that new users are added. */
-  mapping(uint64 => address) private _autoClaimQueue;
+  mapping(uint64 => address) internal _autoClaimQueue;
   /** @dev reverse lookup for _autoClaimQueue. allows getting index by address */
-  mapping(address => uint64) private _autoClaimQueueReverse;
+  mapping(address => uint64) internal _autoClaimQueueReverse;
 
-  modifier autoClaimAfter {
-    _;
-    _autoClaim();
+  // modifier autoClaimAfter {
+  //   _;
+  //   _autoClaim();
+  // }
+
+  function _totalRewards() internal virtual view returns (uint256) {
+    return _getRewardsBalance() + _totalClaimed;
+  }
+
+  function rewardsAreToken() public virtual override pure returns (bool) {
+    return false;
+  }
+
+  function accuracy() external virtual override view returns (uint256) {
+    return _accuracy;
+  }
+
+  function setAccuracy(uint256 value) external virtual override onlyAuthorized {
+    _rewardsPerToken = _rewardsPerToken * value / _accuracy;
+    _accuracy = value;
+  }
+
+  function setAutoClaimOnDeposit(bool value) external virtual override onlyAuthorized {
+    _autoClaimOnDeposit = value;
+  }
+
+  function setAutoClaimOnClaim(bool value) external virtual override onlyAuthorized {
+    _autoClaimOnClaim = value;
+  }
+
+  function getAutoClaimOptOut(address account) external virtual override view returns (bool) {
+    return _stakers[account].autoClaimOptOut;
+  }
+
+  function setAutoClaimOptOut(bool value) external virtual override {
+    _stakers[_msgSender()].autoClaimOptOut = value;
   }
 
   /**
@@ -121,35 +149,31 @@ contract StakingV1 is Authorizable, Pausable, IDCounter, ReentrancyGuard {
    * removing the lock is necessary in case of emergencies,
    * like migrating to a new staking contract.
    */
-  function removeLockDuration() external onlyAuthorized {
+  function removeLockDuration() external virtual override onlyAuthorized {
     _lockDurationDays = 0;
   }
 
-  function setMaxStakers(uint64 value) external onlyAuthorized {
-    _maxStakers = value;
-  }
-
-  function getPlaceInQueue(address account) external view returns (uint256) {
+  function getPlaceInQueue(address account) external virtual override view returns (uint256) {
     if (_autoClaimQueueReverse[account] >= _autoClaimIndex)
       return _autoClaimQueueReverse[account] - _autoClaimIndex;
 
     return _totalNumStakers - (_autoClaimIndex - _autoClaimQueueReverse[account]);
   }
 
-  function autoClaimGasLimit() external view returns (uint256) {
+  function autoClaimGasLimit() external virtual override view returns (uint256) {
     return _autoClaimGasLimit;
   }
 
-  function setAutoClaimGasLimit(uint256 value) external onlyAuthorized {
+  function setAutoClaimGasLimit(uint256 value) external virtual override onlyAuthorized {
     _autoClaimGasLimit = value;
   }
 
   /** @return the address of the staked token */
-  function token() external view returns (address) {
+  function token() external virtual override view returns (address) {
     return address(_token);
   }
 
-  function getStakingData() external view returns (
+  function getStakingData() external virtual override view returns (
     address stakedToken,
     string memory name,
     uint8 decimals,
@@ -161,93 +185,94 @@ contract StakingV1 is Authorizable, Pausable, IDCounter, ReentrancyGuard {
     name = _name;
     decimals = _decimals;
     totalStaked = _totalStaked;
-    totalRewards = _totalRewards;
+    totalRewards = _totalRewards();
     totalClaimed = _totalClaimed;
   }
 
-  function getStakingDataForAccount(address account) external view returns (
+  function getStakingDataForAccount(address account) external virtual override view returns (
     uint256 amount,
-    uint64 lastClaimedBlock,
     uint64 lastClaimedAt,
     uint256 pendingRewards,
     uint256 totalClaimed
   ) {
     amount = _stakers[account].amount;
-    lastClaimedBlock = _lastClaimBlock(account);
-    lastClaimedAt = _lastClaimTime(account);
+    lastClaimedAt = uint64(_lastClaimTime(account));
     pendingRewards = _pending(account);
     totalClaimed = _stakers[account].totalClaimed;
   }
 
-  function _pending(address account) private view returns (uint256) {
-    if (_stakers[account].amount == 0) return 0;
+  function _earned(address account) internal virtual view returns (uint256) {
+    if (_stakers[account].amount == 0)
+      return 0;
 
-    uint256 pendingAmount = 0;
+    uint256 rewards = _getCumalativeRewards(_stakers[account].amount);
+    uint256 excluded = _stakers[account].totalExcluded;
 
-    // NOTE if we need to iterate through too many deposits,
-    // we'll run out of gas and revert. do something about that!
-    for (uint64 i = _lastClaimId(account); i < _count; i++) {
-      pendingAmount += Math.mulScale(
-        _deposits[i].amount,
-        Math.percent(
-          _stakers[account].amount,
-          _deposits[i].totalStaked,
-          18
-        ),
-        10 ** 18
-      );
-    }
-
-    return pendingAmount;
+    return rewards > excluded ? rewards - excluded : 0;
   }
 
-  function pending(address account) external view returns (uint256) {
+  function _pending(address account) internal virtual view returns (uint256) {
+    if (_stakers[account].amount == 0)
+      return 0;
+    
+    uint256 rewards = _stakers[account].amount * _getRewardsPerToken() / _accuracy;
+    uint256 excluded = _stakers[account].totalExcluded;
+
+    return rewards > excluded ? rewards - excluded : 0;
+  }
+
+  function pending(address account) external virtual override view returns (uint256) {
     return _pending(account);
   }
 
-  function _generateClaimData() private view returns (uint192) {
-    uint192 claimData = uint192(uint64(_count));
-    claimData |= uint192(uint64(block.number)) << 64;
-    claimData |= uint192(uint64(block.timestamp)) << 128;
-
-    return claimData;
+  function _sendRewards(address account, uint256 amount) internal virtual {
+    payable(account).sendValue(amount);
   }
 
-  function _claim(address account, uint192 claimData) private returns (bool) {
-    uint256 pendingRewards = _pending(account);
+  function _claim(address account) internal virtual returns (bool) {
+    _updateRewards();
 
-    _stakers[account].lastClaimData = claimData;
+    uint256 pendingRewards = _earned(account);
 
-    // if we have no pending rewards, skip
-    if (pendingRewards == 0) return false;
-    
+    if (_stakers[account].amount == 0 || pendingRewards == 0)
+      return false;
+
     _stakers[account].totalClaimed += pendingRewards;
+    _stakers[account].totalExcluded += pendingRewards;
+    _stakers[account].lastClaim = block.timestamp;
     _totalClaimed += pendingRewards;
 
-    payable(account).sendValue(pendingRewards);
+    _sendRewards(account, pendingRewards);
+
+    _updateRewards();
 
     emit ClaimedRewards(account, pendingRewards);
 
     return true;
   }
 
-  function claimFor(address account) external nonReentrant autoClaimAfter {
-    require(_claim(account, _generateClaimData()), "Claim failed");
+  function claimFor(address account, bool revertOnFailure, bool doAutoClaim) external virtual override nonReentrant {
+    if (revertOnFailure)
+      require(_claim(account), "Claim failed");
+    else
+      _claim(account);
+
+    if (doAutoClaim) _autoClaim();
   }
 
-  function claim() external nonReentrant autoClaimAfter {
-    require(_claim(_msgSender(), _generateClaimData()), "Claim failed");
+  function claim() external virtual override nonReentrant {
+    require(_claim(_msgSender()), "Claim failed");
+
+    if (_autoClaimOnClaim) _autoClaim();
   }
 
-  function _deposit(address account, uint256 amount) private onlyNotPaused {
+  function _deposit(address account, uint256 amount) internal virtual onlyNotPaused {
     require(amount != 0, "Deposit amount cannot be 0");
 
     // claim before depositing
-    _claim(account, _generateClaimData());
+    _claim(account);
 
     if (_autoClaimQueueReverse[account] == 0) {
-      require(_currentNumStakers < _maxStakers, "Too many stakers");
-
       _totalNumStakers++;
       _currentNumStakers++;
       _autoClaimQueueReverse[account] = _totalNumStakers;
@@ -255,6 +280,8 @@ contract StakingV1 is Authorizable, Pausable, IDCounter, ReentrancyGuard {
     }
 
     _stakers[account].amount += amount;
+    _stakers[account].totalExcluded = _getCumalativeRewards(_stakers[account].amount);
+    _stakers[account].lastDeposit = block.timestamp;
     _totalStaked += amount;
 
     // store previous balance to determine actual amount transferred
@@ -275,35 +302,37 @@ contract StakingV1 is Authorizable, Pausable, IDCounter, ReentrancyGuard {
    * @dev deposit amount of tokens to the staking pool.
    * reverts if tokens are lost during transfer.
    */
-  function deposit(uint256 amount) external nonReentrant {
+  function deposit(uint256 amount) external virtual override nonReentrant {
     _deposit(_msgSender(), amount);
   }
 
-  function _getUnlockTime(address account) private view returns (uint64) {
-    return _lockDurationDays == 0 ? 0 : _lastClaimTime(account) + (uint64(_lockDurationDays) * 86400);
+  function _getUnlockTime(address account) internal virtual view returns (uint64) {
+    return _lockDurationDays == 0 ? 0 : uint64(_lastClaimTime(account)) + (uint64(_lockDurationDays) * 86400);
   }
 
-  function getUnlockTime(address account) external view returns (uint64) {
+  function getUnlockTime(address account) external virtual override view returns (uint64) {
     return _getUnlockTime(account);
   }
 
-  function _withdraw(address account, uint256 amount) private {
+  function _withdraw(address account, uint256 amount, bool claimFirst) internal virtual {
     require(
       _stakers[account].amount != 0 && _stakers[account].amount >= amount,
       "Attempting to withdraw too many tokens"
     );
 
-    if (_lockDurationDays != 0) {
+    if (_lockDurationDays != 0)
       require(
         block.timestamp > _getUnlockTime(account),
         "Wait for tokens to unlock before withdrawing"
       );
-    }
 
-    _claim(account, _generateClaimData());
+    if (claimFirst)
+      _claim(account);
 
     _stakers[account].amount -= amount;
+    _stakers[account].totalExcluded = _getCumalativeRewards(_stakers[account].amount);
     _totalStaked -= amount;
+
     if (_stakers[account].amount == 0) {
       // decrement current number of stakers
       _currentNumStakers--;
@@ -311,72 +340,90 @@ contract StakingV1 is Authorizable, Pausable, IDCounter, ReentrancyGuard {
       _autoClaimQueue[_autoClaimQueueReverse[account]] = address(0);
       _autoClaimQueueReverse[account] = 0;
     }
+
     // transfer eth after modifying internal state
     _token.safeTransfer(account, amount);
 
     emit WithdrewTokens(account, amount);
   }
 
-  function withdraw(uint256 amount) external nonReentrant {
-    _withdraw(_msgSender(), amount);
+  function withdraw(uint256 amount) external virtual override nonReentrant {
+    _withdraw(_msgSender(), amount, true);
   }
 
-  function _lastClaimId(address account) private view returns (uint64) {
-    return uint64(_stakers[account].lastClaimData);
+  /** this withdraws all and skips the claiming step */
+  function emergencyWithdraw() external virtual override nonReentrant {
+    _withdraw(_msgSender(), _stakers[_msgSender()].amount, false);
   }
 
-  function _lastClaimBlock(address account) private view returns (uint64) {
-    return uint64(_stakers[account].lastClaimData >> 64);
+  function _lastClaimTime(address account) internal virtual view returns (uint256) {
+    return _stakers[account].lastClaim;
   }
 
-  function _lastClaimTime(address account) private view returns (uint64) {
-    return uint64(_stakers[account].lastClaimData >> 128);
-  }
-
-  function _depositEth(address account, uint256 amount) private onlyNotPaused {
+  function _depositRewards(address account, uint256 amount) internal virtual onlyNotPaused {
     require(amount != 0, "Receive value cannot be 0");
 
-    _totalRewards += amount;
-
-    _deposits[uint64(_next())] = DepositData({
-      amount: amount,
-      totalStaked: _totalStaked
-    });
+    // _totalRewards += amount;
 
     emit DepositedEth(account, amount);
   }
 
-  /** NOTE DANGER WARNING ALERT this is for debug only! delete it! */
-  function fakeDeposits(uint256 numDeposits) external onlyOwner {
-    for (uint256 i = 0; i < numDeposits; i++) {
-      _depositEth(_msgSender(), 10 ** 18);
-    }
-  }
-
-  function _autoClaim() private {
+  function _autoClaim() internal virtual {
     uint256 startingGas = gasleft();
-    uint192 claimData = _generateClaimData();
-    uint64 index;
     uint256 iterations = 0;
 
     while (startingGas - gasleft() < _autoClaimGasLimit && iterations++ < _totalNumStakers) {
+      // use unchecked here so index can overflow, since it doesn't matter.
+      // this prevents the incredibly unlikely future problem of running
+      // into an overflow error and probably saves some gas
+      uint64 index;
       unchecked {
         index = _autoClaimIndex++;
       }
 
-      _claim(
-        _autoClaimQueue[1 + (index % _totalNumStakers)],
-        claimData
-      );
+      address autoClaimAddress = _autoClaimQueue[1 + (index % _totalNumStakers)];
+
+      if (!_stakers[autoClaimAddress].autoClaimOptOut) {
+        _claim(autoClaimAddress);
+      }
     }
   }
 
   /** @dev allow anyone to process autoClaim functionality manually */
-  function processAutoClaim() external nonReentrant {
+  function processAutoClaim() external virtual override nonReentrant {
     _autoClaim();
   }
 
-  receive() external payable nonReentrant autoClaimAfter {
-    _depositEth(_msgSender(), msg.value);
+  function _getRewardsPerToken() internal virtual view returns (uint256) {
+    uint256 rewardsBalance = _getRewardsBalance();
+
+    if (rewardsBalance <= _lastBalance || _totalStaked == 0)
+      return 0;
+
+    return _rewardsPerToken + (((rewardsBalance - _lastBalance) * _accuracy) / _totalStaked);
+  }
+
+  function _updateRewards() internal virtual {
+    uint256 rewardsBalance = _getRewardsBalance();
+
+    if (rewardsBalance > _lastBalance && _totalStaked != 0)
+      _rewardsPerToken += ((rewardsBalance - _lastBalance) * _accuracy) / _totalStaked;
+
+    if (_totalStaked != 0)
+      _lastBalance = rewardsBalance;
+  }
+
+  function _getCumalativeRewards(uint256 amount) internal virtual view returns (uint256) {
+    return (amount * _rewardsPerToken) / _accuracy;
+  }
+
+  function _getRewardsBalance() internal virtual view returns (uint256) {
+    return address(this).balance;
+  }
+
+  receive() external virtual payable nonReentrant {
+    _depositRewards(_msgSender(), msg.value);
+
+    if (_autoClaimOnDeposit) _autoClaim();
   }
 }

@@ -5,8 +5,8 @@ export const Outer = tw.div`
 `
 
 export const MidSection = tw.section`
-  bg-blue-500
-  dark:bg-blue-900
+  bg-gray-200
+  dark:bg-gray-900
   py-10
   px-5
   md:px-10

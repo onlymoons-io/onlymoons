@@ -12,7 +12,7 @@ Outer.defaultProps = {
 }
 
 export const Inner = tw.div`
-  bg-gray-200
+  bg-gray-100
   text-gray-900
   dark:bg-gray-800
   dark:text-gray-200
@@ -36,11 +36,20 @@ export const Title = tw.h3`
   gap-3
 `
 
-export const Header = tw(Section)``
+export const Header = tw(Section)`
+  bg-gray-200
+  bg-opacity-80
+  dark:bg-gray-900
+  dark:bg-opacity-80
+  border-l border-t border-r
+  rounded-t
+  border-gray-100
+  dark:border-gray-800
+`
 
 export const Main = tw(Section)`
   bg-gray-100
-  dark:bg-gray-900
+  dark:bg-gray-800
   rounded-b
 `
 

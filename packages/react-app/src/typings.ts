@@ -57,10 +57,6 @@ export interface StakingDataForAccount {
   lastClaimedBlock: number
   /** uint40 lastClaimedAt */
   lastClaimedAt: number
-  // uint40 lastClaimedDepositBlock,
-  lastClaimedDepositBlock: number
-  // uint40 lastClaimedDepositNum,
-  lastClaimedDepositNum: number
   /** uint256 pending */
   pendingRewards: BigNumber
   /** uint256 totalClaimed */
@@ -95,4 +91,9 @@ export interface SplitStakingRewardsData {
   waitingRewards: BigNumber
   // uint256 lastDistributionAt
   lastDistributionAt: BigNumber
+}
+
+export interface AllRewardsForAddress {
+  pending: BigNumber
+  claimed: BigNumber
 }

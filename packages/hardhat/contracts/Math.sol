@@ -52,7 +52,6 @@ library Math {
     // NOTE - solidity 0.8 and above throws on overflows automatically
     uint256 _numerator = numerator * 10 ** (precision+1);
     // with rounding of last digit
-    // TODO - determine if this rounding is actually safe
     return ((_numerator / denominator) + 5) / 10;
   }
 }

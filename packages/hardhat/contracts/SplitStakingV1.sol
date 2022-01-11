@@ -22,9 +22,7 @@ import { IStakingManagerV1 } from "./IStakingManagerV1.sol";
 import { Address } from "./library/Address.sol";
 import { Governable } from "./Governable.sol";
 import { Pausable } from "./Pausable.sol";
-import { IDCounter } from "./IDCounter.sol";
-import { StakingV1 } from "./StakingV1.sol";
-import { StakingTokenV1 } from "./StakingTokenV1.sol";
+import { IStakingV1 } from "./IStakingV1.sol";
 import { Math } from "./Math.sol";
 import { IERC20 } from "./library/IERC20.sol";
 import { ReentrancyGuard } from "./library/ReentrancyGuard.sol";
@@ -34,8 +32,16 @@ struct AccountBountyRewards {
   uint256 claimed;
 }
 
-contract StakingManagerV1 is IStakingManagerV1, Governable, Pausable, IDCounter, ReentrancyGuard {
+contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
   using Address for address payable;
+
+  event DepositedEth(address indexed account, uint256 amount);
+  event DistributedRewards(
+    address indexed account,
+    uint256 soloStakingRewards,
+    uint256 lpStakingRewards,
+    uint256 distributorReward
+  );
 
   /** @dev set the deployer as both owner and governor initially */
   constructor() Governable(_msgSender(), _msgSender()) {
@@ -44,60 +50,60 @@ contract StakingManagerV1 is IStakingManagerV1, Governable, Pausable, IDCounter,
     // _lastDistributionAt = block.timestamp - _distributionCooldown;
   }
 
-  uint40 private constant UNSET_ID = type(uint40).max;
 
-  uint40 private _soloStakingId = UNSET_ID;
-  uint40 private _lpStakingId = UNSET_ID;
 
-  IERC20 private _soloStakingToken;
-  IERC20 private _lpStakingToken;
+  address internal constant UNSET_ID = address(0);
+
+  address internal _soloStakingAddress = UNSET_ID;
+  address internal _lpStakingAddress = UNSET_ID;
+
+  IERC20 internal _soloStakingToken;
+  IERC20 internal _lpStakingToken;
 
   /** @dev 0-10000 based percent for fee rewarded for distributing */
-  uint16 private _rewardForDistributing = 200; // 2%
+  uint16 internal _rewardForDistributing = 200; // 2%
 
-  uint256 private _distributionRewardRate = 1000 * 10 ** 10;
-  uint256 private _distributionRewardAmountModifier = 1000 * 10 ** 11;
+  uint256 internal _distributionRewardRate = 1000 * 10 ** 10;
+  uint256 internal _distributionRewardAmountModifier = 1000 * 10 ** 11;
 
-  uint256 private _totalRewards = 0;
-  // uint256 private _waitingRewards = 0;
-  uint256 private _distributedRewards = 0;
-  uint256 private _cachedRewards = 0;
+  uint256 internal _totalRewards = 0;
+  // uint256 internal _waitingRewards = 0;
+  uint256 internal _distributedRewards = 0;
+  uint256 internal _cachedRewards = 0;
 
   /** @dev if this is too low, the gas cost of distributing will be greater than the reward */
-  uint256 private _minimumRewardsForDistribution = 1; // 1 * 10 ** 17; // 0.1 eth
+  uint256 internal _minimumRewardsForDistribution = 1; // 1 * 10 ** 17; // 0.1 eth
   /** @dev if this is too high, this contract might run out of rewards too quickly */
-  uint256 private _maximumRewardsForDistribution = 35 * 10 ** 16; // 0.35 eth
+  uint256 internal _maximumRewardsForDistribution = 35 * 10 ** 16; // 0.35 eth
   /** @dev start this at a low value for testing, since waiting is no good. increase this on mainnets */
-  uint256 private _distributionCooldown = 0 minutes;
-  uint256 private _lastDistributionAt = 0;
-  uint256 private _lastDepositAt = 0;
+  uint256 internal _distributionCooldown = 0 minutes;
+  uint256 internal _lastDistributionAt = 0;
+  uint256 internal _lastDepositAt = 0;
 
   /** @dev 0 = auto, 1 = only lp, 2 = only solo */
-  uint8 private _rewardsMode = 0;
+  uint8 internal _rewardsMode = 0;
 
-  mapping(uint40 => StakingV1) private _staking;
-
-  mapping(address => AccountBountyRewards) private _bountyRewards;
+  mapping(address => AccountBountyRewards) internal _bountyRewards;
 
   /** @dev 0 = auto, 1 = only lp, 2 = only solo */
-  function rewardsMode() external view override returns (uint8) {
+  function rewardsMode() external view returns (uint8) {
     return _rewardsMode;
   }
 
   /**
    * @dev 0 = auto, 1 = only lp, 2 = only solo
    */
-  function setRewardsMode(uint8 value) external override onlyOwner {
+  function setRewardsMode(uint8 value) external onlyOwner {
     require(value <= 2, "Invalid rewardsMode value");
 
     _rewardsMode = value;
   }
 
-  function rewardForDistributing() external view override returns (uint16) {
+  function rewardForDistributing() external view returns (uint16) {
     return _rewardForDistributing;
   }
 
-  function setRewardForDistributing(uint16 value) external override onlyGovernor {
+  function setRewardForDistributing(uint16 value) external onlyGovernor {
     // hard cap reward at 10%, which is probably higher than it ever should be
     _rewardForDistributing = value < 1000 ? value : 1000;
   }
@@ -118,7 +124,7 @@ contract StakingManagerV1 is IStakingManagerV1, Governable, Pausable, IDCounter,
     _distributionRewardAmountModifier = distributionRewardAmountModifier_;
   }
 
-  function setRewardsForDistribution(uint256 min, uint256 max) external override onlyGovernor {
+  function setRewardsForDistribution(uint256 min, uint256 max) external onlyGovernor {
     _minimumRewardsForDistribution = min;
     _maximumRewardsForDistribution = max;
   }
@@ -126,124 +132,52 @@ contract StakingManagerV1 is IStakingManagerV1, Governable, Pausable, IDCounter,
   /**
    * @dev this is here for public visibility.
    */
-  function getRewardsForDistribution() external override view returns (uint256 min, uint256 max) {
+  function getRewardsForDistribution() external view returns (uint256 min, uint256 max) {
     min = _minimumRewardsForDistribution;
     max = _maximumRewardsForDistribution;
   }
 
-  function setDistributionCooldown(uint256 sec) external override onlyGovernor {
+  function setDistributionCooldown(uint256 sec) external onlyGovernor {
     _distributionCooldown = sec;
   }
 
-  function setSoloStakingId(uint40 id) external override onlyOwner {
-    require(!_staking[id].rewardsAreToken(), "Split rewards cannot be a token");
-    _soloStakingId = id;
-    (address stakedToken,,,,,) = _staking[_soloStakingId].getStakingData();
+  function setSoloStakingAddress(address address_) external onlyOwner {
+    IStakingV1 stake = IStakingV1(address_);
+    require(!stake.rewardsAreToken(), "Split rewards cannot be a token");
+    _soloStakingAddress = address_;
+    (address stakedToken,,,,,) = stake.getStakingData();
     _soloStakingToken = IERC20(stakedToken);
   }
 
-  function setLpStakingId(uint40 id) external override onlyOwner {
-    require(!_staking[id].rewardsAreToken(), "Split rewards cannot be a token");
-    _lpStakingId = id;
-    (address stakedToken,,,,,) = _staking[_lpStakingId].getStakingData();
+  function setLpStakingAddress(address address_) external onlyOwner {
+    IStakingV1 stake = IStakingV1(address_);
+    require(!stake.rewardsAreToken(), "Split rewards cannot be a token");
+    _lpStakingAddress = address_;
+    (address stakedToken,,,,,) = stake.getStakingData();
     _lpStakingToken = IERC20(stakedToken);
   }
 
-  function _ready() private view returns (bool) {
-    return _soloStakingId != UNSET_ID && _lpStakingId != UNSET_ID;
+  function _ready() internal view returns (bool) {
+    return _soloStakingAddress != UNSET_ID && _lpStakingAddress != UNSET_ID;
   }
 
-  function _createStaking(
-    address tokenAddress_,
-    string memory name_,
-    uint16 lockDurationDays_
-  ) private {
-    uint40 id = uint40(_next());
-
-    _staking[id] = new StakingV1(
-      _msgSender(),
-      tokenAddress_,
-      name_,
-      lockDurationDays_
-    );
-
-    emit CreatedStaking(id, address(_staking[id]));
-  }
-
-  function createStaking(
-    address tokenAddress_,
-    string memory name_,
-    uint16 lockDurationDays_
-  ) external override onlyNotPaused {
-    _createStaking(tokenAddress_, name_, lockDurationDays_);
-  }
-
-  function _createStakingToken(
-    address tokenAddress_,
-    address rewardsTokenAddress_,
-    string memory name_,
-    uint16 lockDurationDays_  
-  ) internal {
-    uint40 id = uint40(_next());
-
-    _staking[id] = new StakingTokenV1(
-      _msgSender(),
-      tokenAddress_,
-      rewardsTokenAddress_,
-      name_,
-      lockDurationDays_
-    );
-
-    emit CreatedStaking(id, address(_staking[id]));
-  }
-
-  function createStakingToken(
-    address tokenAddress_,
-    address rewardsTokenAddress_,
-    string memory name_,
-    uint16 lockDurationDays_  
-  ) external onlyNotPaused {
-    _createStakingToken(tokenAddress_, rewardsTokenAddress_, name_, lockDurationDays_);
-  }
-
-  function getStakingData(uint40 id) external view override returns (
-    address contractAddress,
-    address stakedToken,
-    string memory name,
-    uint8 decimals,
-    uint256 totalStaked,
-    uint256 totalRewards,
-    uint256 totalClaimed
-  ){
-    (
-      stakedToken,
-      name,
-      decimals,
-      totalStaked,
-      totalRewards,
-      totalClaimed
-    ) = _staking[id].getStakingData();
-
-    contractAddress = address(_staking[id]);
-  }
-
-  function getGlobalStakingData() external view override returns (
+  function getGlobalStakingData() external view returns (
     bool ready,
     address mainToken,
-    uint40 soloStakingId,
-    uint40 lpStakingId,
+    address soloStakingAddress,
+    address lpStakingAddress,
     uint16 liquidityRatio,
     uint16 rewardsRatio
   ) {
     ready = _ready();
     mainToken = address(_soloStakingToken);
-    soloStakingId = _soloStakingId;
-    lpStakingId = _lpStakingId;
+    soloStakingAddress = _soloStakingAddress;
+    lpStakingAddress = _lpStakingAddress;
     liquidityRatio = _getLiquidityRatio();
     rewardsRatio = _getRewardsRatio();
   }
 
-  function _getLiquidityRatio() private view returns (uint16) {
+  function _getLiquidityRatio() internal view returns (uint16) {
     if (!_ready()) {
       return 1000;
     }
@@ -252,11 +186,11 @@ contract StakingManagerV1 is IStakingManagerV1, Governable, Pausable, IDCounter,
     return uint16(ratio < 10000 ? ratio : 10000);
   }
 
-  function getLiquidityRatio() external view override returns (uint16) {
+  function getLiquidityRatio() external view returns (uint16) {
     return _getLiquidityRatio();
   }
 
-  function _getRewardsRatio() private view returns (uint16) {
+  function _getRewardsRatio() internal view returns (uint16) {
     uint16 liquidityRatio = _getLiquidityRatio();
 
     return liquidityRatio <= 1000
@@ -264,15 +198,15 @@ contract StakingManagerV1 is IStakingManagerV1, Governable, Pausable, IDCounter,
       : 5000 + ((liquidityRatio - 1000) / 2);
   }
 
-  function getRewardsRatio() external view override returns (uint16) {
+  function getRewardsRatio() external view returns (uint16) {
     return _getRewardsRatio();
   }
 
-  function _getMostRecentDepositOrDistribution() private view returns (uint256) {
+  function _getMostRecentDepositOrDistribution() internal view returns (uint256) {
     return _lastDistributionAt > _lastDepositAt ? _lastDistributionAt : _lastDepositAt;
   }
 
-  function _getAvailableRewards() private view returns (uint256) {
+  function _getAvailableRewards() internal view returns (uint256) {
     uint256 diff = block.timestamp - _getMostRecentDepositOrDistribution();
     uint256 rewards = _cachedRewards;
     rewards += diff * _distributionRewardRate;
@@ -299,27 +233,27 @@ contract StakingManagerV1 is IStakingManagerV1, Governable, Pausable, IDCounter,
     return rewards;
   }
 
-  function getAvailableRewards() external view override returns (uint256) {
+  function getAvailableRewards() external view returns (uint256) {
     return _getAvailableRewards();
   }
 
-  function _canDistribute() private view returns (bool) {
+  function _canDistribute() internal view returns (bool) {
     return (
       (
         _rewardsMode == 0 && _ready()
       ) || (
-        _rewardsMode == 1 && _lpStakingId != UNSET_ID
+        _rewardsMode == 1 && _lpStakingAddress != UNSET_ID
       ) || (
-        _rewardsMode == 2 && _soloStakingId != UNSET_ID
+        _rewardsMode == 2 && _soloStakingAddress != UNSET_ID
       )
     ) && _getAvailableRewards() >= _minimumRewardsForDistribution;
   }
 
-  function canDistribute() external view override returns (bool) {
+  function canDistribute() external view returns (bool) {
     return _canDistribute();
   }
 
-  function _getStakingRewards(bool includeDistributorReward) private view returns (
+  function _getStakingRewards(bool includeDistributorReward) internal view returns (
     uint256 combinedRewards,
     uint256 soloStakingRewards,
     uint256 lpStakingRewards,
@@ -355,7 +289,7 @@ contract StakingManagerV1 is IStakingManagerV1, Governable, Pausable, IDCounter,
     }
   }
 
-  function getStakingRewards() external view override returns (
+  function getStakingRewards() external view returns (
     uint256 combinedRewards,
     uint256 soloStakingRewards,
     uint256 lpStakingRewards,
@@ -367,7 +301,7 @@ contract StakingManagerV1 is IStakingManagerV1, Governable, Pausable, IDCounter,
     return _getStakingRewards(true);
   }
 
-  function _distribute(address payable distributor, bool revertOnFailure) private {
+  function _distribute(address payable distributor, bool revertOnFailure) internal {
     if (!_canDistribute()) {
       if (revertOnFailure)
         revert("Cannot distribute");
@@ -394,12 +328,10 @@ contract StakingManagerV1 is IStakingManagerV1, Governable, Pausable, IDCounter,
     // so we can use the cooldown feature to limit the number of rewards transactions.
     _lastDistributionAt = block.timestamp;
 
-    // _waitingRewards -= combinedRewards;
-
     if (soloStakingRewards != 0)
-      payable(address(_staking[_soloStakingId])).sendValue(soloStakingRewards);
+      payable(_soloStakingAddress).sendValue(soloStakingRewards);
     if (lpStakingRewards != 0)
-      payable(address(_staking[_lpStakingId])).sendValue(lpStakingRewards);
+      payable(_lpStakingAddress).sendValue(lpStakingRewards);
     if (distributorReward != 0) {
       _bountyRewards[distributor].count++;
       _bountyRewards[distributor].claimed += distributorReward;
@@ -414,65 +346,44 @@ contract StakingManagerV1 is IStakingManagerV1, Governable, Pausable, IDCounter,
     );
   }
 
-  function distribute() external override nonReentrant {
+  function distribute() external nonReentrant {
     _distribute(payable(_msgSender()), true);
   }
 
-  function getAllRewardsForAddress(address account) external view override returns (uint256 pending, uint256 claimed) {
-    // include total bounty rewards claimed
-    claimed = _bountyRewards[account].claimed;
-
-    for (uint40 i = 0; i < _count && gasleft() > 20000; i++) {
-      (,,uint256 amount,uint256 amountClaimed) = _staking[i].getStakingDataForAccount(account);
-      pending += amount;
-      claimed += amountClaimed;
-    }
-  }
-
-  function getSplitStakingRewardsForAddress(address account) external view override returns (uint256 pending, uint256 claimed) {
+  function getSplitStakingRewardsForAddress(address account) external view returns (uint256 pending, uint256 claimed) {
     uint256 soloPending;
     uint256 soloClaimed;
     uint256 lpPending;
     uint256 lpClaimed;
 
-    if (_soloStakingId != UNSET_ID)
-      (,,soloPending,soloClaimed) = _staking[_soloStakingId].getStakingDataForAccount(account);
-    if (_lpStakingId != UNSET_ID)
-      (,,lpPending,lpClaimed) = _staking[_lpStakingId].getStakingDataForAccount(account);
+    if (_soloStakingAddress != UNSET_ID)
+      (,,soloPending,soloClaimed) = IStakingV1(_soloStakingAddress).getStakingDataForAccount(account);
+    if (_lpStakingAddress != UNSET_ID)
+      (,,lpPending,lpClaimed) = IStakingV1(_lpStakingAddress).getStakingDataForAccount(account);
 
     pending = soloPending + lpPending;
     claimed = _bountyRewards[account].claimed + soloClaimed + lpClaimed;
   }
 
-  function _claimAll(address account, bool revertOnFailure, bool doAutoClaim) private {
-    for (uint40 i = 0; i < _count && gasleft() > 100000; i++) {
-      _staking[i].claimFor(account, revertOnFailure, doAutoClaim);
-    }
-  }
-
-  function claimAll() external override nonReentrant {
-    _claimAll(_msgSender(), false, false);
-  }
-
-  function _claimById(address account, uint40 id, bool revertOnFailure, bool doAutoClaim) private {
-    if (id != UNSET_ID)
-      _staking[id].claimFor(account, revertOnFailure, doAutoClaim);
+  function _claimByAddress(address account, address address_, bool revertOnFailure, bool doAutoClaim) internal {
+    if (address_ != UNSET_ID)
+      IStakingV1(address_).claimFor(account, revertOnFailure, doAutoClaim);
     else if (revertOnFailure)
       revert("Invalid id");
   }
 
   /** NOTE!!! this currently doesn't revert when there's nothing to do */
-  function _claimSplitStaking(address account) private {
+  function _claimSplitStaking(address account) internal {
     _distribute(payable(account), false);
-    _claimById(account, _soloStakingId, false, false);
-    _claimById(account, _lpStakingId, false, false);
+    _claimByAddress(account, _soloStakingAddress, false, false);
+    _claimByAddress(account, _lpStakingAddress, false, false);
   }
 
-  function claimSplitStaking() external override nonReentrant {
+  function claimSplitStaking() external nonReentrant {
     _claimSplitStaking(_msgSender());
   }
 
-  function _depositEth(address account, uint256 amount) private onlyNotPaused {
+  function _depositEth(address account, uint256 amount) internal onlyNotPaused {
     require(amount != 0, "Receive value cannot be 0");
     require(_ready(), "Split staking is not ready");
 

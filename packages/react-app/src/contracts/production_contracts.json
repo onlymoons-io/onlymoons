@@ -1622,8 +1622,142 @@
             }
           ]
         },
+        "Faucet": {
+          "address": "0xD951d985DDb0A8FAa6A277f7483538E0a2C292aC",
+          "abi": [
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "tokenAddress",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "claimAmount",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "claimCooldown",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "nonpayable",
+              "type": "constructor"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "oldOwner",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "newOwner",
+                  "type": "address"
+                }
+              ],
+              "name": "OwnershipTransferred",
+              "type": "event"
+            },
+            {
+              "inputs": [],
+              "name": "balance",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "claim",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "getClaimLimits",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "cooldown",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "owner",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "removeTokens",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "cooldown",
+                  "type": "uint256"
+                }
+              ],
+              "name": "setClaimLimits",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "newOwner_",
+                  "type": "address"
+                }
+              ],
+              "name": "transferOwnership",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            }
+          ]
+        },
         "Math": {
-          "address": "0x822Bc660cC8E1916d0370d53101Db92cA78683e4",
+          "address": "0xe598C2c7140EfB14d48F251a1C06787569b407e7",
           "abi": []
         },
         "OnlyMoons": {
@@ -1911,31 +2045,12 @@
           "abi": []
         },
         "StakingManagerV1": {
-          "address": "0x3B0D88c7CFeF739E436976e3B2D9Aec9789AEe9a",
+          "address": "0x334D8db837cdc3bc496C8D81538d46f126B84bf5",
           "abi": [
             {
               "inputs": [],
               "stateMutability": "nonpayable",
               "type": "constructor"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "account",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "bool",
-                  "name": "value",
-                  "type": "bool"
-                }
-              ],
-              "name": "Authorized",
-              "type": "event"
             },
             {
               "anonymous": false,
@@ -1995,9 +2110,34 @@
                   "internalType": "uint256",
                   "name": "lpStakingRewards",
                   "type": "uint256"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "uint256",
+                  "name": "distributorReward",
+                  "type": "uint256"
                 }
               ],
               "name": "DistributedRewards",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "oldGovernor",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "newGovernor",
+                  "type": "address"
+                }
+              ],
+              "name": "GovernorshipTransferred",
               "type": "event"
             },
             {
@@ -2020,24 +2160,6 @@
               "type": "event"
             },
             {
-              "inputs": [
-                {
-                  "internalType": "address",
-                  "name": "account",
-                  "type": "address"
-                },
-                {
-                  "internalType": "bool",
-                  "name": "value",
-                  "type": "bool"
-                }
-              ],
-              "name": "authorize",
-              "outputs": [],
-              "stateMutability": "nonpayable",
-              "type": "function"
-            },
-            {
               "inputs": [],
               "name": "canDistribute",
               "outputs": [
@@ -2053,6 +2175,13 @@
             {
               "inputs": [],
               "name": "claimAll",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "claimSplitStaking",
               "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"
@@ -2111,7 +2240,7 @@
                 },
                 {
                   "internalType": "uint256",
-                  "name": "timeModifier",
+                  "name": "amountModifier",
                   "type": "uint256"
                 }
               ],
@@ -2130,7 +2259,12 @@
               "outputs": [
                 {
                   "internalType": "uint256",
-                  "name": "",
+                  "name": "pending",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "claimed",
                   "type": "uint256"
                 }
               ],
@@ -2235,6 +2369,30 @@
             {
               "inputs": [
                 {
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                }
+              ],
+              "name": "getSplitStakingRewardsForAddress",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "pending",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "claimed",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
                   "internalType": "uint40",
                   "name": "id",
                   "type": "uint40"
@@ -2326,12 +2484,12 @@
             },
             {
               "inputs": [],
-              "name": "isAuthorized",
+              "name": "governor",
               "outputs": [
                 {
-                  "internalType": "bool",
+                  "internalType": "address",
                   "name": "",
-                  "type": "bool"
+                  "type": "address"
                 }
               ],
               "stateMutability": "view",
@@ -2411,7 +2569,7 @@
                 },
                 {
                   "internalType": "uint256",
-                  "name": "distributionRewardRateTimeModifier_",
+                  "name": "distributionRewardAmountModifier_",
                   "type": "uint256"
                 }
               ],
@@ -2507,6 +2665,19 @@
               "inputs": [
                 {
                   "internalType": "address",
+                  "name": "newGovernor",
+                  "type": "address"
+                }
+              ],
+              "name": "transferGovernorship",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
                   "name": "newOwner_",
                   "type": "address"
                 }
@@ -2523,7 +2694,7 @@
           ]
         },
         "StakingV1": {
-          "address": "0xc6f8Cd0D55440e37264B593A2098D2eF904681Cf",
+          "address": "0x95C9736395F06f99e7B3Ea0909592cC44a98CFE0",
           "abi": [
             {
               "inputs": [
@@ -2666,6 +2837,19 @@
               "type": "event"
             },
             {
+              "inputs": [],
+              "name": "accuracy",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
               "inputs": [
                 {
                   "internalType": "address",
@@ -2709,24 +2893,21 @@
                   "internalType": "address",
                   "name": "account",
                   "type": "address"
+                },
+                {
+                  "internalType": "bool",
+                  "name": "revertOnFailure",
+                  "type": "bool"
+                },
+                {
+                  "internalType": "bool",
+                  "name": "doAutoClaim",
+                  "type": "bool"
                 }
               ],
               "name": "claimFor",
               "outputs": [],
               "stateMutability": "nonpayable",
-              "type": "function"
-            },
-            {
-              "inputs": [],
-              "name": "count",
-              "outputs": [
-                {
-                  "internalType": "uint256",
-                  "name": "",
-                  "type": "uint256"
-                }
-              ],
-              "stateMutability": "view",
               "type": "function"
             },
             {
@@ -2743,16 +2924,29 @@
               "type": "function"
             },
             {
-              "inputs": [
-                {
-                  "internalType": "uint256",
-                  "name": "numDeposits",
-                  "type": "uint256"
-                }
-              ],
-              "name": "fakeDeposits",
+              "inputs": [],
+              "name": "emergencyWithdraw",
               "outputs": [],
               "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                }
+              ],
+              "name": "getAutoClaimOptOut",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "view",
               "type": "function"
             },
             {
@@ -2826,11 +3020,6 @@
                   "internalType": "uint256",
                   "name": "amount",
                   "type": "uint256"
-                },
-                {
-                  "internalType": "uint64",
-                  "name": "lastClaimedBlock",
-                  "type": "uint64"
                 },
                 {
                   "internalType": "uint64",
@@ -2936,6 +3125,26 @@
               "type": "function"
             },
             {
+              "inputs": [],
+              "name": "removeLockDuration",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "value",
+                  "type": "uint256"
+                }
+              ],
+              "name": "setAccuracy",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
               "inputs": [
                 {
                   "internalType": "uint256",
@@ -2944,6 +3153,45 @@
                 }
               ],
               "name": "setAutoClaimGasLimit",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "bool",
+                  "name": "value",
+                  "type": "bool"
+                }
+              ],
+              "name": "setAutoClaimOnClaim",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "bool",
+                  "name": "value",
+                  "type": "bool"
+                }
+              ],
+              "name": "setAutoClaimOnDeposit",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "bool",
+                  "name": "value",
+                  "type": "bool"
+                }
+              ],
+              "name": "setAutoClaimOptOut",
               "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"

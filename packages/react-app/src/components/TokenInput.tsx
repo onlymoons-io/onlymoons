@@ -11,12 +11,22 @@ interface Props {
   maxValue?: BigNumber
   inputRef?: React.RefObject<HTMLInputElement>
   placeholder?: string
+  disabled?: boolean
   className?: string
   style?: CSSProperties
   onChange?: (value: string) => void
 }
 
-const TokenInput: React.FC<Props> = ({ tokenData, maxValue, inputRef, placeholder, className, style, onChange }) => {
+const TokenInput: React.FC<Props> = ({
+  tokenData,
+  maxValue,
+  inputRef,
+  placeholder,
+  disabled = false,
+  className = '',
+  style = {},
+  onChange,
+}) => {
   const [amount, setAmount] = useState<string>('')
 
   if (!inputRef) {
@@ -34,7 +44,7 @@ const TokenInput: React.FC<Props> = ({ tokenData, maxValue, inputRef, placeholde
           className="text-indigo-400 cursor-pointer"
           style={{ maxWidth: '50%' }}
           onClick={() => {
-            if (inputRef?.current) {
+            if (inputRef?.current && !disabled) {
               inputRef.current.value = utils.formatUnits(maxValue || tokenData.balance, tokenData.decimals)
               setAmount(inputRef.current.value)
             }
@@ -46,11 +56,14 @@ const TokenInput: React.FC<Props> = ({ tokenData, maxValue, inputRef, placeholde
         </div>
       </div>
 
-      <div className="flex gap-2 bg-white dark:bg-gray-800 rounded h-11">
+      <div className="flex gap-2 bg-white dark:bg-gray-900 rounded h-11">
         <input
           type="text"
-          className="flex-grow text-right bg-transparent text-gray-800 dark:text-gray-200 px-3 py-2 rounded text-lg outline-none"
+          className={`flex-grow text-right bg-transparent text-gray-800 dark:text-gray-200 px-3 py-2 rounded text-lg outline-none disabled:opacity-30 ${
+            disabled ? 'cursor-not-allowed' : ''
+          }`}
           placeholder={placeholder}
+          disabled={disabled}
           ref={inputRef}
           onInput={e => setAmount(e.currentTarget.value)}
         />

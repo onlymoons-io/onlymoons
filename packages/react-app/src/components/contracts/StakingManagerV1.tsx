@@ -2,7 +2,7 @@ import React, { createContext, useEffect, useState, useCallback } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import { BigNumber, Contract, providers } from 'ethers'
 import contracts from '../../contracts/production_contracts.json'
-import { StakingData, GlobalStakingData, SplitStakingRewardsData } from '../../typings'
+import { StakingData, GlobalStakingData, SplitStakingRewardsData, AllRewardsForAddress } from '../../typings'
 
 const { Web3Provider } = providers
 
@@ -15,6 +15,7 @@ export interface IStakingManagerV1ContractContext {
   globalStakingData?: GlobalStakingData
   canDistribute: boolean
 
+  stakingEnabledOnNetwork: (chainId?: number) => boolean
   createStaking?: (tokenAddress: string, name: string, lockDurationDays: number) => Promise<number>
   getStakingData?: (id: number) => Promise<StakingData>
   setSoloStakingId?: (id: number) => Promise<void>
@@ -23,14 +24,17 @@ export interface IStakingManagerV1ContractContext {
   distribute?: () => Promise<void>
   getRewardsRatio?: () => Promise<number>
   getStakingRewards?: () => Promise<SplitStakingRewardsData>
-  getAllRewardsForAddress?: (account: string) => Promise<BigNumber>
+  getAllRewardsForAddress?: (account: string) => Promise<AllRewardsForAddress>
+  getSplitStakingRewardsForAddress?: (account: string) => Promise<AllRewardsForAddress>
   claimAll?: () => Promise<void>
+  claimSplitStaking?: () => Promise<void>
 }
 
 export const StakingManagerV1ContractContext = createContext<IStakingManagerV1ContractContext>({
   //
   count: 0,
   canDistribute: false,
+  stakingEnabledOnNetwork: () => false,
 })
 
 const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
@@ -42,6 +46,15 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
   const [owner, setOwner] = useState<string>()
   const [globalStakingData, setGlobalStakingData] = useState<GlobalStakingData>()
   const [canDistribute, setCanDistribute] = useState<boolean>(false)
+
+  const stakingEnabledOnNetwork = (chainId?: number) => {
+    switch (chainId) {
+      case 97:
+        return true
+      default:
+        return false
+    }
+  }
 
   const setSoloStakingId = useCallback(
     async (id: number) => {
@@ -124,6 +137,14 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
     await (await contract.claimAll()).wait()
   }, [contract])
 
+  const claimSplitStaking = useCallback(async () => {
+    if (!contract) {
+      throw new Error('Staking contract is not loaded')
+    }
+
+    await (await contract.claimSplitStaking()).wait()
+  }, [contract])
+
   const getAllRewardsForAddress = useCallback(
     async (account: string) => {
       if (!contract) {
@@ -131,6 +152,17 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
       }
 
       return await contract.getAllRewardsForAddress(account)
+    },
+    [contract],
+  )
+
+  const getSplitStakingRewardsForAddress = useCallback(
+    async (account: string) => {
+      if (!contract) {
+        throw new Error('Staking contract is not loaded')
+      }
+
+      return await contract.getSplitStakingRewardsForAddress(account)
     },
     [contract],
   )
@@ -245,6 +277,7 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
         globalStakingData,
         setSoloStakingId,
         setLpStakingId,
+        stakingEnabledOnNetwork,
         createStaking,
         getStakingData,
         getGlobalStakingData,
@@ -252,7 +285,9 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
         getStakingRewards,
         canDistribute,
         claimAll,
+        claimSplitStaking,
         getAllRewardsForAddress,
+        getSplitStakingRewardsForAddress,
         getRewardsRatio,
       }}
     >

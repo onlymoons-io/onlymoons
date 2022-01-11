@@ -57,6 +57,7 @@ const Staking: React.FC<StakingProps> = ({
   const [depositLoading, setDepositLoading] = useState<boolean>(false)
   const [withdrawLoading, setWithdrawLoading] = useState<boolean>(false)
   const [stakingDataForAccount, setStakingDataForAccount] = useState<StakingDataForAccount>()
+  const [paused, setPaused] = useState<boolean>(false)
   // const [withdrawApproved, setWithdrawApproved] = useState<boolean>(false)
 
   useMount(() => setStakingData(_stakingData))
@@ -288,6 +289,21 @@ const Staking: React.FC<StakingProps> = ({
   //     .catch(console.error)
   // }, [stakingContract])
 
+  useEffect(() => {
+    if (!stakingContract) {
+      setPaused(false)
+      return
+    }
+
+    stakingContract
+      .paused()
+      .then((result: boolean) => setPaused(result))
+      .catch((err: Error) => {
+        console.error(err)
+        setPaused(false)
+      })
+  }, [stakingContract])
+
   return (
     <DetailsCard
       className={className}
@@ -330,6 +346,7 @@ const Staking: React.FC<StakingProps> = ({
                   className="w-2/3 flex-shrink-0"
                   tokenData={stakingTokenData}
                   maxValue={stakingTokenData.balance}
+                  disabled={paused}
                   inputRef={depositInputRef}
                   onChange={setDepositInputValue}
                 />
@@ -482,6 +499,14 @@ const Staking: React.FC<StakingProps> = ({
                   {owner && owner === account && (
                     <>
                       <hr className="my-1 opacity-10" />
+
+                      <PrimaryButton
+                        onClick={() => {
+                          stakingContract && stakingContract.setAutoClaimOptOut(true)
+                        }}
+                      >
+                        Disable auto claim
+                      </PrimaryButton>
 
                       <div className="grid grid-cols-2 gap-2">
                         <PrimaryButton

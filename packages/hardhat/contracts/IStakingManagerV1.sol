@@ -22,13 +22,13 @@ import { IIDCounter } from "./IIDCounter.sol";
 
 interface IStakingManagerV1 is IIDCounter {
   event CreatedStaking(uint40 indexed id, address contractAddress);
-  event DepositedEth(address indexed account, uint256 amount);
-  event DistributedRewards(
-    address indexed account,
-    uint256 soloStakingRewards,
-    uint256 lpStakingRewards,
-    uint256 distributorReward
-  );
+  // event DepositedEth(address indexed account, uint256 amount);
+  // event DistributedRewards(
+  //   address indexed account,
+  //   uint256 soloStakingRewards,
+  //   uint256 lpStakingRewards,
+  //   uint256 distributorReward
+  // );
 
   function rewardsMode() external view returns (uint8);
   function setRewardsMode(uint8 value) external;
@@ -75,6 +75,8 @@ interface IStakingManagerV1 is IIDCounter {
     uint256 waitingRewards,
     uint256 lastDistributionAt
   );
-  function getAllRewardsForAddress(address account) external view returns (uint256);
+  function getAllRewardsForAddress(address account) external view returns (uint256 pending, uint256 claimed);
+  function getSplitStakingRewardsForAddress(address account) external view returns (uint256 pending, uint256 claimed);
   function claimAll() external;
+  function claimSplitStaking() external;
 }
