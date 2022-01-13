@@ -12,8 +12,14 @@ const DarkModeToggle: React.FC = () => {
   )
 
   useEffect(() => {
+    // toggle main dark mode class - tailwind picks up on this
     document.documentElement.classList.toggle('dark', darkModeEnabled)
 
+    // toggle light & dark mode classes on html element
+    document.documentElement.classList.toggle('bg-gray-900', darkModeEnabled)
+    document.documentElement.classList.toggle('bg-gray-200', !darkModeEnabled)
+
+    // store preference in localStorage
     window.localStorage.setItem('OM_DARKMODE_ENABLED', darkModeEnabled ? '1' : '0')
   }, [darkModeEnabled])
 

@@ -88,6 +88,8 @@ contract StakingV1 is IStakingV1, Authorizable, Pausable, ReentrancyGuard {
   /** @dev current index used for auto claim iteration */
   uint64 internal _autoClaimIndex;
 
+  bool internal _autoClaimEnabled = true;
+
   /** @dev should autoClaim be run automatically on deposit? */
   bool internal _autoClaimOnDeposit = true;
 
@@ -113,6 +115,14 @@ contract StakingV1 is IStakingV1, Authorizable, Pausable, ReentrancyGuard {
 
   function rewardsAreToken() public virtual override pure returns (bool) {
     return false;
+  }
+
+  function autoClaimEnabled() external virtual override view returns (bool) {
+    return _autoClaimEnabled;
+  }
+
+  function setAutoClaimEnabled(bool value) external virtual override {
+    _autoClaimEnabled = value;
   }
 
   function accuracy() external virtual override view returns (uint256) {
@@ -369,6 +379,8 @@ contract StakingV1 is IStakingV1, Authorizable, Pausable, ReentrancyGuard {
   }
 
   function _autoClaim() internal virtual {
+    if (!_autoClaimEnabled) return;
+
     uint256 startingGas = gasleft();
     uint256 iterations = 0;
 
@@ -383,9 +395,8 @@ contract StakingV1 is IStakingV1, Authorizable, Pausable, ReentrancyGuard {
 
       address autoClaimAddress = _autoClaimQueue[1 + (index % _totalNumStakers)];
 
-      if (!_stakers[autoClaimAddress].autoClaimOptOut) {
+      if (!_stakers[autoClaimAddress].autoClaimOptOut)
         _claim(autoClaimAddress);
-      }
     }
   }
 
@@ -397,24 +408,24 @@ contract StakingV1 is IStakingV1, Authorizable, Pausable, ReentrancyGuard {
   function _getRewardsPerToken() internal virtual view returns (uint256) {
     uint256 rewardsBalance = _getRewardsBalance();
 
-    if (rewardsBalance <= _lastBalance || _totalStaked == 0)
+    if (rewardsBalance < _lastBalance || _totalStaked == 0)
       return 0;
 
-    return _rewardsPerToken + (((rewardsBalance - _lastBalance) * _accuracy) / _totalStaked);
+    return _rewardsPerToken + ((rewardsBalance - _lastBalance) * _accuracy / _totalStaked);
   }
 
   function _updateRewards() internal virtual {
     uint256 rewardsBalance = _getRewardsBalance();
 
     if (rewardsBalance > _lastBalance && _totalStaked != 0)
-      _rewardsPerToken += ((rewardsBalance - _lastBalance) * _accuracy) / _totalStaked;
+      _rewardsPerToken += (rewardsBalance - _lastBalance) * _accuracy / _totalStaked;
 
     if (_totalStaked != 0)
       _lastBalance = rewardsBalance;
   }
 
   function _getCumalativeRewards(uint256 amount) internal virtual view returns (uint256) {
-    return (amount * _rewardsPerToken) / _accuracy;
+    return amount * _rewardsPerToken / _accuracy;
   }
 
   function _getRewardsBalance() internal virtual view returns (uint256) {

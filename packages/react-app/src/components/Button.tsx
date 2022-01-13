@@ -11,9 +11,10 @@ const Button = tw.button`
 export default Button
 
 export const Primary = tw(Button)`
-  bg-blue-700
+  bg-blue-500
+  dark:bg-blue-700
   text-gray-100
-  ${props => (props.disabled ? '' : 'hover:bg-blue-600')}
+  ${props => (props.disabled ? '' : 'hover:bg-blue-400 dark:hover:bg-blue-600')}
 `
 
 export const Secondary = tw(Button)`

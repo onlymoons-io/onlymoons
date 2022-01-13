@@ -1,4 +1,4 @@
-import React, { useState, useContext, useCallback, useRef, forwardRef } from 'react'
+import React, { useState, useContext, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import tw from 'tailwind-styled-components'
@@ -9,9 +9,9 @@ import { useWeb3React } from '@web3-react/core'
 import { Primary as PrimaryButton } from '../Button'
 import Input from '../Input'
 import { TokenData } from '../../typings'
-import { StakingManagerV1ContractContext } from '../contracts/StakingManagerV1'
+import StakingManagerV1ContractContextProvider, { StakingManagerV1ContractContext } from '../contracts/StakingManagerV1'
 import { UtilContractContext } from '../contracts/Util'
-import Header from './Header'
+// import Header from './Header'
 import { Outer, MidSection, SectionInner } from '../Layout'
 
 const { isAddress } = utils
@@ -144,4 +144,12 @@ const Create: React.FC = () => {
   )
 }
 
-export default Create
+const CreateWrapper: React.FC = () => {
+  return (
+    <StakingManagerV1ContractContextProvider>
+      <Create />
+    </StakingManagerV1ContractContextProvider>
+  )
+}
+
+export default CreateWrapper

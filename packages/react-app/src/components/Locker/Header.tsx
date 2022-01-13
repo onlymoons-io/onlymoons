@@ -9,7 +9,10 @@ const TopSection = tw.section`
   py-10
   px-5
   md:px-10
-  bg-gray-900
+  bg-gray-200
+  text-gray-800
+  dark:bg-gray-900
+  dark:text-gray-200
 `
 
 const SectionInner = tw.div`

@@ -104,6 +104,15 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     },
   });
 
+  const splitStakingV1 = await deploy("SplitStakingV1", {
+    from: deployer,
+    log: true,
+    // args: [],
+    libraries: {
+      Math: mathLibrary.address,
+    },
+  });
+
   /*
     // Getting a previously deployed contract
     const YourContract = await ethers.getContract("YourContract", deployer);

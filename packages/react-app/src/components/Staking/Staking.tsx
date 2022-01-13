@@ -18,6 +18,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faCircleNotch } from '@fortawesome/free-solid-svg-icons'
 import TokenInput from '../TokenInput'
 import { Web3Provider as Web3ProviderClass } from '@ethersproject/providers'
+import { SplitStakingV1ContractContext } from '../contracts/SplitStakingV1'
 
 const { Web3Provider } = providers
 
@@ -40,13 +41,14 @@ const Staking: React.FC<StakingProps> = ({
   const [provider, setProvider] = useState<Web3ProviderClass>()
   const { push: pushNotification } = useContext(NotificationCatcherContext)
   const { getTokenData } = useContext(UtilContractContext)
-  const { contract, owner, setSoloStakingId, setLpStakingId } = useContext(StakingManagerV1ContractContext)
+  const { contract, owner } = useContext(StakingManagerV1ContractContext)
+  const { setSoloStakingAddress, setLpStakingAddress } = useContext(SplitStakingV1ContractContext)
   const [_stakingData, setStakingData] = useState<StakingData | undefined>(stakingData)
   const [stakingTokenData, setStakingTokenData] = useState<TokenData>()
   const [stakingContract, setStakingContract] = useState<Contract>()
   const [tokenContract, setTokenContract] = useState<Contract>()
   const [stakingAbi, setStakingAbi] = useState<any>()
-  const [depositTokens, setDepositTokens] = useState<string>('')
+  // const [depositTokens, setDepositTokens] = useState<string>('')
   const [detailsExpanded, setDetailsExpanded] = useState<boolean>(startExpanded)
   const [settingStakingToken, setSettingStakingToken] = useState<boolean>(false)
   const depositInputRef = useRef<HTMLInputElement>(null)
@@ -496,16 +498,27 @@ const Staking: React.FC<StakingProps> = ({
                     }`}
                   />
 
+                  <hr className="my-1 opacity-10" />
+
+                  <PrimaryButton
+                    onClick={() => {
+                      stakingContract && stakingContract.setAutoClaimOptOut(true)
+                    }}
+                  >
+                    Disable auto claim
+                  </PrimaryButton>
+
                   {owner && owner === account && (
                     <>
                       <hr className="my-1 opacity-10" />
 
                       <PrimaryButton
                         onClick={() => {
-                          stakingContract && stakingContract.setAutoClaimOptOut(true)
+                          //
+                          stakingContract && stakingContract.setAutoClaimEnabled(false)
                         }}
                       >
-                        Disable auto claim
+                        Disable auto claim globally
                       </PrimaryButton>
 
                       <div className="grid grid-cols-2 gap-2">
@@ -514,14 +527,14 @@ const Staking: React.FC<StakingProps> = ({
                           onClick={() => {
                             setSettingStakingToken(true)
 
-                            setSoloStakingId &&
-                              setSoloStakingId(_stakingData.id)
+                            setSoloStakingAddress &&
+                              setSoloStakingAddress(_stakingData.contractAddress)
                                 .then(() => {
                                   setSettingStakingToken(false)
 
                                   pushNotification &&
                                     pushNotification({
-                                      message: `Set solo staking id to ${_stakingData.id}`,
+                                      message: `Set solo staking address to ${_stakingData.contractAddress}`,
                                       level: 'success',
                                     })
                                 })
@@ -544,14 +557,14 @@ const Staking: React.FC<StakingProps> = ({
                           onClick={() => {
                             setSettingStakingToken(true)
 
-                            setLpStakingId &&
-                              setLpStakingId(_stakingData.id)
+                            setLpStakingAddress &&
+                              setLpStakingAddress(_stakingData.contractAddress)
                                 .then(() => {
                                   setSettingStakingToken(false)
 
                                   pushNotification &&
                                     pushNotification({
-                                      message: `Set LP staking id to ${_stakingData.id}`,
+                                      message: `Set LP staking address to ${_stakingData.contractAddress}`,
                                       level: 'success',
                                     })
                                 })

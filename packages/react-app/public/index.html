@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class=" bg-gray-900 text-gray-100">
+<html lang="en" class="bg-gray-900 text-gray-100">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
@@ -24,8 +24,9 @@
     <title>OnlyMoons</title>
 
     <script>
-      document.documentElement.classList.toggle(
-        'dark',
+      ;(darkModeEnabled => {
+        document.documentElement.classList.toggle('dark', darkModeEnabled)
+      })(
         window.localStorage.getItem('OM_DARKMODE_ENABLED') === null ||
           window.localStorage.getItem('OM_DARKMODE_ENABLED') === '1',
       )

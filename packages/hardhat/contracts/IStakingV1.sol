@@ -26,6 +26,8 @@ interface IStakingV1 {
   event ClaimedRewards(address indexed account, uint256 amount);
 
   function rewardsAreToken() external pure returns (bool);
+  function autoClaimEnabled() external view returns (bool);
+  function setAutoClaimEnabled(bool value) external;
   function accuracy() external view returns (uint256);
   function setAccuracy(uint256 value) external;
   function setAutoClaimOnDeposit(bool value) external;

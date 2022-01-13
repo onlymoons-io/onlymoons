@@ -2044,32 +2044,13 @@
           "address": "0xf952F106449281dF133C8D01a2b313CEd2c58E74",
           "abi": []
         },
-        "StakingManagerV1": {
-          "address": "0x334D8db837cdc3bc496C8D81538d46f126B84bf5",
+        "SplitStakingV1": {
+          "address": "0x21cd7D0B2612BccFd298feE43EF24FfD1694c299",
           "abi": [
             {
               "inputs": [],
               "stateMutability": "nonpayable",
               "type": "constructor"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "uint40",
-                  "name": "id",
-                  "type": "uint40"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "address",
-                  "name": "contractAddress",
-                  "type": "address"
-                }
-              ],
-              "name": "CreatedStaking",
-              "type": "event"
             },
             {
               "anonymous": false,
@@ -2174,50 +2155,7 @@
             },
             {
               "inputs": [],
-              "name": "claimAll",
-              "outputs": [],
-              "stateMutability": "nonpayable",
-              "type": "function"
-            },
-            {
-              "inputs": [],
               "name": "claimSplitStaking",
-              "outputs": [],
-              "stateMutability": "nonpayable",
-              "type": "function"
-            },
-            {
-              "inputs": [],
-              "name": "count",
-              "outputs": [
-                {
-                  "internalType": "uint256",
-                  "name": "",
-                  "type": "uint256"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "address",
-                  "name": "tokenAddress_",
-                  "type": "address"
-                },
-                {
-                  "internalType": "string",
-                  "name": "name_",
-                  "type": "string"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "lockDurationDays_",
-                  "type": "uint16"
-                }
-              ],
-              "name": "createStaking",
               "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"
@@ -2241,30 +2179,6 @@
                 {
                   "internalType": "uint256",
                   "name": "amountModifier",
-                  "type": "uint256"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "address",
-                  "name": "account",
-                  "type": "address"
-                }
-              ],
-              "name": "getAllRewardsForAddress",
-              "outputs": [
-                {
-                  "internalType": "uint256",
-                  "name": "pending",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "claimed",
                   "type": "uint256"
                 }
               ],
@@ -2299,14 +2213,14 @@
                   "type": "address"
                 },
                 {
-                  "internalType": "uint40",
-                  "name": "soloStakingId",
-                  "type": "uint40"
+                  "internalType": "address",
+                  "name": "soloStakingAddress",
+                  "type": "address"
                 },
                 {
-                  "internalType": "uint40",
-                  "name": "lpStakingId",
-                  "type": "uint40"
+                  "internalType": "address",
+                  "name": "lpStakingAddress",
+                  "type": "address"
                 },
                 {
                   "internalType": "uint16",
@@ -2384,55 +2298,6 @@
                 {
                   "internalType": "uint256",
                   "name": "claimed",
-                  "type": "uint256"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "uint40",
-                  "name": "id",
-                  "type": "uint40"
-                }
-              ],
-              "name": "getStakingData",
-              "outputs": [
-                {
-                  "internalType": "address",
-                  "name": "contractAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "address",
-                  "name": "stakedToken",
-                  "type": "address"
-                },
-                {
-                  "internalType": "string",
-                  "name": "name",
-                  "type": "string"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "decimals",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "totalStaked",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "totalRewards",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "totalClaimed",
                   "type": "uint256"
                 }
               ],
@@ -2581,12 +2446,12 @@
             {
               "inputs": [
                 {
-                  "internalType": "uint40",
-                  "name": "id",
-                  "type": "uint40"
+                  "internalType": "address",
+                  "name": "address_",
+                  "type": "address"
                 }
               ],
-              "name": "setLpStakingId",
+              "name": "setLpStakingAddress",
               "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"
@@ -2651,12 +2516,12 @@
             {
               "inputs": [
                 {
-                  "internalType": "uint40",
-                  "name": "id",
-                  "type": "uint40"
+                  "internalType": "address",
+                  "name": "address_",
+                  "type": "address"
                 }
               ],
-              "name": "setSoloStakingId",
+              "name": "setSoloStakingAddress",
               "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"
@@ -2693,8 +2558,346 @@
             }
           ]
         },
+        "StakingManagerV1": {
+          "address": "0xFD47B4d59C610e63A4979A998be61DE26b1a4b5C",
+          "abi": [
+            {
+              "inputs": [],
+              "stateMutability": "nonpayable",
+              "type": "constructor"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "uint40",
+                  "name": "id",
+                  "type": "uint40"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "address",
+                  "name": "contractAddress",
+                  "type": "address"
+                }
+              ],
+              "name": "CreatedStaking",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "oldGovernor",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "newGovernor",
+                  "type": "address"
+                }
+              ],
+              "name": "GovernorshipTransferred",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "oldOwner",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "newOwner",
+                  "type": "address"
+                }
+              ],
+              "name": "OwnershipTransferred",
+              "type": "event"
+            },
+            {
+              "inputs": [],
+              "name": "claimAll",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "count",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "tokenAddress_",
+                  "type": "address"
+                },
+                {
+                  "internalType": "string",
+                  "name": "name_",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint16",
+                  "name": "lockDurationDays_",
+                  "type": "uint16"
+                }
+              ],
+              "name": "createStaking",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "tokenAddress_",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "rewardsTokenAddress_",
+                  "type": "address"
+                },
+                {
+                  "internalType": "string",
+                  "name": "name_",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint16",
+                  "name": "lockDurationDays_",
+                  "type": "uint16"
+                }
+              ],
+              "name": "createStakingToken",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                }
+              ],
+              "name": "getAllRewardsForAddress",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "pending",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "claimed",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "address_",
+                  "type": "address"
+                }
+              ],
+              "name": "getStakingDataByAddress",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "contractAddress",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "stakedToken",
+                  "type": "address"
+                },
+                {
+                  "internalType": "string",
+                  "name": "name",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint8",
+                  "name": "decimals",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "totalStaked",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "totalRewards",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "totalClaimed",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint40",
+                  "name": "id",
+                  "type": "uint40"
+                }
+              ],
+              "name": "getStakingDataById",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "contractAddress",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "stakedToken",
+                  "type": "address"
+                },
+                {
+                  "internalType": "string",
+                  "name": "name",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint8",
+                  "name": "decimals",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "totalStaked",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "totalRewards",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "totalClaimed",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "governor",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "owner",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "paused",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "bool",
+                  "name": "value",
+                  "type": "bool"
+                }
+              ],
+              "name": "setPaused",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "newGovernor",
+                  "type": "address"
+                }
+              ],
+              "name": "transferGovernorship",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "newOwner_",
+                  "type": "address"
+                }
+              ],
+              "name": "transferOwnership",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            }
+          ]
+        },
         "StakingV1": {
-          "address": "0x95C9736395F06f99e7B3Ea0909592cC44a98CFE0",
+          "address": "0x9432a7E69C4C285C540C1bdFe1FE5e1498257Ae4",
           "abi": [
             {
               "inputs": [
@@ -3129,6 +3332,19 @@
               "name": "removeLockDuration",
               "outputs": [],
               "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "rewardsAreToken",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "pure",
               "type": "function"
             },
             {

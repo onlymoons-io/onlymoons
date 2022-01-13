@@ -296,9 +296,45 @@ const Lock: React.FC<Props> = ({ lock }) => {
               </Tooltip>
             </div>
 
+            {/* {lpToken0Data && lpToken1Data && (
+              <motion.div
+                className="px-4 flex items-center gap-1 bg-yellow-100 dark:bg-yellow-100 dark:bg-opacity-10 border-b border-gray-200 dark:border-transparent absolute left-0 right-0 -bottom-4 z-10"
+                initial={{ scaleY: 0, y: '-100%', opacity: 0 }}
+                animate={{ scaleY: 1, y: 0, opacity: 1 }}
+              >
+                <span>Pair: </span>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-500"
+                  href={getExplorerTokenLink(getChainId(), lpToken0Data.address)}
+                >
+                  {lpToken0Data.symbol}
+                </a>
+                <FontAwesomeIcon icon={faExchangeAlt} fixedWidth size="sm" opacity={0.5} />
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-500"
+                  href={getExplorerTokenLink(getChainId(), lpToken1Data.address)}
+                >
+                  {lpToken1Data.symbol}
+                </a>
+              </motion.div>
+            )} */}
+          </>
+        ) : (
+          // lockData is not ready
+          <></>
+        )
+      }
+      mainContent={
+        //
+        lockData ? (
+          <>
             {lpToken0Data && lpToken1Data && (
               <motion.div
-                className="px-4 flex items-center gap-1 bg-yellow-100 dark:bg-gray-800 border-b border-gray-200 dark:border-transparent absolute left-0 right-0 z-10"
+                className="px-4 flex items-center gap-1 bg-yellow-100 bg-opacity-50 dark:bg-yellow-200 dark:bg-opacity-5 border-b border-gray-200 dark:border-transparent absolute left-0 right-0 top-0 z-10"
                 initial={{ scaleY: 0, y: '-100%', opacity: 0 }}
                 animate={{ scaleY: 1, y: 0, opacity: 1 }}
               >
@@ -322,17 +358,8 @@ const Lock: React.FC<Props> = ({ lock }) => {
                 </a>
               </motion.div>
             )}
-          </>
-        ) : (
-          // lockData is not ready
-          <></>
-        )
-      }
-      mainContent={
-        //
-        lockData ? (
-          <>
-            <div className="flex-grow flex flex-col gap-2">
+
+            <div className="flex-grow flex flex-col gap-2 mt-4">
               <Detail
                 label="Locker address"
                 value={

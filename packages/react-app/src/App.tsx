@@ -8,7 +8,6 @@ import NotificationCatcherContextProvider from './components/NotificationCatcher
 
 import UtilContractContextProvider from './components/contracts/Util'
 import TokenLockerManagerV1ContractContextProvider from './components/contracts/TokenLockerManagerV1'
-import StakingManagerV1ContractContextProvider from './components/contracts/StakingManagerV1'
 
 import FullscreenLoading from './components/FullscreenLoading'
 
@@ -74,9 +73,7 @@ const App: React.FC = () => {
         <NotificationCatcherContextProvider>
           <UtilContractContextProvider>
             <TokenLockerManagerV1ContractContextProvider>
-              <StakingManagerV1ContractContextProvider>
-                <AppContent />
-              </StakingManagerV1ContractContextProvider>
+              <AppContent />
             </TokenLockerManagerV1ContractContextProvider>
           </UtilContractContextProvider>
         </NotificationCatcherContextProvider>

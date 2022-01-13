@@ -1,7 +1,7 @@
 import React, { useEffect, useState, createRef, CSSProperties } from 'react'
 // import tw from 'tailwind-styled-components'
 import { utils, BigNumber } from 'ethers'
-import { Primary as PrimaryButton } from './Button'
+// import { Primary as PrimaryButton } from './Button'
 import { TokenData } from '../typings'
 import humanNumber from 'human-number'
 

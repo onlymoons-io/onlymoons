@@ -68,12 +68,14 @@ export interface GlobalStakingData {
   ready: boolean
   // address mainToken,
   mainToken: string
-  // uint40 soloStakingId,
-  soloStakingId: number
-  // uint40 lpStakingId,
-  lpStakingId: number
+  //
+  soloStakingAddress: string
+  //
+  lpStakingAddress: string
   // uint16 rewardsRatio
   rewardsRatio: number
+  //
+  liquidityRatio: number
 }
 
 export interface SplitStakingRewardsData {

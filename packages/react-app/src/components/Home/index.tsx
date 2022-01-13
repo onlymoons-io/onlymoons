@@ -23,7 +23,8 @@ import logoSrc from '../../images/logo-white.svg'
 
 const Outer = tw.div`
   w-full
-  bg-gray-900
+  bg-gray-200
+  dark:bg-gray-900
 `
 
 const HeroOuter = tw.div`
@@ -58,7 +59,8 @@ const HeroSection = tw.div`
 
 const Header = tw.h1`
   text-5xl
-  text-gray-200
+  text-gray-800
+  dark:text-gray-200
   text-center
   md:text-left
 `
@@ -78,7 +80,10 @@ const MainAnchor = tw(Anchor)`
 
 const SocialLinkCSS = styled(Anchor)`
   transition: all 0.1s;
+  color: #ddd !important;
+  opacity: 0.75;
   &:hover {
+    opacity: 1;
     transform: scale(1.2);
   }
 `
@@ -86,7 +91,8 @@ const SocialLinkCSS = styled(Anchor)`
 const SocialLink = tw(SocialLinkCSS)`
   text-xl
   p-2
-  bg-blue-700
+  bg-blue-500
+  dark:bg-blue-700
   flex
   justify-center
   items-center

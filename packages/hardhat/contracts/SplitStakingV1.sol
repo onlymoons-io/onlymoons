@@ -76,7 +76,7 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
   /** @dev if this is too high, this contract might run out of rewards too quickly */
   uint256 internal _maximumRewardsForDistribution = 35 * 10 ** 16; // 0.35 eth
   /** @dev start this at a low value for testing, since waiting is no good. increase this on mainnets */
-  uint256 internal _distributionCooldown = 0 minutes;
+  uint256 internal _distributionCooldown = 0; // minutes;
   uint256 internal _lastDistributionAt = 0;
   uint256 internal _lastDepositAt = 0;
 
@@ -207,28 +207,26 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
   }
 
   function _getAvailableRewards() internal view returns (uint256) {
+    uint256 rewardsBalance = address(this).balance;
     uint256 diff = block.timestamp - _getMostRecentDepositOrDistribution();
     uint256 rewards = _cachedRewards;
     rewards += diff * _distributionRewardRate;
     rewards += Math.mulScale(
-      address(this).balance,
+      rewardsBalance,
       diff * _distributionRewardAmountModifier,
       10 ** 18
     );
 
     // uint256 rewards = _cachedRewards + ((block.timestamp - _getMostRecentDepositOrDistribution()) * _distributionRewardRate);
 
-    if (rewards < _minimumRewardsForDistribution) {
+    if (rewards < _minimumRewardsForDistribution)
       return 0;
-    }
 
-    if (rewards > _maximumRewardsForDistribution && rewards < address(this).balance) {
+    if (rewards > _maximumRewardsForDistribution && rewards < rewardsBalance)
       return _maximumRewardsForDistribution;
-    }
 
-    if (rewards > address(this).balance) {
-      return address(this).balance;
-    }
+    if (rewards > rewardsBalance)
+      return rewardsBalance;
 
     return rewards;
   }
@@ -264,7 +262,6 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
   ){
     lastDistributionAt = _lastDistributionAt;
     totalRewards = _totalRewards;
-    // waitingRewards = _waitingRewards;
     waitingRewards = address(this).balance;
     combinedRewards = _getAvailableRewards();
     
@@ -387,16 +384,12 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
     require(amount != 0, "Receive value cannot be 0");
     require(_ready(), "Split staking is not ready");
 
-    if (address(this).balance == 0) {
+    if (address(this).balance == 0)
       _lastDistributionAt = block.timestamp;
-    }
 
     _cachedRewards = _getAvailableRewards();
-
     _lastDepositAt = block.timestamp;
-
     _totalRewards += amount;
-    // _waitingRewards += amount;
 
     emit DepositedEth(account, amount);
   }

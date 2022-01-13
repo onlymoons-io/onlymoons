@@ -12,7 +12,10 @@ const Outer = tw.nav`
   h-16
   px-5
   md:px-10
-  bg-gray-900
+  bg-gray-200
+  dark:bg-gray-900
+  text-gray-800
+  dark:text-gray-100
   overflow-hidden
   fixed
   w-full
@@ -46,11 +49,25 @@ const LogoLink = tw(LogoLinkCSS)`
   items-center
 `
 
-const LogoImgCSS = styled.img`
-  transform: scale3d(2.25, 2.25, 2.25);
+const LogoImgWrapperCSS = styled.span`
   transition: transform 0.5s;
+
   ${LogoLinkCSS}:hover & {
-    transform: scale3d(2.5, 2.5, 2.5) rotateZ(270deg);
+    transform: scale3d(1.2, 1.2, 1.2) rotateZ(270deg);
+  }
+`
+
+const LogoImgWrapper = tw(LogoImgWrapperCSS)`
+  bg-blue-500
+  rounded-full
+`
+
+const LogoImgCSS = styled.img`
+  transform: scale3d(1.6, 1.6, 1.6);
+  transition: transform 0.5s;
+
+  ${LogoLinkCSS}:hover & {
+    transform: scale3d(1.5, 1.5, 1.5);
   }
 `
 
@@ -83,8 +100,10 @@ const RightLinks = tw.div`
 
 const RightLink = tw(Link)`
   text-lg
-  text-indigo-300
-  hover:text-indigo-100
+  text-indigo-500
+  hover:text-indigo-400
+  dark:text-indigo-300
+  dark:hover:text-indigo-100
 `
 
 const NavBar: React.FC = () => {
@@ -94,10 +113,12 @@ const NavBar: React.FC = () => {
         <Left>
           <Header>
             <LogoLink to="/">
-              <LogoImg src={logoSrc} width={36} height={36} />
+              <LogoImgWrapper>
+                <LogoImg src={logoSrc} width={36} height={36} />
+              </LogoImgWrapper>
 
               <LogoText>
-                <span className="font-light mr-1">Only</span>
+                <span className="font-light">Only</span>
                 <span className="font-bold">Moons</span>
               </LogoText>
             </LogoLink>
