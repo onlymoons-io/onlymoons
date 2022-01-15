@@ -5,5 +5,7 @@ export default function getExplorerTokenLink(chainId: number, address: string) {
       return `https://bscscan.com/token/${address}`
     case 97:
       return `https://testnet.bscscan.com/token/${address}`
+    case 1088:
+      return `https://andromeda-explorer.metis.io/token/${address}`
   }
 }

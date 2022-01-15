@@ -182,7 +182,7 @@ const Create: React.FC = () => {
   const onClickSubmit = useCallback(() => {
     //
     if (!account || !contract || !lockerManagerAddress || !amount || !tokenData || !createTokenLocker) {
-      return // not ready
+      return console.log('not ready') // not ready
     }
 
     setIsSubmitting(true)

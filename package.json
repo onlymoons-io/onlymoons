@@ -26,6 +26,8 @@
     "deploy:bsc": "yarn deploy --network bsc",
     "deploy:localhost": "yarn deploy --network localhost",
     "deploy:bsctest": "yarn deploy --network bsctest",
+    "deploy:metis": "yarn deploy --network metis",
+    "deploy:metistest": "yarn deploy --network metistest",
     "deploy:rinkeby": "yarn deploy --network rinkeby",
     "deploy:ropsten": "yarn deploy --network ropsten",
     "deploy:kovan": "yarn deploy --network kovan",

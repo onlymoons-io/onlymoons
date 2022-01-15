@@ -88,7 +88,7 @@ const ConnectButton: FC<Props> = ({ color = 'dark' }) => {
         {w3.account ? getShortAddress(w3.account) : 'Connect'}
       </Button>
 
-      <Tooltip id="connect-button">Currently only available on BSC</Tooltip>
+      <Tooltip id="connect-button">Currently available on BSC &amp; Metis Andromeda</Tooltip>
     </>
   )
 }

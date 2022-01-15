@@ -134,6 +134,9 @@ const Lock: React.FC<Props> = ({ lock }) => {
       case 97:
         setLockAbi(contracts['97'].bsctest.contracts.TokenLockerV1.abi)
         break
+      case 1088:
+        setLockAbi(contracts['1088'].metis.contracts.TokenLockerV1.abi)
+        break
       // localhost
       // case 31337:
       //   setLockAbi(contracts['31337'].localhost.contracts[_tokenOrLp === 'token' ? 'TokenLockerV1' : 'LPLockerV1'].abi)
