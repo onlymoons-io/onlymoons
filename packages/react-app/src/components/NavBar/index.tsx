@@ -3,12 +3,11 @@ import styled from 'styled-components'
 import tw from 'tailwind-styled-components'
 import { Link } from 'react-router-dom'
 import ConnectButton from '../ConnectButton'
-import DarkModeToggle from '../DarkModeToggle'
+// import DarkModeToggle from '../DarkModeToggle'
 
 import logoSrc from '../../images/logo-white.svg'
 
 const Outer = tw.nav`
-  z-10
   h-16
   px-5
   md:px-10
@@ -18,8 +17,10 @@ const Outer = tw.nav`
   dark:text-gray-100
   overflow-hidden
   fixed
-  w-full
   top-0
+  left-16
+  right-0
+  z-30
 `
 
 const Inner = tw.div`
@@ -92,19 +93,19 @@ const Right = tw.div`
   items-center
 `
 
-const RightLinks = tw.div`
-  flex
-  gap-4
-  items-center
-`
+// const RightLinks = tw.div`
+//   flex
+//   gap-4
+//   items-center
+// `
 
-const RightLink = tw(Link)`
-  text-lg
-  text-indigo-500
-  hover:text-indigo-400
-  dark:text-indigo-300
-  dark:hover:text-indigo-100
-`
+// const RightLink = tw(Link)`
+//   text-lg
+//   text-indigo-500
+//   hover:text-indigo-400
+//   dark:text-indigo-300
+//   dark:hover:text-indigo-100
+// `
 
 const NavBar: React.FC = () => {
   return (
@@ -126,13 +127,12 @@ const NavBar: React.FC = () => {
         </Left>
 
         <Right>
-          <RightLinks>
-            {/* <RightLink to="/launches">Launches</RightLink> */}
+          {/* <RightLinks>
             <RightLink to="/staking">Staking</RightLink>
             <RightLink to="/locker">Locker</RightLink>
-          </RightLinks>
+          </RightLinks> */}
 
-          <DarkModeToggle />
+          {/* <DarkModeToggle /> */}
 
           <ConnectButton />
         </Right>
