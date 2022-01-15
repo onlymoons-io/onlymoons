@@ -96,7 +96,7 @@ const Roadmap: React.FC = () => {
                   Begin development of launchpad platform <FontAwesomeIcon icon={faCheck} className="text-green-500" />
                 </li>
                 <li>
-                  <Link className="text-indigo-400" to="/locker">
+                  <Link className="text-gray-900 dark:text-indigo-300" to="/locker">
                     Token locker V1
                   </Link>{' '}
                   release <FontAwesomeIcon icon={faCheck} className="text-green-500" />
@@ -109,22 +109,22 @@ const Roadmap: React.FC = () => {
                   <ul className="list-inside list-disc">
                     <li>
                       <a
-                        className="text-indigo-400"
+                        className="text-gray-900 dark:text-indigo-300"
                         href="https://solidity.finance/audits/OnlyMoons/"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Token <FontAwesomeIcon size="sm" icon={faExternalLinkAlt} />
+                        Token <FontAwesomeIcon size="sm" icon={faExternalLinkAlt} opacity="0.5" />
                       </a>
                     </li>
                     <li>
                       <a
-                        className="text-indigo-400"
+                        className="text-gray-900 dark:text-indigo-300"
                         href="https://solidity.finance/audits/OnlyMoonsTokenLockerV1/"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Locker <FontAwesomeIcon size="sm" icon={faExternalLinkAlt} />
+                        Locker <FontAwesomeIcon size="sm" icon={faExternalLinkAlt} opacity="0.5" />
                       </a>
                     </li>
                   </ul>

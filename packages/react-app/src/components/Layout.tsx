@@ -1,7 +1,8 @@
 import tw from 'tailwind-styled-components'
 
 export const Outer = tw.div`
-  
+  text-gray-800
+  dark:text-gray-200
 `
 
 export const MidSection = tw.section`

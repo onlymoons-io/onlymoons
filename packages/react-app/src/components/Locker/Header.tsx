@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import tw from 'tailwind-styled-components'
 import { useWeb3React } from '@web3-react/core'
-import { Primary as PrimaryButton, Dark as DarkButton } from '../Button'
+import { Primary as PrimaryButton, Light as LightButton } from '../Button'
 import Input from '../Input'
 
 const TopSection = tw.section`
@@ -53,10 +53,10 @@ const Header: React.FC<Props> = ({ filterEnabled = true, onFilterInput }) => {
 
             {account ? (
               <Link to={`/locker/account/${account}`}>
-                <DarkButton className="w-full">Your locks</DarkButton>
+                <LightButton className="w-full">Your locks</LightButton>
               </Link>
             ) : (
-              <DarkButton disabled={true}>Your locks</DarkButton>
+              <LightButton disabled={true}>Your locks</LightButton>
             )}
           </div>
 

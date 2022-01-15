@@ -8,11 +8,11 @@ import { Dark, Light, Primary, Secondary } from './Button'
 import { NotificationCatcherContext } from './NotificationCatcher'
 import contracts from '../contracts/production_contracts.json'
 
-interface Props {
+export interface ConnectButtonProps {
   color?: 'dark' | 'light' | 'primary' | 'secondary'
 }
 
-const ConnectButton: FC<Props> = ({ color = 'dark' }) => {
+const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light' }) => {
   const w3 = useWeb3React()
   const { push: pushNotification } = useContext(NotificationCatcherContext)
 

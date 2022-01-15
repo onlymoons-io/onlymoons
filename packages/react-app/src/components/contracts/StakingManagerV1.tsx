@@ -34,8 +34,8 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
   const [count, setCount] = useState<number>(0)
   const [owner, setOwner] = useState<string>()
 
-  const stakingEnabledOnNetwork = (chainId?: number) => {
-    switch (chainId) {
+  const stakingEnabledOnNetwork = (_chainId?: number) => {
+    switch (_chainId) {
       case 97:
         return true
       default:

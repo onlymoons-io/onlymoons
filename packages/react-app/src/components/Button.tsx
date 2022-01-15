@@ -25,14 +25,18 @@ export const Secondary = tw(Button)`
 
 export const Dark = tw(Button)`
   bg-gray-800
-  ${props => (props.disabled ? '' : 'hover:bg-gray-700')}
+  dark:bg-gray-200
+  ${props => (props.disabled ? '' : 'hover:bg-gray-700 dark:hover:bg-gray-300')}
   text-gray-100
+  dark:text-gray-900
 `
 
 export const Light = tw(Button)`
-  bg-gray-200
-  ${props => (props.disabled ? '' : 'hover:bg-gray-700')}
+  bg-gray-100
+  dark:bg-gray-800
+  ${props => (props.disabled ? '' : 'hover:bg-white dark:hover:bg-gray-700')}
   text-gray-900
+  dark:text-gray-100
 `
 
 export const Success = tw(Button)`

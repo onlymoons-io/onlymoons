@@ -20,6 +20,7 @@ import CreateLocker from './components/Locker/Create'
 import Staking from './components/Staking'
 import CreateStaking from './components/Staking/Create'
 import DarkModeToggle from './components/DarkModeToggle'
+import ModalControllerProvider from './components/ModalController'
 
 import './App.css'
 
@@ -106,44 +107,46 @@ const AppContent: React.FC = () => {
         setLeftNavExpanded,
       }}
     >
-      <Outer>
-        <LeftArea
-          className={`${leftNavExpanded ? 'w-64 border-r-0' : 'w-16 border-r'}`}
-          onMouseEnter={() => {
-            mouseLeaveTimer.current && clearTimeout(mouseLeaveTimer.current)
-            setLeftNavExpanded(true)
-          }}
-          onMouseLeave={() => {
-            //
-            mouseLeaveTimer.current && clearTimeout(mouseLeaveTimer.current)
+      <ModalControllerProvider>
+        <Outer>
+          <LeftArea
+            className={`${leftNavExpanded ? 'w-64 border-r-0' : 'w-16 border-r'}`}
+            onMouseEnter={() => {
+              mouseLeaveTimer.current && clearTimeout(mouseLeaveTimer.current)
+              setLeftNavExpanded(true)
+            }}
+            onMouseLeave={() => {
+              //
+              mouseLeaveTimer.current && clearTimeout(mouseLeaveTimer.current)
 
-            mouseLeaveTimer.current = setTimeout(() => {
-              setLeftNavExpanded(false)
-            }, 500)
-          }}
-        >
-          <LeftNav />
-          <BottomLeftArea className={`${leftNavExpanded ? 'border-r' : 'border-r-0'}`}>
-            <DarkModeToggle className="-ml-1" />
-          </BottomLeftArea>
-        </LeftArea>
+              mouseLeaveTimer.current = setTimeout(() => {
+                setLeftNavExpanded(false)
+              }, 500)
+            }}
+          >
+            <LeftNav />
+            <BottomLeftArea className={`${leftNavExpanded ? 'border-r' : 'border-r-0'}`}>
+              <DarkModeToggle className="-ml-1" />
+            </BottomLeftArea>
+          </LeftArea>
 
-        <RightArea>
-          <NavBar />
+          <RightArea>
+            <NavBar />
 
-          <Routes>
-            <Route path="/locker/account/:account" element={<ManageLockers />} />
-            <Route path="/locker/create" element={<CreateLocker />} />
-            <Route path="/locker/:chainId/:id" element={<Locker />} />
-            <Route path="/locker" element={<Locker />} />
-            <Route path="/staking/create" element={<CreateStaking />} />
-            <Route path="/staking" element={<Staking />} />
-            <Route path="/" element={<Home />} />
-          </Routes>
-        </RightArea>
+            <Routes>
+              <Route path="/locker/account/:account" element={<ManageLockers />} />
+              <Route path="/locker/create" element={<CreateLocker />} />
+              <Route path="/locker/:chainId/:id" element={<Locker />} />
+              <Route path="/locker" element={<Locker />} />
+              <Route path="/staking/create" element={<CreateStaking />} />
+              <Route path="/staking" element={<Staking />} />
+              <Route path="/" element={<Home />} />
+            </Routes>
+          </RightArea>
 
-        {/* {leftNavExpanded && <div className="absolute inset-0 left-64 bg-gray-900 bg-opacity-80 z-50" />} */}
-      </Outer>
+          {/* {leftNavExpanded && <div className="absolute inset-0 left-64 bg-gray-900 bg-opacity-80 z-50" />} */}
+        </Outer>
+      </ModalControllerProvider>
     </AppNavState.Provider>
   )
 }

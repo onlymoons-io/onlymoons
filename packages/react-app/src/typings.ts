@@ -99,3 +99,14 @@ export interface AllRewardsForAddress {
   pending: BigNumber
   claimed: BigNumber
 }
+
+export interface NetworkData {
+  chainId: number
+  name: string
+  shortName: string
+  nativeCurrency: TokenData
+  icon?: string
+  rpcURL: string
+  explorerURL: string
+  isTestNet: boolean
+}

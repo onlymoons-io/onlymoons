@@ -15,29 +15,31 @@ import { ERC20ABI } from '../../contracts/external_contracts'
 import { timestampToDateTimeLocal } from '../../util'
 import Header from './Header'
 import TokenInput from '../TokenInput'
+import { Outer, MidSection, SectionInner } from '../Layout'
 
 const { Web3Provider } = providers
 const { isAddress } = utils
 
-const Outer = tw.div``
+// const Outer = tw.div``
 
-const MidSection = tw.section`
-  bg-blue-500
-  dark:bg-blue-900
-  py-10
-  px-5
-  md:px-5
-`
+// const MidSection = tw.section`
+//   bg-blue-500
+//   dark:bg-blue-900
+//   py-10
+//   px-5
+//   md:px-5
+// `
 
-const SectionInner = tw.div`
-  container
-  m-auto
-  md:flex
-  justify-between
-  items-center
-`
+// const SectionInner = tw.div`
+//   container
+//   m-auto
+//   md:flex
+//   justify-between
+//   items-center
+// `
 
 const FormOuter = tw.div`
+  bg-gray-100
   dark:bg-gray-800
   rounded
   p-4
@@ -50,9 +52,7 @@ const AddressInputCSS = styled(Input)`
 `
 
 const AddressInput = tw(AddressInputCSS)`
-  bg-white
-  dark:bg-gray-700
-  dark:text-gray-200
+  text-center
 `
 
 const Create: React.FC = () => {
@@ -236,7 +236,7 @@ const Create: React.FC = () => {
   // }, [amount])
 
   return (
-    <Outer>
+    <Outer className="text-gray-800 dark:text-gray-200">
       <Header filterEnabled={false} />
 
       <MidSection>

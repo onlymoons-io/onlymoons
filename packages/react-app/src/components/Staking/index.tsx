@@ -124,7 +124,7 @@ const StakingComponent: React.FC = () => {
 
       <MidSection>
         <SectionInner>
-          {chainId && stakingEnabledOnNetwork && !stakingEnabledOnNetwork(chainId) ? (
+          {chainId && (!stakingEnabledOnNetwork || !stakingEnabledOnNetwork(chainId)) ? (
             <div className="m-auto text-center flex flex-col gap-4">
               <div>
                 <FontAwesomeIcon size="4x" icon={faSadTear} />
