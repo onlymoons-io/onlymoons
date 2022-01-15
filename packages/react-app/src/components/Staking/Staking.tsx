@@ -17,7 +17,6 @@ import DetailsCard, { Detail, Title } from '../DetailsCard'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faCircleNotch } from '@fortawesome/free-solid-svg-icons'
 import TokenInput from '../TokenInput'
-import { Web3Provider as Web3ProviderClass } from '@ethersproject/providers'
 import { SplitStakingV1ContractContext } from '../contracts/SplitStakingV1'
 
 const { Web3Provider } = providers
@@ -38,7 +37,6 @@ const Staking: React.FC<StakingProps> = ({
   onClaimed,
 }) => {
   const { account, chainId, connector } = useWeb3React()
-  const [provider, setProvider] = useState<Web3ProviderClass>()
   const { push: pushNotification } = useContext(NotificationCatcherContext)
   const { getTokenData } = useContext(UtilContractContext)
   const { contract, owner } = useContext(StakingManagerV1ContractContext)
@@ -48,7 +46,6 @@ const Staking: React.FC<StakingProps> = ({
   const [stakingContract, setStakingContract] = useState<Contract>()
   const [tokenContract, setTokenContract] = useState<Contract>()
   const [stakingAbi, setStakingAbi] = useState<any>()
-  // const [depositTokens, setDepositTokens] = useState<string>('')
   const [detailsExpanded, setDetailsExpanded] = useState<boolean>(startExpanded)
   const [settingStakingToken, setSettingStakingToken] = useState<boolean>(false)
   const depositInputRef = useRef<HTMLInputElement>(null)
@@ -60,7 +57,6 @@ const Staking: React.FC<StakingProps> = ({
   const [withdrawLoading, setWithdrawLoading] = useState<boolean>(false)
   const [stakingDataForAccount, setStakingDataForAccount] = useState<StakingDataForAccount>()
   const [paused, setPaused] = useState<boolean>(false)
-  // const [withdrawApproved, setWithdrawApproved] = useState<boolean>(false)
 
   useMount(() => setStakingData(_stakingData))
   useUnmount(() => setStakingData(undefined))
@@ -167,23 +163,6 @@ const Staking: React.FC<StakingProps> = ({
   useEffect(updateStakingDataForAccount, [updateStakingDataForAccount])
 
   useEffect(() => {
-    if (!connector) {
-      setProvider(undefined)
-      return
-    }
-
-    connector
-      .getProvider()
-      .then(_provider => {
-        setProvider(new Web3Provider(_provider))
-      })
-      .catch((err: Error) => {
-        console.error(err)
-        setProvider(undefined)
-      })
-  }, [connector])
-
-  useEffect(() => {
     if (!account || !stakingContract) {
       return
     }
@@ -241,9 +220,9 @@ const Staking: React.FC<StakingProps> = ({
     }
   }, [account, stakingContract, chainId, updateStakingDataForAccount, onClaimed, stakingTokenData])
 
-  useEffect(() => {
-    console.log('staking data for account', stakingDataForAccount)
-  }, [stakingDataForAccount])
+  // useEffect(() => {
+  //   console.log('staking data for account', stakingDataForAccount)
+  // }, [stakingDataForAccount])
 
   useEffect(() => {
     if (!account || !tokenContract || !stakingTokenData) {
@@ -410,7 +389,12 @@ const Staking: React.FC<StakingProps> = ({
 
                 <PrimaryButton
                   className="self-end flex-grow h-11"
-                  disabled={!stakingDataForAccount || !withdrawInputValue || stakingDataForAccount.amount.eq(0)}
+                  disabled={
+                    !stakingDataForAccount ||
+                    !withdrawInputValue ||
+                    withdrawLoading ||
+                    stakingDataForAccount.amount.eq(0)
+                  }
                   onClick={async () => {
                     if (!stakingContract || !withdrawInputRef.current) return
 

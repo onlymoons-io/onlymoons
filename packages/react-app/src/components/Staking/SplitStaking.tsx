@@ -232,7 +232,7 @@ const SplitStakingComponent: React.FC = () => {
 
     // cleanup
     return () => {
-      console.log(_provider)
+      // console.log(_provider)
       _provider?.off('block', newBlockListener)
     }
   }, [provider, updateSplitStakingRewards])

@@ -44,7 +44,7 @@ const ModalControllerProvider: React.FC = ({ children }) => {
         initial={{ opacity: 0 }}
         style={{
           //
-          visibility: currentModal ? 'visible' : 'hidden',
+          // visibility: currentModal ? 'visible' : 'hidden',
           pointerEvents: currentModal ? 'auto' : 'none',
         }}
         animate={currentModal ? { opacity: 1 } : { opacity: 0 }}
@@ -55,7 +55,13 @@ const ModalControllerProvider: React.FC = ({ children }) => {
           }
         }}
       >
-        {currentModal}
+        <motion.div
+          initial={{ scale: 0.8 }}
+          animate={{ scale: currentModal ? 1 : 0.8 }}
+          transition={{ duration: 0.15 }}
+        >
+          {currentModal}
+        </motion.div>
       </motion.div>
     </ModalControllerContext.Provider>
   )

@@ -6,7 +6,6 @@ import { NetworkData } from '../typings'
 import { ModalControllerContext } from './ModalController'
 import DetailsCard from './DetailsCard'
 import contracts from '../contracts/production_contracts.json'
-import { providers } from 'ethers'
 
 interface ErrorInterface {
   code: number
@@ -81,7 +80,7 @@ const NetworkSelect: React.FC = () => {
 
       closeModal()
     },
-    [provider],
+    [provider, closeModal],
   )
 
   return !chainId ? (

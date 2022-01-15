@@ -6,7 +6,7 @@ import { useWeb3React } from '@web3-react/core'
 // import { /*BigNumber, Contract, utils,*/ providers } from 'ethers'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faCircleNotch,
+  // faCircleNotch,
   // faBalanceScale,
   // faBalanceScaleLeft,
   // faBalanceScaleRight,
@@ -14,14 +14,14 @@ import {
   faSadTear,
   // faInfoCircle,
 } from '@fortawesome/free-solid-svg-icons'
-import { motion } from 'framer-motion'
+// import { motion } from 'framer-motion'
 import SplitStakingV1ContractContextProvider from '../contracts/SplitStakingV1'
 import StakingManagerV1ContractContextProvider, { StakingManagerV1ContractContext } from '../contracts/StakingManagerV1'
 import Staking from './Staking'
 import NotConnected from '../NotConnected'
 import { StakingData /*SplitStakingRewardsData, AllRewardsForAddress, StakingDataForAccount*/ } from '../../typings'
 import Button from '../Button'
-import { Outer, MidSection, SectionInner, Grid, Loading } from '../Layout'
+import { Outer, MidSection, SectionInner, Grid } from '../Layout'
 // import { NotificationCatcherContext } from '../NotificationCatcher'
 // import { getExplorerContractLink, getNativeCoin, getShortAddress } from '../../util'
 // import humanNumber from 'human-number'
@@ -35,13 +35,13 @@ import SplitStaking from './SplitStaking'
 
 const StakingComponent: React.FC = () => {
   const { account: accountToCheck, chainId: chainIdToUse, id: idToUse } = useParams()
-  const { account, chainId, connector } = useWeb3React()
+  const { account, chainId } = useWeb3React()
   const {
     stakingEnabledOnNetwork,
     contract,
     count,
     // globalStakingData,
-    getStakingDataByAddress,
+    // getStakingDataByAddress,
     getStakingDataById,
     // distribute,
     // canDistribute,

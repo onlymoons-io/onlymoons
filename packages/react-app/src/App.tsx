@@ -28,8 +28,8 @@ import { Web3ReactProvider } from '@web3-react/core'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 
 import { providers } from 'ethers'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
 const { Web3Provider } = providers
 
 function getLibrary(provider?: any, connector?: AbstractConnector) {
