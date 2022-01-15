@@ -11,9 +11,10 @@ const Button = tw.button`
 export default Button
 
 export const Primary = tw(Button)`
-  bg-blue-700
+  bg-blue-500
+  dark:bg-blue-700
   text-gray-100
-  ${props => (props.disabled ? '' : 'hover:bg-blue-600')}
+  ${props => (props.disabled ? '' : 'hover:bg-blue-400 dark:hover:bg-blue-600')}
 `
 
 export const Secondary = tw(Button)`
@@ -24,14 +25,18 @@ export const Secondary = tw(Button)`
 
 export const Dark = tw(Button)`
   bg-gray-800
-  ${props => (props.disabled ? '' : 'hover:bg-gray-700')}
+  dark:bg-gray-200
+  ${props => (props.disabled ? '' : 'hover:bg-gray-700 dark:hover:bg-gray-300')}
   text-gray-100
+  dark:text-gray-900
 `
 
 export const Light = tw(Button)`
-  bg-gray-200
-  ${props => (props.disabled ? '' : 'hover:bg-gray-700')}
+  bg-gray-100
+  dark:bg-gray-800
+  ${props => (props.disabled ? '' : 'hover:bg-white dark:hover:bg-gray-700')}
   text-gray-900
+  dark:text-gray-100
 `
 
 export const Success = tw(Button)`

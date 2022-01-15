@@ -105,6 +105,12 @@ const TokenLockerManagerV1ContractContextProvider: React.FC = ({ children }) => 
         setAbi(contracts['56'].bsc.contracts.TokenLockerManagerV1.abi)
         break
 
+      // metis mainnet
+      case 1088:
+        setAddress(contracts['1088'].metis.contracts.TokenLockerManagerV1.address)
+        setAbi(contracts['1088'].metis.contracts.TokenLockerManagerV1.abi)
+        break
+
       default:
         setAddress(undefined)
         setAbi(undefined)

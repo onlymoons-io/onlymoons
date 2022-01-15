@@ -14,6 +14,12 @@ require("@nomiclabs/hardhat-ethers");
 
 require("@nomiclabs/hardhat-etherscan");
 
+// require("@ericxstone/hardhat-blockscout-verify");
+// const {
+//   SOLIDITY_VERSION,
+//   EVM_VERSION,
+// } = require("@ericxstone/hardhat-blockscout-verify");
+
 const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 
 /*
@@ -155,6 +161,18 @@ module.exports = {
     },
     bsctest: {
       url: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
+    metis: {
+      url: "https://andromeda.metis.io/?owner=1088",
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
+    metistest: {
+      url: "https://stardust.metis.io/?owner=588",
       accounts: {
         mnemonic: mnemonic(),
       },
@@ -324,6 +342,35 @@ module.exports = {
   etherscan: {
     apiKey: "YJ4MF4JRWQWY5NGYENR27XASJMVN4J43A3",
   },
+  // blockscoutVerify: {
+  //   blockscoutURL: "https://andromeda-explorer.metis.io/",
+  //   contracts: {
+  //     Util: {
+  //       compilerVersion: SOLIDITY_VERSION.SOLIDITY_V_8_10,
+  //       optimizations: true,
+  //       evmVersion: EVM_VERSION.EVM_LONDON,
+  //       optimizationRuns: 200,
+  //     },
+  //     ERC20: {
+  //       compilerVersion: SOLIDITY_VERSION.SOLIDITY_V_8_10,
+  //       optimizations: true,
+  //       evmVersion: EVM_VERSION.EVM_LONDON,
+  //       optimizationRuns: 200,
+  //     },
+  //     TokenLockerManagerV1: {
+  //       compilerVersion: SOLIDITY_VERSION.SOLIDITY_V_8_10,
+  //       optimizations: true,
+  //       evmVersion: EVM_VERSION.EVM_LONDON,
+  //       optimizationRuns: 200,
+  //     },
+  //     TokenLockerV1: {
+  //       compilerVersion: SOLIDITY_VERSION.SOLIDITY_V_8_10,
+  //       optimizations: true,
+  //       evmVersion: EVM_VERSION.EVM_LONDON,
+  //       optimizationRuns: 200,
+  //     },
+  //   },
+  // },
 };
 
 const DEBUG = false;

@@ -10,28 +10,18 @@ const Elem = tw(ElemCSS)`
   py-2
   rounded
   disabled:opacity-50
-  ${props =>
-    props.color === 'dark'
-      ? `
-    bg-gray-800
-    text-gray-200
-  `
-      : `
-    bg-gray-200
-    text-gray-800
-  `}
+  bg-gray-100
+  text-gray-800
+  dark:bg-gray-700
+  dark:text-gray-200
   ${props => (props.disabled ? 'cursor-not-allowed' : 'cursor-text')}
 `
 Elem.defaultProps = {
   type: 'text',
 }
 
-interface Props {
-  color?: 'dark' | 'light'
-}
-
-const Input: React.FC<Props & InputHTMLAttributes<HTMLInputElement>> = ({ children, color = 'light', ...rest }) => {
-  return <Elem color={color} {...rest} />
+const Input: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({ children, ...rest }) => {
+  return <Elem {...rest} />
 }
 
 export default Input

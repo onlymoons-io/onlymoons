@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react'
-import tw from 'tailwind-styled-components'
 import { useParams } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
 import { utils } from 'ethers'
@@ -11,45 +10,9 @@ import Lock from './Lock'
 import NotConnected from '../NotConnected'
 import { TokenLockData } from '../../typings'
 import Header from './Header'
+import { Outer, MidSection, SectionInner, Grid as Locks, Loading as LocksLoading } from '../Layout'
 
 const { isAddress } = utils
-
-const Outer = tw.div`
-  
-`
-
-const MidSection = tw.section`
-  bg-blue-500
-  dark:bg-blue-900
-  py-10
-  px-5
-  md:px-10
-`
-
-const SectionInner = tw.div`
-  container
-  m-auto
-  md:flex
-  justify-between
-  items-center
-`
-
-const Locks = tw.div`
-  grid
-  grid-cols-1
-  md:grid-cols-2
-  xl:grid-cols-3
-  2xl:grid-cols-4
-  gap-5
-  w-full
-`
-
-const LocksLoading = tw.div`
-  flex
-  justify-center
-  items-center
-  py-20
-`
 
 const Locker: React.FC = () => {
   const { account: accountToCheck, chainId: chainIdToUse, id: idToUse } = useParams()
