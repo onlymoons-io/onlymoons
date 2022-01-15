@@ -20,8 +20,8 @@ const networks: Record<number, NetworkData> = {
   },
   97: {
     chainId: 97,
-    name: 'Binance Smart Chain (TESTNET)',
-    shortName: 'BSC',
+    name: 'Binance Smart Chain (testnet)',
+    shortName: 'BSC (testnet)',
     nativeCurrency: {
       address: '-',
       name: 'Binance Coin',

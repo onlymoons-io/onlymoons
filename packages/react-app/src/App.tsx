@@ -21,6 +21,7 @@ import Staking from './components/Staking'
 import CreateStaking from './components/Staking/Create'
 import DarkModeToggle from './components/DarkModeToggle'
 import ModalControllerProvider from './components/ModalController'
+import ComingSoon from './components/ComingSoon'
 
 import './App.css'
 
@@ -134,12 +135,16 @@ const AppContent: React.FC = () => {
             <NavBar />
 
             <Routes>
+              <Route path="/launches" element={<ComingSoon />} />
+              <Route path="/deployer" element={<ComingSoon />} />
               <Route path="/locker/account/:account" element={<ManageLockers />} />
               <Route path="/locker/create" element={<CreateLocker />} />
               <Route path="/locker/:chainId/:id" element={<Locker />} />
               <Route path="/locker" element={<Locker />} />
               <Route path="/staking/create" element={<CreateStaking />} />
               <Route path="/staking" element={<Staking />} />
+              <Route path="/governance" element={<ComingSoon />} />
+              <Route path="/stats" element={<ComingSoon />} />
               <Route path="/" element={<Home />} />
             </Routes>
           </RightArea>

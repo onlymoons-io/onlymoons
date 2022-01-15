@@ -88,6 +88,7 @@ const NetworkSelect: React.FC = () => {
   ) : (
     <>
       <LightButton
+        className="flex gap-2 items-center"
         onClick={() => {
           //
           setCurrentModal(
@@ -103,12 +104,13 @@ const NetworkSelect: React.FC = () => {
                     ) : (
                       <div
                         key={key}
-                        className="p-4 cursor-pointer hover:bg-gray-500 hover:bg-opacity-10"
+                        className="flex gap-3 items-center p-4 cursor-pointer hover:bg-gray-500 hover:bg-opacity-10"
                         onClick={() => {
                           //
                           switchNetwork(_networkData.chainId)
                         }}
                       >
+                        {_networkData.icon && <img width={28} height={28} src={`/network-icons${_networkData.icon}`} />}
                         <span>{_networkData.name}</span>
                       </div>
                     )
@@ -119,7 +121,8 @@ const NetworkSelect: React.FC = () => {
           )
         }}
       >
-        {networkData?.shortName || 'Unknown'}
+        {networkData?.icon && <img width={20} height={20} src={`/network-icons${networkData.icon}`} />}
+        <span>{networkData?.shortName || 'Unknown'}</span>
       </LightButton>
     </>
   )
