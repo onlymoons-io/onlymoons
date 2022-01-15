@@ -110,7 +110,14 @@ const NetworkSelect: React.FC = () => {
                           switchNetwork(_networkData.chainId)
                         }}
                       >
-                        {_networkData.icon && <img width={28} height={28} src={`/network-icons${_networkData.icon}`} />}
+                        {_networkData.icon && (
+                          <img
+                            alt={_networkData.name}
+                            width={28}
+                            height={28}
+                            src={`/network-icons${_networkData.icon}`}
+                          />
+                        )}
                         <span>{_networkData.name}</span>
                       </div>
                     )
@@ -121,7 +128,9 @@ const NetworkSelect: React.FC = () => {
           )
         }}
       >
-        {networkData?.icon && <img width={20} height={20} src={`/network-icons${networkData.icon}`} />}
+        {networkData?.icon && (
+          <img alt={networkData?.name || ''} width={20} height={20} src={`/network-icons${networkData.icon}`} />
+        )}
         <span>{networkData?.shortName || 'Unknown'}</span>
       </LightButton>
     </>
