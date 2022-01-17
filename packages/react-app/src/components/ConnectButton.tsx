@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext } from 'react'
+import { CSSProperties, FC, useCallback, useContext } from 'react'
 import { useMount } from 'react-use'
 import { useWeb3React } from '@web3-react/core'
 import { InjectedConnector } from '@web3-react/injected-connector'
@@ -10,9 +10,11 @@ import contracts from '../contracts/production_contracts.json'
 
 export interface ConnectButtonProps {
   color?: 'dark' | 'light' | 'primary' | 'secondary'
+  className?: string
+  style?: CSSProperties
 }
 
-const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light' }) => {
+const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light', className = '', style = {} }) => {
   const w3 = useWeb3React()
   const { push: pushNotification } = useContext(NotificationCatcherContext)
 
@@ -84,7 +86,7 @@ const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light' }) => {
 
   return (
     <>
-      <Button data-tip={true} data-for="connect-button" onClick={onClickConnect}>
+      <Button className={className} style={style} data-tip={true} data-for="connect-button" onClick={onClickConnect}>
         {w3.account ? getShortAddress(w3.account) : 'Connect'}
       </Button>
 

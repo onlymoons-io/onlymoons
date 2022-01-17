@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback } from 'react'
+import React, { useContext, useState, useEffect, useCallback, CSSProperties } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import { Light as LightButton } from './Button'
 import { getNetworkDataByChainId } from '../util'
@@ -12,7 +12,12 @@ interface ErrorInterface {
   message: string
 }
 
-const NetworkSelect: React.FC = () => {
+export interface NetworkSelectProps {
+  className?: string
+  style?: CSSProperties
+}
+
+const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {} }) => {
   const { setCurrentModal, closeModal } = useContext(ModalControllerContext)
   const { chainId, connector } = useWeb3React()
   const [networkData, setNetworkData] = useState<NetworkData>()
@@ -88,7 +93,8 @@ const NetworkSelect: React.FC = () => {
   ) : (
     <>
       <LightButton
-        className="flex gap-2 items-center"
+        className={`flex gap-2 items-center ${className}`}
+        style={style}
         onClick={() => {
           //
           setCurrentModal(

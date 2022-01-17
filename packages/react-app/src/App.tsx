@@ -6,6 +6,7 @@ import tw from 'tailwind-styled-components'
 
 import NotificationCatcherContextProvider from './components/NotificationCatcher'
 
+import ContractCacheContextProvider from './components/contracts/ContractCache'
 import UtilContractContextProvider from './components/contracts/Util'
 import TokenLockerManagerV1ContractContextProvider from './components/contracts/TokenLockerManagerV1'
 
@@ -22,6 +23,7 @@ import CreateStaking from './components/Staking/Create'
 import DarkModeToggle from './components/DarkModeToggle'
 import ModalControllerProvider from './components/ModalController'
 import ComingSoon from './components/ComingSoon'
+import Faucets from './components/Faucets'
 
 import './App.css'
 
@@ -144,6 +146,7 @@ const AppContent: React.FC = () => {
               <Route path="/staking/create" element={<CreateStaking />} />
               <Route path="/staking" element={<Staking />} />
               <Route path="/governance" element={<ComingSoon />} />
+              <Route path="/faucet" element={<Faucets />} />
               <Route path="/stats" element={<ComingSoon />} />
               <Route path="/" element={<Home />} />
             </Routes>
@@ -169,11 +172,13 @@ const App: React.FC = () => {
     <Web3ReactProvider getLibrary={getLibrary}>
       <Router>
         <NotificationCatcherContextProvider>
-          <UtilContractContextProvider>
-            <TokenLockerManagerV1ContractContextProvider>
-              <AppContent />
-            </TokenLockerManagerV1ContractContextProvider>
-          </UtilContractContextProvider>
+          <ContractCacheContextProvider>
+            <UtilContractContextProvider>
+              <TokenLockerManagerV1ContractContextProvider>
+                <AppContent />
+              </TokenLockerManagerV1ContractContextProvider>
+            </UtilContractContextProvider>
+          </ContractCacheContextProvider>
         </NotificationCatcherContextProvider>
       </Router>
     </Web3ReactProvider>

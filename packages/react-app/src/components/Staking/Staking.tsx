@@ -10,13 +10,13 @@ import { TokenData, StakingData, StakingDataForAccount } from '../../typings'
 import { motion } from 'framer-motion'
 import { Primary as PrimaryButton } from '../Button'
 import { NotificationCatcherContext } from '../NotificationCatcher'
-import contracts from '../../contracts/production_contracts.json'
 import { getShortAddress, getExplorerContractLink, getExplorerTokenLink, getNativeCoin } from '../../util'
 import { ERC20ABI } from '../../contracts/external_contracts'
 import DetailsCard, { Detail, Title } from '../DetailsCard'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faCircleNotch } from '@fortawesome/free-solid-svg-icons'
 import TokenInput from '../TokenInput'
+import { ContractCacheContext } from '../contracts/ContractCache'
 import { SplitStakingV1ContractContext } from '../contracts/SplitStakingV1'
 
 const { Web3Provider } = providers
@@ -37,6 +37,7 @@ const Staking: React.FC<StakingProps> = ({
   onClaimed,
 }) => {
   const { account, chainId, connector } = useWeb3React()
+  const { getContract } = useContext(ContractCacheContext)
   const { push: pushNotification } = useContext(NotificationCatcherContext)
   const { getTokenData } = useContext(UtilContractContext)
   const { contract, owner } = useContext(StakingManagerV1ContractContext)
@@ -45,7 +46,6 @@ const Staking: React.FC<StakingProps> = ({
   const [stakingTokenData, setStakingTokenData] = useState<TokenData>()
   const [stakingContract, setStakingContract] = useState<Contract>()
   const [tokenContract, setTokenContract] = useState<Contract>()
-  const [stakingAbi, setStakingAbi] = useState<any>()
   const [detailsExpanded, setDetailsExpanded] = useState<boolean>(startExpanded)
   const [settingStakingToken, setSettingStakingToken] = useState<boolean>(false)
   const depositInputRef = useRef<HTMLInputElement>(null)
@@ -83,7 +83,7 @@ const Staking: React.FC<StakingProps> = ({
       })
 
     getTokenData(_stakingData.stakedToken)
-      .then(result => setStakingTokenData(result))
+      .then(setStakingTokenData)
       .catch(console.error)
   }, [contract, connector, _stakingData, getTokenData])
 
@@ -106,42 +106,18 @@ const Staking: React.FC<StakingProps> = ({
   }, [account, tokenContract, _stakingData, stakingTokenData])
 
   useEffect(() => {
-    switch (chainId) {
-      // bsc testnet
-      case 56:
-        // setStakingAbi(contracts['56'].bsc.contracts.TokenLockerV1.abi)
-        break
-      case 97:
-        setStakingAbi(contracts['97'].bsctest.contracts.StakingV1.abi)
-        break
-      // localhost
-      // case 31337:
-      //   setStakingAbi(contracts['31337'].localhost.contracts[_tokenOrLp === 'token' ? 'TokenLockerV1' : 'LPLockerV1'].abi)
-      //   break
-
-      default:
-        setStakingAbi(undefined)
-    }
-  }, [chainId])
-
-  useEffect(() => {
-    if (!contract || !_stakingData || !stakingAbi || !connector) {
+    if (!_stakingData) {
       setStakingContract(undefined)
       return
     }
 
-    connector
-      .getProvider()
-      .then(provider =>
-        setStakingContract(
-          new Contract(_stakingData.contractAddress, stakingAbi, new Web3Provider(provider).getSigner()),
-        ),
-      )
-      .catch(err => {
+    getContract('StakingV1', { address: _stakingData.contractAddress })
+      .then(setStakingContract)
+      .catch((err: Error) => {
         console.error(err)
         setStakingContract(undefined)
       })
-  }, [contract, _stakingData, connector, stakingAbi])
+  }, [getContract, _stakingData])
 
   const updateStakingDataForAccount = useCallback(() => {
     if (!account || !stakingContract) {

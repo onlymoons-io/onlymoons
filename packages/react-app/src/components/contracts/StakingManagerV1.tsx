@@ -1,10 +1,7 @@
-import React, { createContext, useEffect, useState, useCallback } from 'react'
-import { useWeb3React } from '@web3-react/core'
-import { Contract, providers } from 'ethers'
-import contracts from '../../contracts/production_contracts.json'
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import { Contract } from 'ethers'
+import { ContractCacheContext } from './ContractCache'
 import { StakingData, GlobalStakingData, AllRewardsForAddress } from '../../typings'
-
-const { Web3Provider } = providers
 
 export interface IStakingManagerV1ContractContext {
   contract?: Contract
@@ -27,9 +24,7 @@ export const StakingManagerV1ContractContext = createContext<IStakingManagerV1Co
 })
 
 const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
-  const { chainId, connector } = useWeb3React()
-  const [address, setAddress] = useState<string>()
-  const [abi, setAbi] = useState<any>()
+  const { getContract } = useContext(ContractCacheContext)
   const [contract, setContract] = useState<Contract>()
   const [count, setCount] = useState<number>(0)
   const [owner, setOwner] = useState<string>()
@@ -80,49 +75,13 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
   )
 
   useEffect(() => {
-    // vscode is confused about some old code here, and is showing a warning
-    // on TokenLockerManagerV1, even though that does exist in the json
-    switch (chainId) {
-      // localhost
-      // case 31337:
-      //   setAddress(contracts['31337'].localhost.contracts.TokenLockerManagerV1.address)
-      //   setAbi(contracts['31337'].localhost.contracts.TokenLockerManagerV1.abi)
-      //   break
-
-      // bsc testnet
-      case 97:
-        setAddress(contracts['97'].bsctest.contracts.StakingManagerV1.address)
-        setAbi(contracts['97'].bsctest.contracts.StakingManagerV1.abi)
-        break
-
-      // bsc mainnet
-      case 56:
-        // setAddress(contracts['56'].bsc.contracts.StakingManagerV1.address)
-        // setAbi(contracts['56'].bsc.contracts.StakingManagerV1.abi)
-        break
-
-      default:
-        setAddress(undefined)
-        setAbi(undefined)
-        break
-    }
-  }, [chainId])
-
-  useEffect(() => {
-    if (!address || !abi || !connector) {
-      setContract(undefined)
-      return
-    }
-
-    //
-    connector
-      .getProvider()
-      .then(provider => setContract(new Contract(address, abi, new Web3Provider(provider).getSigner())))
-      .catch(err => {
+    getContract('StakingManagerV1')
+      .then(setContract)
+      .catch((err: Error) => {
         console.error(err)
         setContract(undefined)
       })
-  }, [address, abi, connector])
+  }, [getContract])
 
   useEffect(() => {
     if (!contract) {
@@ -150,7 +109,7 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
           ? {}
           : {
               contract,
-              address,
+              address: contract.address,
               count,
               owner,
               stakingEnabledOnNetwork,
