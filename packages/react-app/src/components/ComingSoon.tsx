@@ -9,7 +9,11 @@ const ComingSoon: React.FC = () => {
     <Outer>
       <MidSection>
         <SectionInner className="flex flex-col gap-8 justify-center items-center">
-          <motion.div initial={{ rotateZ: -30 }} animate={{ rotateZ: 0 }}>
+          <motion.div
+            initial={{ rotateZ: -30 }}
+            animate={{ rotateZ: 0 }}
+            transition={{ repeat: Infinity, repeatType: 'reverse' }}
+          >
             <FontAwesomeIcon icon={faHammer} size="5x" fixedWidth />
           </motion.div>
 

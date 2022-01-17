@@ -1623,7 +1623,7 @@
           ]
         },
         "Faucet": {
-          "address": "0xD951d985DDb0A8FAa6A277f7483538E0a2C292aC",
+          "address": "0x5eE93793ceb2803f1A1Bddd8823Cf2110eF142e4",
           "abi": [
             {
               "inputs": [
@@ -1680,6 +1680,19 @@
             },
             {
               "inputs": [],
+              "name": "canClaim",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
               "name": "claim",
               "outputs": [],
               "stateMutability": "nonpayable",
@@ -1697,6 +1710,25 @@
                 {
                   "internalType": "uint256",
                   "name": "cooldown",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                }
+              ],
+              "name": "lastClaim",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
                   "type": "uint256"
                 }
               ],
@@ -1739,6 +1771,19 @@
               "name": "setClaimLimits",
               "outputs": [],
               "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "token",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
               "type": "function"
             },
             {
@@ -2045,7 +2090,7 @@
           "abi": []
         },
         "SplitStakingV1": {
-          "address": "0x21cd7D0B2612BccFd298feE43EF24FfD1694c299",
+          "address": "0xE3a78edD3fae8878f163F30Fe413cDC0c103336f",
           "abi": [
             {
               "inputs": [],
@@ -2559,7 +2604,7 @@
           ]
         },
         "StakingManagerV1": {
-          "address": "0xFD47B4d59C610e63A4979A998be61DE26b1a4b5C",
+          "address": "0x41f4394aDfb76b24184083AdAb54438B21ffce28",
           "abi": [
             {
               "inputs": [],
@@ -2897,7 +2942,7 @@
           ]
         },
         "StakingV1": {
-          "address": "0x9432a7E69C4C285C540C1bdFe1FE5e1498257Ae4",
+          "address": "0x3eF88A1FDDA98D277Fe083C23E2cA556141Fd33E",
           "abi": [
             {
               "inputs": [
@@ -3068,6 +3113,19 @@
               "name": "authorize",
               "outputs": [],
               "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "autoClaimEnabled",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "view",
               "type": "function"
             },
             {
@@ -3356,6 +3414,19 @@
                 }
               ],
               "name": "setAccuracy",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "bool",
+                  "name": "value",
+                  "type": "bool"
+                }
+              ],
+              "name": "setAutoClaimEnabled",
               "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"
@@ -4512,113 +4583,6 @@
             }
           ]
         },
-        "Util": {
-          "address": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11",
-          "abi": [
-            {
-              "inputs": [
-                {
-                  "internalType": "address",
-                  "name": "address_",
-                  "type": "address"
-                }
-              ],
-              "name": "getLpData",
-              "outputs": [
-                {
-                  "internalType": "address",
-                  "name": "token0",
-                  "type": "address"
-                },
-                {
-                  "internalType": "address",
-                  "name": "token1",
-                  "type": "address"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "balance0",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "balance1",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "price0",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "price1",
-                  "type": "uint256"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "address",
-                  "name": "address_",
-                  "type": "address"
-                }
-              ],
-              "name": "getTokenData",
-              "outputs": [
-                {
-                  "internalType": "string",
-                  "name": "name",
-                  "type": "string"
-                },
-                {
-                  "internalType": "string",
-                  "name": "symbol",
-                  "type": "string"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "decimals",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "totalSupply",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "balance",
-                  "type": "uint256"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "address",
-                  "name": "address_",
-                  "type": "address"
-                }
-              ],
-              "name": "isLpToken",
-              "outputs": [
-                {
-                  "internalType": "bool",
-                  "name": "",
-                  "type": "bool"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            }
-          ]
-        },
         "TokenLockerManagerV1": {
           "address": "0x77110f67C0EF3c98c43570BADe06046eF6549876",
           "abi": [
@@ -5247,6 +5211,113 @@
             {
               "stateMutability": "payable",
               "type": "receive"
+            }
+          ]
+        },
+        "Util": {
+          "address": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11",
+          "abi": [
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "address_",
+                  "type": "address"
+                }
+              ],
+              "name": "getLpData",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "token0",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "token1",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "balance0",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "balance1",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "price0",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "price1",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "address_",
+                  "type": "address"
+                }
+              ],
+              "name": "getTokenData",
+              "outputs": [
+                {
+                  "internalType": "string",
+                  "name": "name",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "symbol",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint8",
+                  "name": "decimals",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "totalSupply",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "balance",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "address_",
+                  "type": "address"
+                }
+              ],
+              "name": "isLpToken",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
             }
           ]
         }

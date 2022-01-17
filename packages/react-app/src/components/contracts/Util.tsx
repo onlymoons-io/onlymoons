@@ -1,10 +1,7 @@
-import React, { createContext, useState, useEffect } from 'react'
-import { useWeb3React } from '@web3-react/core'
+import React, { createContext, useContext, useState, useEffect } from 'react'
+import { Contract } from 'ethers'
+import { ContractCacheContext } from './ContractCache'
 import { TokenData, LPLockData } from '../../typings'
-import contracts from '../../contracts/production_contracts.json'
-
-import { Contract, providers } from 'ethers'
-const { Web3Provider } = providers
 
 export class UtilContract extends Contract {
   //
@@ -22,27 +19,17 @@ export const UtilContractContext = createContext<IUtilContractContext>({
 })
 
 const UtilContractContextProvider: React.FC = ({ children }) => {
-  const w3 = useWeb3React()
+  const { getContract } = useContext(ContractCacheContext)
   const [contract, setContract] = useState<UtilContract>()
 
   useEffect(() => {
-    if (!w3.connector || !w3.chainId) {
-      setContract(undefined)
-      return
-    }
-
-    //
-    const chains = (contracts as any)[w3.chainId.toString()]
-    const key = Object.keys(chains)[0]
-    const _contract = chains[key].contracts['Util']
-
-    w3.connector
-      .getProvider()
-      .then(provider =>
-        setContract(new UtilContract(_contract.address, _contract.abi, new Web3Provider(provider).getSigner())),
-      )
-      .catch(console.error)
-  }, [w3])
+    getContract('Util')
+      .then(setContract)
+      .catch((err: Error) => {
+        console.error(err)
+        setContract(undefined)
+      })
+  }, [getContract])
 
   return (
     <UtilContractContext.Provider

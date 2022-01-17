@@ -90,7 +90,6 @@ const LogoText = tw.div`
 
 const Right = tw.div`
   flex
-  gap-3
   items-center
 `
 
@@ -135,8 +134,8 @@ const NavBar: React.FC = () => {
 
           {/* <DarkModeToggle /> */}
 
-          <NetworkSelect />
-          <ConnectButton />
+          <NetworkSelect className="rounded-tr-none rounded-br-none" />
+          <ConnectButton className="rounded-tl-none rounded-bl-none" />
         </Right>
       </Inner>
     </Outer>

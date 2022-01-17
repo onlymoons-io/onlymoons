@@ -1,10 +1,7 @@
-import React, { createContext, useEffect, useState, useCallback } from 'react'
-import { useWeb3React } from '@web3-react/core'
-import { Contract, providers } from 'ethers'
-import contracts from '../../contracts/production_contracts.json'
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import { Contract } from 'ethers'
+import { ContractCacheContext } from './ContractCache'
 import { GlobalStakingData, SplitStakingRewardsData, AllRewardsForAddress } from '../../typings'
-
-const { Web3Provider } = providers
 
 export interface ISplitStakingV1ContractContext {
   //
@@ -30,9 +27,7 @@ export const SplitStakingV1ContractContext = createContext<ISplitStakingV1Contra
 })
 
 const SplitStakingV1ContractContextProvider: React.FC = ({ children }) => {
-  const { chainId, connector } = useWeb3React()
-  const [address, setAddress] = useState<string>()
-  const [abi, setAbi] = useState<any>()
+  const { getContract } = useContext(ContractCacheContext)
   const [contract, setContract] = useState<Contract>()
   const [owner, setOwner] = useState<string>()
   const [globalStakingData, setGlobalStakingData] = useState<GlobalStakingData>()
@@ -80,49 +75,13 @@ const SplitStakingV1ContractContextProvider: React.FC = ({ children }) => {
   }, [contract])
 
   useEffect(() => {
-    // vscode is confused about some old code here, and is showing a warning
-    // on TokenLockerManagerV1, even though that does exist in the json
-    switch (chainId) {
-      // localhost
-      // case 31337:
-      //   setAddress(contracts['31337'].localhost.contracts.TokenLockerManagerV1.address)
-      //   setAbi(contracts['31337'].localhost.contracts.TokenLockerManagerV1.abi)
-      //   break
-
-      // bsc testnet
-      case 97:
-        setAddress(contracts['97'].bsctest.contracts.SplitStakingV1.address)
-        setAbi(contracts['97'].bsctest.contracts.SplitStakingV1.abi)
-        break
-
-      // bsc mainnet
-      case 56:
-        // setAddress(contracts['56'].bsc.contracts.StakingManagerV1.address)
-        // setAbi(contracts['56'].bsc.contracts.StakingManagerV1.abi)
-        break
-
-      default:
-        setAddress(undefined)
-        setAbi(undefined)
-        break
-    }
-  }, [chainId])
-
-  useEffect(() => {
-    if (!address || !abi || !connector) {
-      setContract(undefined)
-      return
-    }
-
-    //
-    connector
-      .getProvider()
-      .then(provider => setContract(new Contract(address, abi, new Web3Provider(provider).getSigner())))
-      .catch(err => {
+    getContract('SplitStakingV1')
+      .then(setContract)
+      .catch((err: Error) => {
         console.error(err)
         setContract(undefined)
       })
-  }, [address, abi, connector])
+  }, [getContract])
 
   useEffect(() => {
     if (!contract) {
@@ -173,7 +132,7 @@ const SplitStakingV1ContractContextProvider: React.FC = ({ children }) => {
           ? {}
           : {
               contract,
-              address,
+              address: contract.address,
               owner,
               globalStakingData,
               setSoloStakingAddress,

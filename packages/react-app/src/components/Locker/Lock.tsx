@@ -15,10 +15,10 @@ import { motion } from 'framer-motion'
 import { Primary as PrimaryButton } from '../Button'
 import Tooltip from '../Tooltip'
 import TokenInput from '../TokenInput'
-import contracts from '../../contracts/production_contracts.json'
 import { getShortAddress, getExplorerContractLink, getExplorerTokenLink, timestampToDateTimeLocal } from '../../util'
 import { ERC20ABI } from '../../contracts/external_contracts'
 import DetailsCard, { Detail, Title } from '../DetailsCard'
+import { ContractCacheContext } from '../contracts/ContractCache'
 
 const { Web3Provider } = providers
 
@@ -63,13 +63,13 @@ interface Props {
 
 const Lock: React.FC<Props> = ({ lock }) => {
   const { account, chainId, connector } = useWeb3React()
+  const { getContract } = useContext(ContractCacheContext)
   const { getTokenData } = useContext(UtilContractContext)
   const { contract, getTokenLockData } = useContext(TokenLockerManagerV1ContractContext)
   const [lockData, setLockData] = useState<TokenLockData | undefined>(lock)
   const [lockTokenData, setLockTokenData] = useState<TokenData>()
   const [lockContract, setLockContract] = useState<Contract>()
   const [tokenContract, setTokenContract] = useState<Contract>()
-  const [lockAbi, setLockAbi] = useState<any>()
   const [isWithdrawing, setIsWithdrawing] = useState<boolean>(false)
   const [extendVisible, setExtendVisible] = useState<boolean>(false)
   const [depositTokens, setDepositTokens] = useState<string>('')
@@ -126,43 +126,18 @@ const Lock: React.FC<Props> = ({ lock }) => {
   }, [contract, connector, lockData, getTokenData])
 
   useEffect(() => {
-    switch (chainId) {
-      // bsc testnet
-      case 56:
-        setLockAbi(contracts['56'].bsc.contracts.TokenLockerV1.abi)
-        break
-      case 97:
-        setLockAbi(contracts['97'].bsctest.contracts.TokenLockerV1.abi)
-        break
-      case 1088:
-        setLockAbi(contracts['1088'].metis.contracts.TokenLockerV1.abi)
-        break
-      // localhost
-      // case 31337:
-      //   setLockAbi(contracts['31337'].localhost.contracts[_tokenOrLp === 'token' ? 'TokenLockerV1' : 'LPLockerV1'].abi)
-      //   break
-
-      default:
-        setLockAbi(undefined)
-    }
-  }, [chainId])
-
-  useEffect(() => {
-    if (!contract || !lockData || !lockAbi || !connector) {
+    if (!lockData) {
       setLockContract(undefined)
       return
     }
 
-    connector
-      .getProvider()
-      .then(provider =>
-        setLockContract(new Contract(lockData.contractAddress, lockAbi, new Web3Provider(provider).getSigner())),
-      )
-      .catch(err => {
+    getContract('TokenLockerV1', { address: lockData.contractAddress })
+      .then(setLockContract)
+      .catch((err: Error) => {
         console.error(err)
         setLockContract(undefined)
       })
-  }, [contract, lockData, connector, lockAbi])
+  }, [lockData, getContract])
 
   useEffect(() => {
     if (!account || !tokenContract || !lockTokenData || !lockContract || !lockData) {

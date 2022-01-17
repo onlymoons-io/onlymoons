@@ -1,9 +1,18 @@
 import React, { CSSProperties, useState, useContext, useEffect, ReactNode } from 'react'
+import { useWeb3React } from '@web3-react/core'
 import tw from 'tailwind-styled-components'
 import styled from 'styled-components'
 import { Link, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChartLine, faFileCode, faLock, faPiggyBank, faRocket, faUniversity } from '@fortawesome/free-solid-svg-icons'
+import {
+  faChartLine,
+  faFaucet,
+  faFileCode,
+  faLock,
+  faPiggyBank,
+  faRocket,
+  faUniversity,
+} from '@fortawesome/free-solid-svg-icons'
 // import Tooltip from '../Tooltip'
 import { AppNavState } from '../../App'
 
@@ -82,6 +91,7 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon = '', label = 'TEST', classN
 }
 
 const LeftNav: React.FC = () => {
+  const { chainId } = useWeb3React()
   const { leftNavExpanded } = useContext(AppNavState)
 
   return (
@@ -93,6 +103,9 @@ const LeftNav: React.FC = () => {
         <NavItem to="/locker" icon={<FontAwesomeIcon icon={faLock} fixedWidth />} label="Locker" />
         <NavItem to="/staking" icon={<FontAwesomeIcon icon={faPiggyBank} fixedWidth />} label="Staking" />
         <NavItem to="/governance" icon={<FontAwesomeIcon icon={faUniversity} fixedWidth />} label="Governance" />
+        {chainId === 97 && (
+          <NavItem to="/faucet" icon={<FontAwesomeIcon icon={faFaucet} fixedWidth />} label="Faucet" />
+        )}
         <hr className="mx-auto my-2 border-gray-300 dark:border-gray-800 w-3/4" />
         <NavItem to="/stats" icon={<FontAwesomeIcon icon={faChartLine} fixedWidth />} label="Stats" />
       </Inner>
