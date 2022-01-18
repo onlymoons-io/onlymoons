@@ -1,9 +1,14 @@
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import tw from 'tailwind-styled-components'
 import { useWeb3React } from '@web3-react/core'
 import { Primary as PrimaryButton, Light as LightButton } from '../Button'
 import Input from '../Input'
+import { ContractCacheContext } from '../contracts/ContractCache'
+import Anchor from '../Anchor'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
+import { getExplorerContractLink } from '../../util'
 
 const TopSection = tw.section`
   py-10
@@ -26,6 +31,9 @@ const SectionInner = tw.div`
 const Title = tw.h2`
   text-2xl
   font-extralight
+  flex
+  gap-2
+  items-center
 `
 
 interface Props {
@@ -34,13 +42,29 @@ interface Props {
 }
 
 const Header: React.FC<Props> = ({ filterEnabled = true, onFilterInput }) => {
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
+  const { getContract } = useContext(ContractCacheContext)
+  const [address, setAddress] = useState<string>()
+
+  useEffect(() => {
+    getContract('TokenLockerManagerV1')
+      .then(contract => setAddress(contract?.address))
+      .catch((err: Error) => {
+        console.error(err)
+        setAddress(undefined)
+      })
+  }, [getContract])
 
   return (
     <TopSection>
       <SectionInner>
         <Title>
           <Link to="/locker">Token Locker V1</Link>
+          {chainId && address && (
+            <Anchor target="_blank" rel="noopener noreferrer" href={getExplorerContractLink(chainId, address)}>
+              <FontAwesomeIcon icon={faExternalLinkAlt} fixedWidth />
+            </Anchor>
+          )}
         </Title>
 
         <div className="my-2 flex flex-col md:flex-row justify-between items-start lg:items-center gap-3">

@@ -24,12 +24,12 @@ const Locker: React.FC = () => {
   const [sortedLocks, setSortedLocks] = useState<Array<TokenLockData>>([])
   const [filterInputValue, setFilterInputValue] = useState<string>()
 
-  useEffect(() => {
-    if (chainId && chainIdToUse && chainId !== parseInt(chainIdToUse)) {
-      //
-      console.warn('Incorrect chain id!')
-    }
-  }, [chainId, chainIdToUse])
+  // useEffect(() => {
+  //   if (chainId && chainIdToUse && chainId !== parseInt(chainIdToUse)) {
+  //     //
+  //     console.warn('Incorrect chain id!')
+  //   }
+  // }, [chainId, chainIdToUse])
 
   const setupLocks = useCallback(() => {
     if (!contract || !account || !tokenLockerCount || !getTokenLockData || !getTokenLockersForAddress) {
@@ -93,7 +93,11 @@ const Locker: React.FC = () => {
             <div className="flex flex-col justify-center w-full items-center gap-4">
               {typeof idToUse !== 'undefined' && sortedLocks[0] && parseInt(idToUse) === sortedLocks[0].id ? (
                 <div className="w-full md:max-w-md">
-                  <Lock key={sortedLocks[0].contractAddress} lock={sortedLocks[0]} />
+                  {chainId && chainIdToUse && chainId !== parseInt(chainIdToUse) ? (
+                    <div className="text-center">Connected to the wrong network to view this lock.</div>
+                  ) : (
+                    <Lock key={sortedLocks[0].contractAddress} lock={sortedLocks[0]} />
+                  )}
                 </div>
               ) : sortedLocks.length === 0 ? (
                 <LocksLoading>

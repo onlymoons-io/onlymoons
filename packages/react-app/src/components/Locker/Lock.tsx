@@ -15,10 +15,17 @@ import { motion } from 'framer-motion'
 import { Primary as PrimaryButton } from '../Button'
 import Tooltip from '../Tooltip'
 import TokenInput from '../TokenInput'
-import { getShortAddress, getExplorerContractLink, getExplorerTokenLink, timestampToDateTimeLocal } from '../../util'
+import {
+  getShortAddress,
+  getExplorerContractLink,
+  getExplorerTokenLink,
+  timestampToDateTimeLocal,
+  getNativeCoin,
+} from '../../util'
 import { ERC20ABI } from '../../contracts/external_contracts'
 import DetailsCard, { Detail, Title } from '../DetailsCard'
 import { ContractCacheContext } from '../contracts/ContractCache'
+import Input from '../Input'
 
 const { Web3Provider } = providers
 
@@ -80,6 +87,13 @@ const Lock: React.FC<Props> = ({ lock }) => {
   const [lpLockData, setLpLockData] = useState<LPLockData>()
   const [lpToken0Data, setLpToken0Data] = useState<TokenData>()
   const [lpToken1Data, setLpToken1Data] = useState<TokenData>()
+  const [claimableEth, setClaimableEth] = useState<BigNumber>(BigNumber.from(0))
+  const [claimableTokens, setClaimableTokens] = useState<BigNumber>(BigNumber.from(0))
+  const [claimTokenAddress, setClaimTokenAddress] = useState<string>()
+  const [claimTokenData, setClaimTokenData] = useState<TokenData>()
+  const [claimingEth, setClaimingEth] = useState<boolean>(false)
+  const [claimingTokens, setClaimingTokens] = useState<boolean>(false)
+  const [checkingTokenBalance, setCheckingTokenBalance] = useState<boolean>(false)
 
   useMount(() => setLockData(lock))
 
@@ -198,6 +212,62 @@ const Lock: React.FC<Props> = ({ lock }) => {
         setLpToken1Data(undefined)
       })
   }, [lpLockData, getTokenData])
+
+  useEffect(() => {
+    if (!lockContract || !account || !lockData || lockData.lockOwner !== account || !connector) {
+      setClaimableEth(BigNumber.from(0))
+      return
+    }
+
+    //
+    connector
+      .getProvider()
+      .then(_provider => new Web3Provider(_provider).getBalance(lockContract.address))
+      .then(setClaimableEth)
+      .catch((err: Error) => {
+        console.error(err)
+        setClaimableEth(BigNumber.from(0))
+      })
+  }, [account, lockContract, connector, lockData])
+
+  useEffect(() => {
+    if (
+      !lockData ||
+      !connector ||
+      !claimTokenAddress ||
+      claimTokenAddress === '' ||
+      claimTokenAddress === lockData.token
+    ) {
+      setClaimableTokens(BigNumber.from(0))
+      return
+    }
+
+    setCheckingTokenBalance(true)
+
+    //
+    connector
+      .getProvider()
+      .then(provider => new Contract(claimTokenAddress, ERC20ABI, new Web3Provider(provider)))
+      .then(claimTokenContract => claimTokenContract.balanceOf(lockData.contractAddress))
+      .then(setClaimableTokens)
+      .catch((err: Error) => {
+        console.error(err)
+      })
+      .then(() => setCheckingTokenBalance(false))
+  }, [lockData, connector, claimTokenAddress])
+
+  useEffect(() => {
+    if (!getTokenData || !claimTokenAddress || claimTokenAddress === '') {
+      setClaimTokenData(undefined)
+      return
+    }
+
+    getTokenData(claimTokenAddress)
+      .then(setClaimTokenData)
+      .catch((err: Error) => {
+        console.error(err)
+      })
+  }, [getTokenData, claimTokenAddress])
 
   return (
     <DetailsCard
@@ -512,6 +582,85 @@ const Lock: React.FC<Props> = ({ lock }) => {
                   </PrimaryButton>
                 </section>
               )}
+
+              {!claimableEth.eq(0) && (
+                <section className="mt-4">
+                  <PrimaryButton
+                    disabled={claimingEth}
+                    className="w-full"
+                    onClick={async () => {
+                      //
+                      setClaimingEth(true)
+
+                      try {
+                        await (await lockContract.withdrawEth()).wait()
+                        setClaimableEth(BigNumber.from(0))
+                      } catch (err) {
+                        console.error(err)
+                      }
+
+                      setClaimingEth(false)
+                    }}
+                  >
+                    Claim {utils.commify(utils.formatEther(claimableEth))} {getNativeCoin(chainId || 0).symbol}
+                  </PrimaryButton>
+                </section>
+              )}
+
+              <section className="mt-4">
+                <div>Claim token by address</div>
+
+                <div className="flex gap-2 mt-1 items-center">
+                  <Input
+                    className="flex-grow"
+                    placeholder="Token address"
+                    onChange={e => {
+                      setClaimTokenAddress(
+                        e.currentTarget.value && e.currentTarget.value !== '' && utils.isAddress(e.currentTarget.value)
+                          ? utils.getAddress(e.currentTarget.value)
+                          : undefined,
+                      )
+                    }}
+                  />
+
+                  <FontAwesomeIcon
+                    icon={faCircleNotch}
+                    spin={checkingTokenBalance}
+                    className={`transition-all ${
+                      claimTokenData && !checkingTokenBalance
+                        ? claimTokenData.address === lockData.token || claimableTokens.eq(0)
+                          ? 'text-red-500 dark:text-red-400'
+                          : 'text-green-500 dark:text-green-400'
+                        : ''
+                    }`}
+                    fixedWidth
+                    opacity={checkingTokenBalance || claimTokenData ? 1 : 0.25}
+                  />
+                </div>
+
+                {claimTokenData && !claimableTokens.eq(0) && (
+                  <PrimaryButton
+                    className="block w-full mt-2"
+                    disabled={claimingTokens}
+                    onClick={async () => {
+                      setClaimingTokens(true)
+
+                      //
+                      try {
+                        await (await lockContract.withdrawToken(claimTokenData.address)).wait()
+                        setClaimableTokens(BigNumber.from(0))
+                      } catch (err) {
+                        console.error(err)
+                      }
+
+                      setClaimingTokens(false)
+                    }}
+                  >
+                    Claim {utils.commify(utils.formatUnits(claimableTokens, claimTokenData.decimals))}{' '}
+                    {claimTokenData.symbol}
+                  </PrimaryButton>
+                )}
+              </section>
             </>
           ) : (
             undefined
