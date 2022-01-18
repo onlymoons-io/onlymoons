@@ -94,6 +94,8 @@ const Lock: React.FC<Props> = ({ lock }) => {
   const [claimingEth, setClaimingEth] = useState<boolean>(false)
   const [claimingTokens, setClaimingTokens] = useState<boolean>(false)
   const [checkingTokenBalance, setCheckingTokenBalance] = useState<boolean>(false)
+  const [newOwnerAddress, setNewOwnerAddress] = useState<string>()
+  const [transferringOwnership, setTransferringOwnership] = useState<boolean>(false)
 
   useMount(() => setLockData(lock))
 
@@ -288,10 +290,13 @@ const Lock: React.FC<Props> = ({ lock }) => {
                   </Link>
                   {lockData.lockOwner !== lockData.createdBy && (
                     <>
-                      , owned by{' '}
-                      <Link to={`/locker/account/${lockData.lockOwner}`} className="mt-2 text-indigo-500">
-                        {getShortAddress(lockData.lockOwner)}
-                      </Link>
+                      ,{' '}
+                      <span className="whitespace-nowrap">
+                        owned by{' '}
+                        <Link to={`/locker/account/${lockData.lockOwner}`} className="mt-2 text-indigo-500">
+                          {getShortAddress(lockData.lockOwner)}
+                        </Link>
+                      </span>
                     </>
                   )}
                 </div>
@@ -660,6 +665,35 @@ const Lock: React.FC<Props> = ({ lock }) => {
                     {claimTokenData.symbol}
                   </PrimaryButton>
                 )}
+              </section>
+
+              <section className="mt-4 flex items-center">
+                <Input
+                  className="flex-grow rounded-r-none"
+                  placeholder="New owner address"
+                  onChange={e => {
+                    setNewOwnerAddress(e.currentTarget.value)
+                  }}
+                />
+                <PrimaryButton
+                  className="rounded-l-none"
+                  disabled={transferringOwnership || !newOwnerAddress || !utils.isAddress(newOwnerAddress)}
+                  onClick={async () => {
+                    if (!newOwnerAddress) return
+
+                    setTransferringOwnership(true)
+
+                    try {
+                      await (await lockContract.transferOwnership(utils.getAddress(newOwnerAddress))).wait()
+                    } catch (err) {
+                      console.error(err)
+                    }
+
+                    setTransferringOwnership(false)
+                  }}
+                >
+                  Transfer
+                </PrimaryButton>
               </section>
             </>
           ) : (
