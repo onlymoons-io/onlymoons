@@ -8,80 +8,49 @@ import { motion } from 'framer-motion'
 import { TokenLockerManagerV1ContractContext } from '../contracts/TokenLockerManagerV1'
 import Lock from './Lock'
 import NotConnected from '../NotConnected'
-import { TokenLockData } from '../../typings'
 import Header from './Header'
 import { Outer, MidSection, SectionInner, Grid as Locks, Loading as LocksLoading } from '../Layout'
 
-const { isAddress } = utils
+const { isAddress, getAddress } = utils
 
 const Locker: React.FC = () => {
   const { account: accountToCheck, chainId: chainIdToUse, id: idToUse } = useParams()
   const { account, chainId } = useWeb3React()
-  const { contract, getTokenLockersForAddress, getTokenLockData, tokenLockerCount } = useContext(
-    TokenLockerManagerV1ContractContext,
-  )
-  const [tokenLocks, setTokenLocks] = useState<Array<TokenLockData>>([])
-  const [sortedLocks, setSortedLocks] = useState<Array<TokenLockData>>([])
+  const { contract, getTokenLockersForAddress, tokenLockerCount } = useContext(TokenLockerManagerV1ContractContext)
   const [filterInputValue, setFilterInputValue] = useState<string>()
-
-  // useEffect(() => {
-  //   if (chainId && chainIdToUse && chainId !== parseInt(chainIdToUse)) {
-  //     //
-  //     console.warn('Incorrect chain id!')
-  //   }
-  // }, [chainId, chainIdToUse])
+  const [lockIds, setLockIds] = useState<number[]>([])
 
   const setupLocks = useCallback(() => {
-    if (!contract || !account || !tokenLockerCount || !getTokenLockData || !getTokenLockersForAddress) {
-      setTokenLocks([])
+    if (!contract || !account || !tokenLockerCount || !getTokenLockersForAddress) {
       return
     }
 
     if (idToUse) {
-      getTokenLockData(parseInt(idToUse))
-        .then(result => setTokenLocks([result]))
-        .catch(console.error)
+      setLockIds([parseInt(idToUse)])
     } else if (accountToCheck) {
-      getTokenLockersForAddress(accountToCheck).then((ids: Array<number>) =>
-        Promise.all(ids.map(id => getTokenLockData(id)))
-          .then((results: Array<TokenLockData>) => setTokenLocks(results))
-          .catch(console.error),
-      )
+      setLockIds([])
+      getTokenLockersForAddress(getAddress(accountToCheck))
+        .then(setLockIds)
+        .catch((err: Error) => {
+          console.error(err)
+          setLockIds([])
+        })
     } else if (filterInputValue) {
-      setTokenLocks([])
+      setLockIds([])
       if (isAddress(filterInputValue)) {
-        getTokenLockersForAddress(filterInputValue).then((ids: Array<number>) =>
-          Promise.all(ids.map(id => getTokenLockData(id)))
-            .then((results: Array<TokenLockData>) => setTokenLocks(results))
-            .catch(console.error),
-        )
+        getTokenLockersForAddress(getAddress(filterInputValue))
+          .then(setLockIds)
+          .catch((err: Error) => {
+            console.error(err)
+            setLockIds([])
+          })
       }
     } else {
-      Promise.all(new Array(tokenLockerCount).fill(null).map((val, index) => getTokenLockData(index)))
-        .then((results: Array<TokenLockData>) => setTokenLocks(results))
-        .catch(console.error)
+      setLockIds(new Array(tokenLockerCount).fill(null).map((val, index) => index))
     }
-  }, [
-    contract,
-    idToUse,
-    account,
-    accountToCheck,
-    getTokenLockData,
-    getTokenLockersForAddress,
-    tokenLockerCount,
-    filterInputValue,
-  ])
+  }, [contract, idToUse, account, accountToCheck, getTokenLockersForAddress, tokenLockerCount, filterInputValue])
 
   useEffect(setupLocks, [setupLocks])
-
-  useEffect(() => {
-    setSortedLocks(
-      [...tokenLocks].sort(
-        //
-        (a, b) => (a.createdAt > b.createdAt ? -1 : a.createdAt < b.createdAt ? 1 : 0),
-      ),
-    )
-  }, [tokenLocks])
 
   return (
     <Outer>
@@ -91,15 +60,15 @@ const Locker: React.FC = () => {
         <SectionInner>
           {account ? (
             <div className="flex flex-col justify-center w-full items-center gap-4">
-              {typeof idToUse !== 'undefined' && sortedLocks[0] && parseInt(idToUse) === sortedLocks[0].id ? (
+              {typeof idToUse !== 'undefined' && lockIds[0] && parseInt(idToUse) === lockIds[0] ? (
                 <div className="w-full md:max-w-md">
                   {chainId && chainIdToUse && chainId !== parseInt(chainIdToUse) ? (
                     <div className="text-center">Connected to the wrong network to view this lock.</div>
                   ) : (
-                    <Lock key={sortedLocks[0].contractAddress} lock={sortedLocks[0]} />
+                    <Lock key={lockIds[0]} lockId={lockIds[0]} />
                   )}
                 </div>
-              ) : sortedLocks.length === 0 ? (
+              ) : lockIds.length === 0 ? (
                 <LocksLoading>
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                     <FontAwesomeIcon icon={faCircleNotch} fixedWidth spin className="opacity-50" size="5x" />
@@ -107,9 +76,14 @@ const Locker: React.FC = () => {
                 </LocksLoading>
               ) : (
                 <Locks>
-                  {sortedLocks.map((lock: TokenLockData) => (
-                    <Lock key={lock.contractAddress} lock={lock} />
-                  ))}
+                  {/* copy and reverse ids to get descending order */}
+                  {lockIds
+                    .map(id => id)
+                    .reverse()
+                    .map(lockId => {
+                      // const lockId = tokenLockerCount - index - 1
+                      return <Lock key={lockId} lockId={lockId} />
+                    })}
                 </Locks>
               )}
             </div>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react'
-import { useMount, useUnmount } from 'react-use'
+import React, { useState, useEffect, useCallback, useContext, useRef } from 'react'
+import { useUnmount, useIntersection } from 'react-use'
 import { Link } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
 import { BigNumber, Contract, providers, utils } from 'ethers'
@@ -64,16 +64,16 @@ const progressStylesUnlocked = buildStyles({
   strokeLinecap: 'butt',
 })
 
-interface Props {
-  lock: TokenLockData
+export interface LockProps {
+  lockId: number
 }
 
-const Lock: React.FC<Props> = ({ lock }) => {
+const Lock: React.FC<LockProps> = ({ lockId }) => {
   const { account, chainId, connector } = useWeb3React()
   const { getContract } = useContext(ContractCacheContext)
   const { getTokenData } = useContext(UtilContractContext)
   const { contract, getTokenLockData } = useContext(TokenLockerManagerV1ContractContext)
-  const [lockData, setLockData] = useState<TokenLockData | undefined>(lock)
+  const [lockData, setLockData] = useState<TokenLockData | undefined>()
   const [lockTokenData, setLockTokenData] = useState<TokenData>()
   const [lockContract, setLockContract] = useState<Contract>()
   const [tokenContract, setTokenContract] = useState<Contract>()
@@ -96,10 +96,18 @@ const Lock: React.FC<Props> = ({ lock }) => {
   const [checkingTokenBalance, setCheckingTokenBalance] = useState<boolean>(false)
   const [newOwnerAddress, setNewOwnerAddress] = useState<string>()
   const [transferringOwnership, setTransferringOwnership] = useState<boolean>(false)
-
-  useMount(() => setLockData(lock))
+  const intersectionRef = useRef<HTMLDivElement>(null)
+  const intersection = useIntersection(intersectionRef, {
+    root: null,
+    rootMargin: '0px',
+    threshold: 1,
+  })
+  const firstVisible = useRef<boolean>(false)
+  const currentlyVisible = useRef<boolean>(false)
+  const [isVisible, setIsVisible] = useState<boolean>(false)
 
   useUnmount(() => {
+    firstVisible.current = false
     setLockData(undefined)
   })
 
@@ -108,16 +116,31 @@ const Lock: React.FC<Props> = ({ lock }) => {
   }, [chainId])
 
   const updateLockData = useCallback(() => {
-    if (!contract || !getTokenLockData) return
+    if (typeof lockId !== 'number' || !contract || !getTokenLockData || !currentlyVisible.current) return
 
-    getTokenLockData(lock.id)
+    getTokenLockData(lockId)
       .then(lockData => setLockData(lockData))
       .catch(console.error)
-  }, [contract, lock, getTokenLockData])
+  }, [contract, getTokenLockData, lockId])
+
+  useEffect(updateLockData, [updateLockData])
+
+  useEffect(() => {
+    setIsVisible((currentlyVisible.current = intersection && intersection.intersectionRatio > 0 ? true : false))
+  }, [intersection])
+
+  useEffect(() => {
+    if (firstVisible.current) return
+
+    if (isVisible) {
+      firstVisible.current = true
+      updateLockData()
+    }
+  }, [isVisible, updateLockData])
 
   useEffect(() => {
     lockData?.unlockTime && setExtendedUnlockTime(lockData.unlockTime)
-  }, [lockData])
+  }, [lockData, intersection])
 
   useEffect(() => {
     if (!contract || !connector || !getTokenData || !lockData) {
@@ -272,84 +295,92 @@ const Lock: React.FC<Props> = ({ lock }) => {
   }, [getTokenData, claimTokenAddress])
 
   return (
-    <DetailsCard
-      headerContent={
-        //
-        lockData ? (
-          <>
-            <div className="flex justify-between items-center">
-              <div className="flex flex-col">
-                <Title>
-                  <Link to={`/locker/${chainId}/${lock.id}`}>{lockTokenData?.symbol || '...'}</Link>
-                </Title>
+    <div ref={intersectionRef} style={{ minHeight: '380px' }}>
+      {!intersection ||
+        (intersection.intersectionRatio > 0 && (
+          <DetailsCard
+            headerContent={
+              //
+              lockData ? (
+                <>
+                  <div className="flex justify-between items-center">
+                    <div className="flex flex-col">
+                      <Title>
+                        <Link to={`/locker/${chainId}/${lockId}`}>{lockTokenData?.symbol || '...'}</Link>
+                      </Title>
 
-                <div className="text-sm">
-                  Locked by{' '}
-                  <Link to={`/locker/account/${lockData.createdBy}`} className="mt-2 text-indigo-500">
-                    {getShortAddress(lockData.createdBy)}
-                  </Link>
-                  {lockData.lockOwner !== lockData.createdBy && (
-                    <>
-                      ,{' '}
-                      <span className="whitespace-nowrap">
-                        owned by{' '}
-                        <Link to={`/locker/account/${lockData.lockOwner}`} className="mt-2 text-indigo-500">
-                          {getShortAddress(lockData.lockOwner)}
+                      <div className="text-sm">
+                        Locked by{' '}
+                        <Link to={`/locker/account/${lockData.createdBy}`} className="mt-2 text-indigo-500">
+                          {getShortAddress(lockData.createdBy)}
                         </Link>
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              <div
-                className="cursor-default"
-                style={{ maxWidth: '64px' }}
-                data-tip={true}
-                data-for={`lock-status-${lockData.id}`}
-              >
-                <CircularProgressbar
-                  value={(() => {
-                    //
-                    const duration = lockData.unlockTime - lockData.createdAt
-                    const progress = Math.ceil(Date.now() / 1000) - lockData.createdAt
-
-                    return 100 - (progress / duration) * 100
-                  })()}
-                  styles={
-                    BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) && !lockData.balance.eq(0)
-                      ? progressStylesUnlocked
-                      : progressStyles
-                  }
-                  children={
-                    BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) ? (
-                      <FontAwesomeIcon
-                        className={`text-2xl ${
-                          lockData.balance.eq(0) ? 'text-gray-400' : 'text-gray-700 dark:text-gray-300'
-                        }`}
-                        icon={lockData.balance.eq(0) ? faCheck : faExclamation}
-                        fixedWidth
-                      />
-                    ) : (
-                      <span>
-                        {shortEnglishHumanizer(
-                          BigNumber.from(lockData.unlockTime)
-                            .sub(BigNumber.from(Math.ceil(Date.now() / 1000)))
-                            .mul(1000)
-                            .toNumber(),
+                        {lockData.lockOwner !== lockData.createdBy && (
+                          <>
+                            ,{' '}
+                            <span className="whitespace-nowrap">
+                              owned by{' '}
+                              <Link to={`/locker/account/${lockData.lockOwner}`} className="mt-2 text-indigo-500">
+                                {getShortAddress(lockData.lockOwner)}
+                              </Link>
+                            </span>
+                          </>
                         )}
-                      </span>
-                    )
-                  }
-                />
-              </div>
+                      </div>
+                    </div>
 
-              <Tooltip id={`lock-status-${lockData.id}`}>
-                {lockData.unlockTime > Date.now() / 1000 ? 'Locked' : lockData.balance.gt(0) ? 'Unlocked!' : 'Empty'}
-              </Tooltip>
-            </div>
+                    <div
+                      className="cursor-default"
+                      style={{ maxWidth: '64px' }}
+                      data-tip={true}
+                      data-for={`lock-status-${lockData.id}`}
+                    >
+                      <CircularProgressbar
+                        value={(() => {
+                          //
+                          const duration = lockData.unlockTime - lockData.createdAt
+                          const progress = Math.ceil(Date.now() / 1000) - lockData.createdAt
 
-            {/* {lpToken0Data && lpToken1Data && (
+                          return 100 - (progress / duration) * 100
+                        })()}
+                        styles={
+                          BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) &&
+                          !lockData.balance.eq(0)
+                            ? progressStylesUnlocked
+                            : progressStyles
+                        }
+                        children={
+                          BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) ? (
+                            <FontAwesomeIcon
+                              className={`text-2xl ${
+                                lockData.balance.eq(0) ? 'text-gray-400' : 'text-gray-700 dark:text-gray-300'
+                              }`}
+                              icon={lockData.balance.eq(0) ? faCheck : faExclamation}
+                              fixedWidth
+                            />
+                          ) : (
+                            <span>
+                              {shortEnglishHumanizer(
+                                BigNumber.from(lockData.unlockTime)
+                                  .sub(BigNumber.from(Math.ceil(Date.now() / 1000)))
+                                  .mul(1000)
+                                  .toNumber(),
+                              )}
+                            </span>
+                          )
+                        }
+                      />
+                    </div>
+
+                    <Tooltip id={`lock-status-${lockData.id}`}>
+                      {lockData.unlockTime > Date.now() / 1000
+                        ? 'Locked'
+                        : lockData.balance.gt(0)
+                        ? 'Unlocked!'
+                        : 'Empty'}
+                    </Tooltip>
+                  </div>
+
+                  {/* {lpToken0Data && lpToken1Data && (
               <motion.div
                 className="px-4 flex items-center gap-1 bg-yellow-100 dark:bg-yellow-100 dark:bg-opacity-10 border-b border-gray-200 dark:border-transparent absolute left-0 right-0 -bottom-4 z-10"
                 initial={{ scaleY: 0, y: '-100%', opacity: 0 }}
@@ -375,129 +406,135 @@ const Lock: React.FC<Props> = ({ lock }) => {
                 </a>
               </motion.div>
             )} */}
-          </>
-        ) : (
-          // lockData is not ready
-          <></>
-        )
-      }
-      mainContent={
-        //
-        lockData ? (
-          <>
-            {lpToken0Data && lpToken1Data && (
-              <motion.div
-                className="px-4 flex items-center gap-1 bg-yellow-100 bg-opacity-50 dark:bg-yellow-200 dark:bg-opacity-5 border-b border-gray-200 dark:border-transparent absolute left-0 right-0 top-0 z-10"
-                initial={{ scaleY: 0, y: '-100%', opacity: 0 }}
-                animate={{ scaleY: 1, y: 0, opacity: 1 }}
-              >
-                <span>Pair: </span>
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-indigo-500"
-                  href={getExplorerTokenLink(getChainId(), lpToken0Data.address)}
-                >
-                  {lpToken0Data.symbol}
-                </a>
-                <FontAwesomeIcon icon={faExchangeAlt} fixedWidth size="sm" opacity={0.5} />
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-indigo-500"
-                  href={getExplorerTokenLink(getChainId(), lpToken1Data.address)}
-                >
-                  {lpToken1Data.symbol}
-                </a>
-              </motion.div>
-            )}
+                </>
+              ) : (
+                // lockData is not ready
+                <>
+                  <Title>...</Title>
+                </>
+              )
+            }
+            mainContent={
+              //
+              lockData ? (
+                <>
+                  {lpToken0Data && lpToken1Data && (
+                    <motion.div
+                      className="px-4 flex items-center gap-1 bg-yellow-100 bg-opacity-50 dark:bg-yellow-200 dark:bg-opacity-5 border-b border-gray-200 dark:border-transparent absolute left-0 right-0 top-0 z-10"
+                      initial={{ scaleY: 0, y: '-100%', opacity: 0 }}
+                      animate={{ scaleY: 1, y: 0, opacity: 1 }}
+                    >
+                      <span>Pair: </span>
+                      <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-indigo-500"
+                        href={getExplorerTokenLink(getChainId(), lpToken0Data.address)}
+                      >
+                        {lpToken0Data.symbol}
+                      </a>
+                      <FontAwesomeIcon icon={faExchangeAlt} fixedWidth size="sm" opacity={0.5} />
+                      <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-indigo-500"
+                        href={getExplorerTokenLink(getChainId(), lpToken1Data.address)}
+                      >
+                        {lpToken1Data.symbol}
+                      </a>
+                    </motion.div>
+                  )}
 
-            <div className="flex-grow flex flex-col gap-2 mt-4">
-              <Detail
-                label="Locker address"
-                value={
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-indigo-500"
-                    href={getExplorerContractLink(getChainId(), lockData.contractAddress)}
-                  >
-                    {getShortAddress(lockData.contractAddress)}
-                  </a>
-                }
-              />
-              <Detail
-                label="Token address"
-                value={
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-indigo-500"
-                    href={getExplorerTokenLink(getChainId(), lockData.token)}
-                  >
-                    {getShortAddress(lockData.token)}
-                  </a>
-                }
-              />
-              <Detail
-                label="Tokens locked"
-                value={utils.commify(utils.formatUnits(lockData.balance, lockTokenData?.decimals || 18))}
-              />
-              <Detail
-                label="Percent of supply"
-                value={`${utils.formatUnits(lockData.balance.mul(10000000).div(lockData.totalSupply), 5)}%`}
-              />
-              <Detail
-                label={lockData.unlockTime > Date.now() / 1000 ? 'Unlocks at' : `Unlocked at`}
-                value={new Date(lockData.unlockTime * 1000).toLocaleString()}
-              />
-            </div>
-          </>
-        ) : (
-          <></>
-        )
-      }
-      footerContent={
-        lockData ? (
-          lockData.lockOwner === account && lockContract ? (
-            <>
-              <section className="text-gray-100 grid grid-cols-1 sm:grid-cols-2 w-full gap-2">
-                <PrimaryButton className="flex-grow" onClick={() => setExtendVisible(!extendVisible)}>
-                  Extend / Deposit
-                </PrimaryButton>
-                <PrimaryButton
-                  className="flex-grow relative flex justify-center items-center"
-                  disabled={
-                    isWithdrawing ||
-                    lockData.balance.eq(0) ||
-                    BigNumber.from(lockData.unlockTime).gt(BigNumber.from(Math.ceil(Date.now() / 1000)))
-                  }
-                  onClick={() => {
-                    //
-                    setIsWithdrawing(true)
-                    lockContract
-                      .withdraw()
-                      .then((tx: any) => tx.wait())
-                      .then(() => {
-                        updateLockData()
-                        setIsWithdrawing(false)
-                      })
-                      .catch((err: Error) => {
-                        console.error(err)
-                        setIsWithdrawing(false)
-                      })
-                  }}
-                >
-                  <span className={isWithdrawing ? 'invisible' : ''}>Withdraw</span>
-                  <FontAwesomeIcon
-                    className={isWithdrawing ? 'absolute' : 'hidden'}
-                    icon={faCircleNotch}
-                    fixedWidth
-                    spin
-                  />
-                </PrimaryButton>
+                  <div className="flex-grow flex flex-col gap-2 mt-4">
+                    <Detail
+                      label="Locker address"
+                      value={
+                        <a
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-indigo-500"
+                          href={getExplorerContractLink(getChainId(), lockData.contractAddress)}
+                        >
+                          {getShortAddress(lockData.contractAddress)}
+                        </a>
+                      }
+                    />
+                    <Detail
+                      label="Token address"
+                      value={
+                        <a
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-indigo-500"
+                          href={getExplorerTokenLink(getChainId(), lockData.token)}
+                        >
+                          {getShortAddress(lockData.token)}
+                        </a>
+                      }
+                    />
+                    <Detail
+                      label="Tokens locked"
+                      value={utils.commify(utils.formatUnits(lockData.balance, lockTokenData?.decimals || 18))}
+                    />
+                    <Detail
+                      label="Percent of supply"
+                      value={`${utils.formatUnits(lockData.balance.mul(10000000).div(lockData.totalSupply), 5)}%`}
+                    />
+                    <Detail
+                      label={lockData.unlockTime > Date.now() / 1000 ? 'Unlocks at' : `Unlocked at`}
+                      value={new Date(lockData.unlockTime * 1000).toLocaleString()}
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-center items-center h-64">
+                    <FontAwesomeIcon icon={faCircleNotch} spin={true} opacity={0.5} size="4x" />
+                  </div>
+                </>
+              )
+            }
+            footerContent={
+              lockData ? (
+                lockData.lockOwner === account && lockContract ? (
+                  <>
+                    <section className="text-gray-100 grid grid-cols-1 sm:grid-cols-2 w-full gap-2">
+                      <PrimaryButton className="flex-grow" onClick={() => setExtendVisible(!extendVisible)}>
+                        Extend / Deposit
+                      </PrimaryButton>
+                      <PrimaryButton
+                        className="flex-grow relative flex justify-center items-center"
+                        disabled={
+                          isWithdrawing ||
+                          lockData.balance.eq(0) ||
+                          BigNumber.from(lockData.unlockTime).gt(BigNumber.from(Math.ceil(Date.now() / 1000)))
+                        }
+                        onClick={() => {
+                          //
+                          setIsWithdrawing(true)
+                          lockContract
+                            .withdraw()
+                            .then((tx: any) => tx.wait())
+                            .then(() => {
+                              updateLockData()
+                              setIsWithdrawing(false)
+                            })
+                            .catch((err: Error) => {
+                              console.error(err)
+                              setIsWithdrawing(false)
+                            })
+                        }}
+                      >
+                        <span className={isWithdrawing ? 'invisible' : ''}>Withdraw</span>
+                        <FontAwesomeIcon
+                          className={isWithdrawing ? 'absolute' : 'hidden'}
+                          icon={faCircleNotch}
+                          fixedWidth
+                          spin
+                        />
+                      </PrimaryButton>
 
-                {/* <PrimaryButton
+                      {/* <PrimaryButton
                   onClick={() => {
                     if (!lockContract) return
 
@@ -524,187 +561,194 @@ const Lock: React.FC<Props> = ({ lock }) => {
                 >
                   Recover tokens
                 </PrimaryButton> */}
-              </section>
+                    </section>
 
-              {extendVisible && lockContract && lockData && lockTokenData && (
-                <section className="flex flex-col gap-2 mt-4">
-                  <TokenInput
-                    tokenData={lockTokenData}
-                    placeholder="Tokens to add (optional)"
-                    onChange={value => setDepositTokens(value)}
-                  />
+                    {extendVisible && lockContract && lockData && lockTokenData && (
+                      <section className="flex flex-col gap-2 mt-4">
+                        <TokenInput
+                          tokenData={lockTokenData}
+                          placeholder="Tokens to add (optional)"
+                          onChange={value => setDepositTokens(value)}
+                        />
 
-                  <div className="flex bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded items-center">
-                    <div className="p-3 flex-shrink-0">Unlock time</div>
-                    <input
-                      type="datetime-local"
-                      className="flex-grow p-3 outline-none bg-white dark:bg-gray-700 rounded-r"
-                      defaultValue={timestampToDateTimeLocal(lockData.unlockTime)}
-                      onInput={e => setExtendedUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))}
-                    />
-                  </div>
+                        <div className="flex bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded items-center">
+                          <div className="p-3 flex-shrink-0">Unlock time</div>
+                          <input
+                            type="datetime-local"
+                            className="flex-grow p-3 outline-none bg-white dark:bg-gray-700 rounded-r"
+                            defaultValue={timestampToDateTimeLocal(lockData.unlockTime)}
+                            onInput={e =>
+                              setExtendedUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))
+                            }
+                          />
+                        </div>
 
-                  <PrimaryButton
-                    disabled={!canSubmitExtend || isExtending}
-                    onClick={() => {
-                      if (isExtendApproved) {
-                        setIsExtending(true)
-                        lockContract
-                          .deposit(utils.parseUnits(depositTokens || '0', lockTokenData.decimals), extendedUnlockTime)
-                          .then((tx: any) => tx.wait())
-                          .then(() => {
-                            setIsExtending(false)
-                            updateLockData()
-                            setExtendVisible(false)
-                          })
-                          .catch((err: Error) => {
-                            console.error(err)
-                            setIsExtending(false)
-                          })
-                      } else if (tokenContract && lockContract && lockTokenData) {
-                        setIsExtending(true)
-                        tokenContract
-                          .approve(lockContract.address, utils.parseUnits(depositTokens, lockTokenData.decimals))
-                          .then((tx: any) => tx.wait())
-                          .then(() => {
-                            setIsExtendApproved(true)
-                            setIsExtending(false)
-                          })
-                          .catch((err: Error) => {
-                            console.error(err)
-                            setIsExtending(false)
-                          })
-                      }
-                    }}
-                  >
-                    {isExtending ? (
-                      <FontAwesomeIcon icon={faCircleNotch} fixedWidth spin className="opacity-50" />
-                    ) : isExtendApproved ? (
-                      'Submit'
-                    ) : (
-                      'Approve'
+                        <PrimaryButton
+                          disabled={!canSubmitExtend || isExtending}
+                          onClick={() => {
+                            if (isExtendApproved) {
+                              setIsExtending(true)
+                              lockContract
+                                .deposit(
+                                  utils.parseUnits(depositTokens || '0', lockTokenData.decimals),
+                                  extendedUnlockTime,
+                                )
+                                .then((tx: any) => tx.wait())
+                                .then(() => {
+                                  setIsExtending(false)
+                                  updateLockData()
+                                  setExtendVisible(false)
+                                })
+                                .catch((err: Error) => {
+                                  console.error(err)
+                                  setIsExtending(false)
+                                })
+                            } else if (tokenContract && lockContract && lockTokenData) {
+                              setIsExtending(true)
+                              tokenContract
+                                .approve(lockContract.address, utils.parseUnits(depositTokens, lockTokenData.decimals))
+                                .then((tx: any) => tx.wait())
+                                .then(() => {
+                                  setIsExtendApproved(true)
+                                  setIsExtending(false)
+                                })
+                                .catch((err: Error) => {
+                                  console.error(err)
+                                  setIsExtending(false)
+                                })
+                            }
+                          }}
+                        >
+                          {isExtending ? (
+                            <FontAwesomeIcon icon={faCircleNotch} fixedWidth spin className="opacity-50" />
+                          ) : isExtendApproved ? (
+                            'Submit'
+                          ) : (
+                            'Approve'
+                          )}
+                        </PrimaryButton>
+                      </section>
                     )}
-                  </PrimaryButton>
-                </section>
-              )}
 
-              {!claimableEth.eq(0) && (
-                <section className="mt-4">
-                  <PrimaryButton
-                    disabled={claimingEth}
-                    className="w-full"
-                    onClick={async () => {
-                      //
-                      setClaimingEth(true)
+                    {!claimableEth.eq(0) && (
+                      <section className="mt-4">
+                        <PrimaryButton
+                          disabled={claimingEth}
+                          className="w-full"
+                          onClick={async () => {
+                            //
+                            setClaimingEth(true)
 
-                      try {
-                        await (await lockContract.withdrawEth()).wait()
-                        setClaimableEth(BigNumber.from(0))
-                      } catch (err) {
-                        console.error(err)
-                      }
+                            try {
+                              await (await lockContract.withdrawEth()).wait()
+                              setClaimableEth(BigNumber.from(0))
+                            } catch (err) {
+                              console.error(err)
+                            }
 
-                      setClaimingEth(false)
-                    }}
-                  >
-                    Claim {utils.commify(utils.formatEther(claimableEth))} {getNativeCoin(chainId || 0).symbol}
-                  </PrimaryButton>
-                </section>
-              )}
+                            setClaimingEth(false)
+                          }}
+                        >
+                          Claim {utils.commify(utils.formatEther(claimableEth))} {getNativeCoin(chainId || 0).symbol}
+                        </PrimaryButton>
+                      </section>
+                    )}
 
-              <section className="mt-4">
-                <div>Claim token by address</div>
+                    <section className="mt-4">
+                      <div className="flex gap-2 mt-1 items-center">
+                        <Input
+                          className="flex-grow"
+                          placeholder="Claim token by address"
+                          onChange={e => {
+                            setClaimTokenAddress(
+                              e.currentTarget.value &&
+                                e.currentTarget.value !== '' &&
+                                utils.isAddress(e.currentTarget.value)
+                                ? utils.getAddress(e.currentTarget.value)
+                                : undefined,
+                            )
+                          }}
+                        />
 
-                <div className="flex gap-2 mt-1 items-center">
-                  <Input
-                    className="flex-grow"
-                    placeholder="Token address"
-                    onChange={e => {
-                      setClaimTokenAddress(
-                        e.currentTarget.value && e.currentTarget.value !== '' && utils.isAddress(e.currentTarget.value)
-                          ? utils.getAddress(e.currentTarget.value)
-                          : undefined,
-                      )
-                    }}
-                  />
+                        <FontAwesomeIcon
+                          icon={faCircleNotch}
+                          spin={checkingTokenBalance}
+                          className={`transition-all ${
+                            claimTokenData && !checkingTokenBalance
+                              ? claimTokenData.address === lockData.token || claimableTokens.eq(0)
+                                ? 'text-red-500 dark:text-red-400'
+                                : 'text-green-500 dark:text-green-400'
+                              : ''
+                          }`}
+                          fixedWidth
+                          opacity={checkingTokenBalance || claimTokenData ? 1 : 0.25}
+                        />
+                      </div>
 
-                  <FontAwesomeIcon
-                    icon={faCircleNotch}
-                    spin={checkingTokenBalance}
-                    className={`transition-all ${
-                      claimTokenData && !checkingTokenBalance
-                        ? claimTokenData.address === lockData.token || claimableTokens.eq(0)
-                          ? 'text-red-500 dark:text-red-400'
-                          : 'text-green-500 dark:text-green-400'
-                        : ''
-                    }`}
-                    fixedWidth
-                    opacity={checkingTokenBalance || claimTokenData ? 1 : 0.25}
-                  />
-                </div>
+                      {claimTokenData && !claimableTokens.eq(0) && (
+                        <PrimaryButton
+                          className="block w-full mt-2"
+                          disabled={claimingTokens}
+                          onClick={async () => {
+                            setClaimingTokens(true)
 
-                {claimTokenData && !claimableTokens.eq(0) && (
-                  <PrimaryButton
-                    className="block w-full mt-2"
-                    disabled={claimingTokens}
-                    onClick={async () => {
-                      setClaimingTokens(true)
+                            //
+                            try {
+                              await (await lockContract.withdrawToken(claimTokenData.address)).wait()
+                              setClaimableTokens(BigNumber.from(0))
+                            } catch (err) {
+                              console.error(err)
+                            }
 
-                      //
-                      try {
-                        await (await lockContract.withdrawToken(claimTokenData.address)).wait()
-                        setClaimableTokens(BigNumber.from(0))
-                      } catch (err) {
-                        console.error(err)
-                      }
+                            setClaimingTokens(false)
+                          }}
+                        >
+                          Claim {utils.commify(utils.formatUnits(claimableTokens, claimTokenData.decimals))}{' '}
+                          {claimTokenData.symbol}
+                        </PrimaryButton>
+                      )}
+                    </section>
 
-                      setClaimingTokens(false)
-                    }}
-                  >
-                    Claim {utils.commify(utils.formatUnits(claimableTokens, claimTokenData.decimals))}{' '}
-                    {claimTokenData.symbol}
-                  </PrimaryButton>
-                )}
-              </section>
+                    <section className="mt-4 flex items-center">
+                      <Input
+                        className="flex-grow rounded-r-none"
+                        placeholder="New owner address"
+                        onChange={e => {
+                          setNewOwnerAddress(e.currentTarget.value)
+                        }}
+                      />
+                      <PrimaryButton
+                        className="rounded-l-none"
+                        disabled={transferringOwnership || !newOwnerAddress || !utils.isAddress(newOwnerAddress)}
+                        onClick={async () => {
+                          if (!newOwnerAddress) return
 
-              <section className="mt-4 flex items-center">
-                <Input
-                  className="flex-grow rounded-r-none"
-                  placeholder="New owner address"
-                  onChange={e => {
-                    setNewOwnerAddress(e.currentTarget.value)
-                  }}
-                />
-                <PrimaryButton
-                  className="rounded-l-none"
-                  disabled={transferringOwnership || !newOwnerAddress || !utils.isAddress(newOwnerAddress)}
-                  onClick={async () => {
-                    if (!newOwnerAddress) return
+                          setTransferringOwnership(true)
 
-                    setTransferringOwnership(true)
+                          try {
+                            await (await lockContract.transferOwnership(utils.getAddress(newOwnerAddress))).wait()
+                          } catch (err) {
+                            console.error(err)
+                          }
 
-                    try {
-                      await (await lockContract.transferOwnership(utils.getAddress(newOwnerAddress))).wait()
-                    } catch (err) {
-                      console.error(err)
-                    }
-
-                    setTransferringOwnership(false)
-                  }}
-                >
-                  Transfer
-                </PrimaryButton>
-              </section>
-            </>
-          ) : (
-            undefined
-          )
-        ) : (
-          // lockData is not ready
-          undefined
-        )
-      }
-    />
+                          setTransferringOwnership(false)
+                        }}
+                      >
+                        Transfer
+                      </PrimaryButton>
+                    </section>
+                  </>
+                ) : (
+                  undefined
+                )
+              ) : (
+                // lockData is not ready
+                undefined
+              )
+            }
+          />
+        ))}
+    </div>
   )
 }
 
