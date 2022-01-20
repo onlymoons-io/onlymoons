@@ -10,11 +10,13 @@ import { faExclamation, faCheck, faCircleNotch, faExchangeAlt } from '@fortaweso
 import humanizeDuration from 'humanize-duration'
 import { UtilContractContext } from '../contracts/Util'
 import { TokenLockerManagerV1ContractContext } from '../contracts/TokenLockerManagerV1'
+import { PriceTrackerContext } from '../contracts/PriceTracker'
 import { TokenData, TokenLockData, LPLockData } from '../../typings'
 import { motion } from 'framer-motion'
 import { Primary as PrimaryButton } from '../Button'
 import Tooltip from '../Tooltip'
 import TokenInput from '../TokenInput'
+import TokenWithValue from '../TokenWithValue'
 import {
   getShortAddress,
   getExplorerContractLink,
@@ -26,6 +28,14 @@ import { ERC20ABI } from '../../contracts/external_contracts'
 import DetailsCard, { Detail, Title } from '../DetailsCard'
 import { ContractCacheContext } from '../contracts/ContractCache'
 import Input from '../Input'
+// import humanNumber from 'human-number'
+// import Anchor from '../Anchor'
+
+// const reallyHumanNumber = (n: number) => {
+//   return n < 1
+//     ? n.toLocaleString('en', { maximumFractionDigits: 18 })
+//     : humanNumber(n, _n => _n.toLocaleString('en', { maximumFractionDigits: 2 }))
+// }
 
 const { Web3Provider } = providers
 
@@ -70,8 +80,10 @@ export interface LockProps {
 
 const Lock: React.FC<LockProps> = ({ lockId }) => {
   const { account, chainId, connector } = useWeb3React()
+  const { isSupportedPair, getTokenFromPair, getPriceForPair, getStablePairAddress } =
+    useContext(PriceTrackerContext) || {}
   const { getContract } = useContext(ContractCacheContext)
-  const { getTokenData } = useContext(UtilContractContext)
+  const { getTokenData, getLpData } = useContext(UtilContractContext)
   const { contract, getTokenLockData } = useContext(TokenLockerManagerV1ContractContext)
   const [lockData, setLockData] = useState<TokenLockData | undefined>()
   const [lockTokenData, setLockTokenData] = useState<TokenData>()
@@ -105,6 +117,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
   const firstVisible = useRef<boolean>(false)
   const currentlyVisible = useRef<boolean>(false)
   const [isVisible, setIsVisible] = useState<boolean>(false)
+  const [priceForPair, setPriceForPair] = useState<number>(-1)
 
   useUnmount(() => {
     firstVisible.current = false
@@ -294,6 +307,66 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
       })
   }, [getTokenData, claimTokenAddress])
 
+  useEffect(() => {
+    if (
+      lpLockData &&
+      lockTokenData &&
+      lpToken0Data &&
+      lpToken1Data &&
+      getLpData &&
+      isSupportedPair &&
+      getStablePairAddress &&
+      getTokenFromPair &&
+      getPriceForPair &&
+      isSupportedPair(lpLockData)
+    ) {
+      const stablePairAddress = getStablePairAddress(lpLockData)
+
+      if (stablePairAddress) {
+        getLpData(stablePairAddress)
+          .then(stableLpData => {
+            if (!stableLpData) {
+              return Promise.reject(new Error('Could not get stable LP data'))
+            }
+
+            return Promise.resolve(stableLpData)
+          })
+          .then(getPriceForPair)
+          // .then(n => parseFloat(utils.formatEther(n)))
+          .then(p => {
+            // console.log(p)
+            setPriceForPair(p)
+          })
+          .catch((err: Error) => {
+            console.error(err)
+            setPriceForPair(0)
+          })
+      } else {
+        setPriceForPair(0)
+      }
+      //
+
+      // getPriceForPair(lpLockData)
+      //   .then(n => parseFloat(utils.formatEther(n)))
+      //   .then(setPriceForPair)
+      //   .catch((err: Error) => {
+      //     console.error(err)
+      //   })
+    } else {
+      setPriceForPair(0)
+    }
+  }, [
+    lpLockData,
+    lockTokenData,
+    lpToken0Data,
+    lpToken1Data,
+    isSupportedPair,
+    getTokenFromPair,
+    getPriceForPair,
+    getLpData,
+    getStablePairAddress,
+  ])
+
   return (
     <div ref={intersectionRef} style={{ minHeight: '380px' }}>
       {!intersection ||
@@ -305,8 +378,14 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                 <>
                   <div className="flex justify-between items-center">
                     <div className="flex flex-col">
-                      <Title>
-                        <Link to={`/locker/${chainId}/${lockId}`}>{lockTokenData?.symbol || '...'}</Link>
+                      <Title className="flex-col">
+                        <div className="self-start">
+                          <Link to={`/locker/${chainId}/${lockId}`}>
+                            {lockTokenData?.name || '...'}{' '}
+                            {lockTokenData && <span className="text-sm">({lockTokenData.symbol || '...'})</span>}
+                          </Link>
+                        </div>
+                        {/* <Link to={`/locker/${chainId}/${lockId}`}>{lockTokenData?.symbol || '...'}</Link> */}
                       </Title>
 
                       <div className="text-sm">
@@ -445,6 +524,30 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                     </motion.div>
                   )}
 
+                  {/* {lpToken0Data && lpToken1Data ? (
+                    <div className="dark:bg-gray-900 dark:bg-opacity-50 p-4 rounded text-xl self-start mb-2 flex justify-center items-center gap-1">
+                      <Anchor
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        href={getExplorerTokenLink(chainId || 0, lpToken0Data.address)}
+                      >
+                        {lpToken0Data.symbol}
+                      </Anchor>
+
+                      <FontAwesomeIcon icon={faExchangeAlt} opacity={0.25} fixedWidth />
+
+                      <Anchor
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        href={getExplorerTokenLink(chainId || 0, lpToken1Data.address)}
+                      >
+                        {lpToken1Data.symbol}
+                      </Anchor>
+                    </div>
+                  ) : (
+                    <></>
+                  )} */}
+
                   <div className="flex-grow flex flex-col gap-2 mt-4">
                     <Detail
                       label="Locker address"
@@ -472,14 +575,143 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                         </a>
                       }
                     />
+
                     <Detail
-                      label="Tokens locked"
-                      value={utils.commify(utils.formatUnits(lockData.balance, lockTokenData?.decimals || 18))}
+                      label={`${lockTokenData?.symbol || 'Tokens'} locked`}
+                      value={`${utils.commify(
+                        utils.formatUnits(lockData.balance, lockTokenData?.decimals || 18),
+                      )} (${utils.formatUnits(lockData.balance.mul(10000).div(lockData.totalSupply), 2)}%)`}
                     />
-                    <Detail
-                      label="Percent of supply"
-                      value={`${utils.formatUnits(lockData.balance.mul(10000000).div(lockData.totalSupply), 5)}%`}
-                    />
+                    {/* <Detail label="Percent of supply" value={``} /> */}
+
+                    {lpLockData &&
+                      lockTokenData &&
+                      lpToken0Data &&
+                      lpToken1Data &&
+                      isSupportedPair &&
+                      getTokenFromPair &&
+                      priceForPair >= 0 &&
+                      isSupportedPair(lpLockData) &&
+                      (getTokenFromPair(lpLockData) === lpLockData.token0 ? (
+                        <>
+                          <Detail
+                            label={`Locked ${lpToken1Data.symbol} value`}
+                            value={(() => {
+                              let val: BigNumber
+
+                              try {
+                                val = lpLockData.balance1
+                                  .mul(BigNumber.from(10).pow(lpToken1Data.decimals))
+                                  .div(
+                                    lockData.totalSupply
+                                      .mul(BigNumber.from(10).pow(lockTokenData.decimals))
+                                      .div(lockData.balance),
+                                  )
+                              } catch (err) {
+                                val = BigNumber.from(0)
+                              }
+
+                              return <TokenWithValue amount={val} tokenData={lpToken1Data} />
+                            })()}
+                          />
+
+                          {/* <Detail
+                            label={`Price per ${lpToken0Data.symbol}`}
+                            value={(() => {
+                              let val: string
+
+                              try {
+                                val = `${utils.commify(
+                                  utils.formatUnits(
+                                    lpLockData.balance1
+                                      .mul(BigNumber.from(10).pow(lpToken0Data.decimals))
+                                      .div(lpLockData.balance0),
+                                    lpToken1Data.decimals,
+                                  ),
+                                )}`
+                              } catch (err) {
+                                // console.error(err)
+                                val = '0'
+                              }
+
+                              return `${val} ${lpToken1Data.symbol}`
+                            })()}
+                          /> */}
+                        </>
+                      ) : (
+                        <>
+                          <Detail
+                            label={`Locked ${lpToken0Data.symbol} value`}
+                            value={(() => {
+                              let val: BigNumber
+
+                              try {
+                                val = lpLockData.balance0
+                                  .mul(BigNumber.from(10).pow(lpToken0Data.decimals))
+                                  .div(
+                                    lockData.totalSupply
+                                      .mul(BigNumber.from(10).pow(lockTokenData.decimals))
+                                      .div(lockData.balance),
+                                  )
+                              } catch (err) {
+                                val = BigNumber.from(0)
+                              }
+
+                              return <TokenWithValue amount={val} tokenData={lpToken0Data} />
+                            })()}
+                            // value={(() => {
+                            //   let val: string
+
+                            //   try {
+                            //     val = `${utils.commify(
+                            //       utils.formatUnits(
+                            //         lpLockData.balance0
+                            //           .mul(BigNumber.from(10).pow(lpToken0Data.decimals))
+                            //           .div(
+                            //             lockData.totalSupply
+                            //               .mul(BigNumber.from(10).pow(lockTokenData.decimals))
+                            //               .div(lockData.balance),
+                            //           ),
+                            //         lpToken0Data.decimals,
+                            //       ),
+                            //     )}`
+                            //   } catch (err) {
+                            //     // console.error(err)
+                            //     val = '0'
+                            //   }
+
+                            //   return `${val} ${lpToken0Data.symbol} ($${humanNumber(parseFloat(val) * priceForPair, n =>
+                            //     n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+                            //   )})`
+                            // })()}
+                          />
+
+                          {/* <Detail
+                            label={`Price per ${lpToken1Data.symbol}`}
+                            value={(() => {
+                              let val: string
+
+                              try {
+                                val = `${utils.commify(
+                                  utils.formatUnits(
+                                    lpLockData.balance0
+                                      .mul(BigNumber.from(10).pow(lpToken1Data.decimals))
+                                      .div(lpLockData.balance1),
+                                    lpToken0Data.decimals,
+                                  ),
+                                )}`
+                              } catch (err) {
+                                // console.error(err)
+                                val = '0'
+                              }
+
+                              return `${val} ${lpToken0Data.symbol}`
+                            })()}
+                          /> */}
+                        </>
+                      ))}
+
+                    <Detail label="Locked at" value={new Date(lockData.createdAt * 1000).toLocaleString()} />
                     <Detail
                       label={lockData.unlockTime > Date.now() / 1000 ? 'Unlocks at' : `Unlocked at`}
                       value={new Date(lockData.unlockTime * 1000).toLocaleString()}

@@ -6,6 +6,7 @@ import { NetworkData } from '../typings'
 import { ModalControllerContext } from './ModalController'
 import DetailsCard from './DetailsCard'
 import contracts from '../contracts/production_contracts.json'
+import { PriceTrackerContext } from './contracts/PriceTracker'
 
 interface ErrorInterface {
   code: number
@@ -18,6 +19,7 @@ export interface NetworkSelectProps {
 }
 
 const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {} }) => {
+  const { nativeCoinPrice } = useContext(PriceTrackerContext) || {}
   const { setCurrentModal, closeModal } = useContext(ModalControllerContext)
   const { chainId, connector } = useWeb3React()
   const [networkData, setNetworkData] = useState<NetworkData>()
@@ -138,6 +140,17 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
           <img alt={networkData?.name || ''} width={20} height={20} src={`/network-icons${networkData.icon}`} />
         )}
         <span>{networkData?.shortName || 'Unknown'}</span>
+        {nativeCoinPrice ? (
+          <span className="ml-1 opacity-60">
+            $
+            {(nativeCoinPrice || 0).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </span>
+        ) : (
+          <></>
+        )}
       </LightButton>
     </>
   )

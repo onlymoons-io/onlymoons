@@ -1,112 +1,122 @@
 import { BigNumber } from 'ethers'
 
 export interface TokenData {
-  address: string
-  name: string
-  symbol: string
-  decimals: number
+  readonly address: string
+  readonly name: string
+  readonly symbol: string
+  readonly decimals: number
   balance: BigNumber
 }
 
 export interface TokenLockData {
-  lockOwner: string
-  id: number
-  contractAddress: string
-  token: string
-  isLpToken: boolean
-  createdBy: string
-  createdAt: number
-  unlockTime: number
-  balance: BigNumber
-  totalSupply: BigNumber
+  readonly lockOwner: string
+  readonly id: number
+  readonly contractAddress: string
+  readonly token: string
+  readonly isLpToken: boolean
+  readonly createdBy: string
+  readonly createdAt: number
+  readonly unlockTime: number
+  readonly balance: BigNumber
+  readonly totalSupply: BigNumber
 }
 
-export interface LPLockData {
-  hasLpData: boolean
-  id: number
-  token0: string
-  token1: string
-  balance0: BigNumber
-  balance1: BigNumber
-  price0: BigNumber
-  price1: BigNumber
+export interface LPData {
+  readonly token0: string
+  readonly token1: string
+  readonly balance0: BigNumber
+  readonly balance1: BigNumber
+  readonly price0: BigNumber
+  readonly price1: BigNumber
+}
+
+export interface LPLockData extends LPData {
+  readonly hasLpData: boolean
+  readonly id: number
 }
 
 export interface StakingData {
-  id: number
+  readonly id: number
   /** address contractAddress */
-  contractAddress: string
+  readonly contractAddress: string
   /** address stakedToken */
-  stakedToken: string
+  readonly stakedToken: string
   /** string memory name */
-  name: string
+  readonly name: string
   /** uint8 decimals */
-  decimals: number
+  readonly decimals: number
   /** uint256 totalStaked */
-  totalStaked: BigNumber
+  readonly totalStaked: BigNumber
   /** uint256 totalRewards */
-  totalRewards: BigNumber
+  readonly totalRewards: BigNumber
   /** uint256 totalClaimed */
-  totalClaimed: BigNumber
+  readonly totalClaimed: BigNumber
 }
 
 export interface StakingDataForAccount {
   /** uint256 amount */
-  amount: BigNumber
+  readonly amount: BigNumber
   /** uint40 lastClaimedBlock */
-  lastClaimedBlock: number
+  readonly lastClaimedBlock: number
   /** uint40 lastClaimedAt */
-  lastClaimedAt: number
+  readonly lastClaimedAt: number
   /** uint256 pending */
-  pendingRewards: BigNumber
+  readonly pendingRewards: BigNumber
   /** uint256 totalClaimed */
-  totalClaimed: BigNumber
+  readonly totalClaimed: BigNumber
 }
 
 export interface GlobalStakingData {
   // bool ready,
-  ready: boolean
+  readonly ready: boolean
   // address mainToken,
-  mainToken: string
+  readonly mainToken: string
   //
-  soloStakingAddress: string
+  readonly soloStakingAddress: string
   //
-  lpStakingAddress: string
+  readonly lpStakingAddress: string
   // uint16 rewardsRatio
-  rewardsRatio: number
+  readonly rewardsRatio: number
   //
-  liquidityRatio: number
+  readonly liquidityRatio: number
 }
 
 export interface SplitStakingRewardsData {
   // uint256 combinedRewards,
-  combinedRewards: BigNumber
+  readonly combinedRewards: BigNumber
   // uint256 soloStakingRewards,
-  soloStakingRewards: BigNumber
+  readonly soloStakingRewards: BigNumber
   // uint256 lpStakingRewards,
-  lpStakingRewards: BigNumber
+  readonly lpStakingRewards: BigNumber
   // uint256 distributorReward,
-  distributorReward: BigNumber
+  readonly distributorReward: BigNumber
   // uint256 totalRewards,
-  totalRewards: BigNumber
+  readonly totalRewards: BigNumber
   // uint256 waitingRewards,
-  waitingRewards: BigNumber
+  readonly waitingRewards: BigNumber
   // uint256 lastDistributionAt
-  lastDistributionAt: BigNumber
+  readonly lastDistributionAt: BigNumber
 }
 
 export interface AllRewardsForAddress {
-  pending: BigNumber
-  claimed: BigNumber
+  readonly pending: BigNumber
+  readonly claimed: BigNumber
+}
+
+export interface LiquidityPair {
+  readonly address: string
+  /** for calculating value */
+  readonly stablePair: string
 }
 
 export interface NetworkData {
-  chainId: number
-  name: string
-  shortName: string
-  nativeCurrency: TokenData
-  icon?: string
-  rpcURL: string
-  explorerURL: string
-  isTestNet: boolean
+  readonly chainId: number
+  readonly name: string
+  readonly shortName: string
+  readonly nativeCurrency: TokenData
+  readonly icon?: string
+  readonly rpcURL: string
+  readonly explorerURL: string
+  readonly isTestNet: boolean
+  readonly supportedLiquidityPairTokens: LiquidityPair[]
 }

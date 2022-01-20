@@ -33,27 +33,31 @@ const UtilContractContextProvider: React.FC = ({ children }) => {
 
   return (
     <UtilContractContext.Provider
-      value={{
-        contract,
-        getTokenData: async (address: string) => {
-          if (!contract) throw new Error('Contract is not ready')
+      value={
+        !contract
+          ? {}
+          : {
+              contract,
+              getTokenData: async (address: string) => {
+                if (!contract) throw new Error('Contract is not ready')
 
-          return {
-            address,
-            ...(await contract.getTokenData(address)),
-          }
-        },
-        isLpToken: async (address: string) => {
-          if (!contract) throw new Error('Contract is not ready')
+                return {
+                  address,
+                  ...(await contract.getTokenData(address)),
+                }
+              },
+              isLpToken: async (address: string) => {
+                if (!contract) throw new Error('Contract is not ready')
 
-          return await contract.isLpToken(address)
-        },
-        getLpData: async (address: string) => {
-          if (!contract) throw new Error('Contract is not ready')
+                return await contract.isLpToken(address)
+              },
+              getLpData: async (address: string) => {
+                if (!contract) throw new Error('Contract is not ready')
 
-          return await contract.getLpData(address)
-        },
-      }}
+                return await contract.getLpData(address)
+              },
+            }
+      }
     >
       {children}
     </UtilContractContext.Provider>

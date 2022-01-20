@@ -4,7 +4,7 @@ import tw from 'tailwind-styled-components'
 import { Link } from 'react-router-dom'
 import NetworkSelect from '../NetworkSelect'
 import ConnectButton from '../ConnectButton'
-// import DarkModeToggle from '../DarkModeToggle'
+// import { PriceTrackerContext } from '../contracts/PriceTracker'
 
 import logoSrc from '../../images/logo-white.svg'
 
@@ -108,6 +108,8 @@ const Right = tw.div`
 // `
 
 const NavBar: React.FC = () => {
+  // const { nativeCoinPrice } = useContext(PriceTrackerContext) || {}
+
   return (
     <Outer>
       <Inner>
@@ -133,6 +135,10 @@ const NavBar: React.FC = () => {
           </RightLinks> */}
 
           {/* <DarkModeToggle /> */}
+
+          {/* <span className="mx-4">
+            ${(nativeCoinPrice || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </span> */}
 
           <NetworkSelect className="rounded-tr-none rounded-br-none" />
           <ConnectButton className="rounded-tl-none rounded-bl-none" />

@@ -9,6 +9,7 @@ import NotificationCatcherContextProvider from './components/NotificationCatcher
 import ContractCacheContextProvider from './components/contracts/ContractCache'
 import UtilContractContextProvider from './components/contracts/Util'
 import TokenLockerManagerV1ContractContextProvider from './components/contracts/TokenLockerManagerV1'
+import PriceTrackerContextProvider from './components/contracts/PriceTracker'
 
 import FullscreenLoading from './components/FullscreenLoading'
 
@@ -174,9 +175,11 @@ const App: React.FC = () => {
         <NotificationCatcherContextProvider>
           <ContractCacheContextProvider>
             <UtilContractContextProvider>
-              <TokenLockerManagerV1ContractContextProvider>
-                <AppContent />
-              </TokenLockerManagerV1ContractContextProvider>
+              <PriceTrackerContextProvider>
+                <TokenLockerManagerV1ContractContextProvider>
+                  <AppContent />
+                </TokenLockerManagerV1ContractContextProvider>
+              </PriceTrackerContextProvider>
             </UtilContractContextProvider>
           </ContractCacheContextProvider>
         </NotificationCatcherContextProvider>
