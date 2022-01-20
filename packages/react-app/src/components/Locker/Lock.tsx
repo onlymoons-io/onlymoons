@@ -23,6 +23,7 @@ import {
   getExplorerTokenLink,
   timestampToDateTimeLocal,
   getNativeCoin,
+  getFormattedAmount,
 } from '../../util'
 import { ERC20ABI } from '../../contracts/external_contracts'
 import DetailsCard, { Detail, Title } from '../DetailsCard'
@@ -578,9 +579,13 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
 
                     <Detail
                       label={`${lockTokenData?.symbol || 'Tokens'} locked`}
-                      value={`${utils.commify(
-                        utils.formatUnits(lockData.balance, lockTokenData?.decimals || 18),
-                      )} (${utils.formatUnits(lockData.balance.mul(10000).div(lockData.totalSupply), 2)}%)`}
+                      value={`${getFormattedAmount(lockData.balance, lockTokenData?.decimals)} (${utils.formatUnits(
+                        lockData.balance.mul(10000).div(lockData.totalSupply),
+                        2,
+                      )}%)`}
+                      // value={`${utils.commify(
+                      //   utils.formatUnits(lockData.balance, lockTokenData?.decimals || 18),
+                      // )} (${utils.formatUnits(lockData.balance.mul(10000).div(lockData.totalSupply), 2)}%)`}
                     />
                     {/* <Detail label="Percent of supply" value={``} /> */}
 

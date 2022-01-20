@@ -4,7 +4,7 @@ import { BigNumber, utils } from 'ethers'
 import { UtilContractContext } from './contracts/Util'
 import { PriceTrackerContext } from './contracts/PriceTracker'
 import { useWeb3React } from '@web3-react/core'
-import { getNetworkDataByChainId } from '../util'
+import { getNetworkDataByChainId, getFormattedAmount } from '../util'
 import { LPData, NetworkData, TokenData } from '../typings'
 import humanNumber from 'human-number'
 
@@ -113,10 +113,11 @@ const TokenWithValue: React.FC<TokenWithValueProps> = ({ amount, tokenData, show
       {showAmount ? (
         <>
           <Amount>
-            {humanNumber(parseFloat(formatUnits(amount, tokenData.decimals)), n =>
+            {getFormattedAmount(amount, tokenData.decimals)} {tokenData.symbol}
+            {/* {humanNumber(parseFloat(formatUnits(amount, tokenData.decimals)), n =>
               n.toLocaleString(undefined, { maximumFractionDigits: tokenData.decimals }),
             )}{' '}
-            {tokenData.symbol}
+            {tokenData.symbol} */}
           </Amount>
         </>
       ) : (
