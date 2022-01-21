@@ -21,7 +21,7 @@ import TokenWithValue from '../TokenWithValue'
 import {
   getShortAddress,
   // getExplorerContractLink,
-  getExplorerTokenLink,
+  // getExplorerTokenLink,
   timestampToDateTimeLocal,
   getNativeCoin,
   getFormattedAmount,
@@ -130,9 +130,9 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
     setLockData(undefined)
   })
 
-  const getChainId = useCallback(() => {
-    return chainId || 0
-  }, [chainId])
+  // const getChainId = useCallback(() => {
+  //   return chainId || 0
+  // }, [chainId])
 
   const updateLockData = useCallback(() => {
     if (typeof lockId !== 'number' || !contract || !getTokenLockData || !currentlyVisible.current) return

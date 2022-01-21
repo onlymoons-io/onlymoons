@@ -10,7 +10,7 @@ import { TokenData, StakingData, StakingDataForAccount } from '../../typings'
 import { motion } from 'framer-motion'
 import { Primary as PrimaryButton } from '../Button'
 import { NotificationCatcherContext } from '../NotificationCatcher'
-import { getShortAddress, getExplorerContractLink, getExplorerTokenLink, getNativeCoin } from '../../util'
+import { getNativeCoin } from '../../util'
 import { ERC20ABI } from '../../contracts/external_contracts'
 import DetailsCard, { Detail, Title } from '../DetailsCard'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -62,9 +62,9 @@ const Staking: React.FC<StakingProps> = ({
   useMount(() => setStakingData(_stakingData))
   useUnmount(() => setStakingData(undefined))
 
-  const getChainId = useCallback(() => {
-    return chainId || 0
-  }, [chainId])
+  // const getChainId = useCallback(() => {
+  //   return chainId || 0
+  // }, [chainId])
 
   useEffect(() => {
     if (!contract || !connector || !getTokenData || !_stakingData) {

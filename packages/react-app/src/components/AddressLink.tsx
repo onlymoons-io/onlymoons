@@ -1,7 +1,7 @@
 import React, { CSSProperties, useCallback, useEffect, useState } from 'react'
 import { useWeb3React } from '@web3-react/core'
-import { utils, providers } from 'ethers'
-import { getExplorerAddressLink, getExplorerContractLink, getExplorerTokenLink, getShortAddress } from '../util'
+import { providers } from 'ethers'
+import { getExplorerAddressLink, getShortAddress } from '../util'
 import { Web3Provider } from '@ethersproject/providers'
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -35,7 +35,7 @@ const AddressLink: React.FC<AddressLinkProps> = ({
   style = {},
 }) => {
   const { chainId, connector } = useWeb3React()
-  const [explorerUrl, setExplorerUrl] = useState<string>()
+  // const [explorerUrl, setExplorerUrl] = useState<string>()
   const [provider, setProvider] = useState<Web3Provider>()
   const [isContract, setIsContract] = useState<boolean>(definitelyContract)
 
@@ -71,7 +71,7 @@ const AddressLink: React.FC<AddressLinkProps> = ({
         console.error(err)
         setProvider(undefined)
       })
-  }, [definitelyContract, chainId, connector])
+  }, [definitelyContract, chainId, connector, showContractIcon])
 
   useEffect(() => {
     getIsContract()
