@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import tw from 'tailwind-styled-components'
 import CodeViewer from './CodeViewer'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faExclamationTriangle, faFileCode, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faFileCode, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { ModalControllerContext } from './ModalController'
 import { Light as Button } from './Button'
 import CopyButton from './CopyButton'
@@ -54,7 +54,7 @@ export interface ContractDetailsProps {
 }
 
 const ContractDetails: React.FC<ContractDetailsProps> = ({ children, address, abi, className = '', style = {} }) => {
-  const { chainId, connector } = useWeb3React()
+  const { connector } = useWeb3React()
   const { closeModal } = useContext(ModalControllerContext)
   const [bytecode, setBytecode] = useState<string>()
 
@@ -93,7 +93,7 @@ const ContractDetails: React.FC<ContractDetailsProps> = ({ children, address, ab
       <Inner>
         <div>It's recommended to save both the lock contract address and ABI in case access to this is lost.</div>
 
-        {chainId === 1088 && (
+        {/* {chainId === 1088 && (
           <div className="mx-auto flex items-center gap-4 bg-red-400 bg-opacity-30 dark:bg-red-900 dark:bg-opacity-30 p-4 rounded w-full">
             <FontAwesomeIcon className="text-red-500" icon={faExclamationTriangle} size="2x" fixedWidth />
             <div>
@@ -101,7 +101,7 @@ const ContractDetails: React.FC<ContractDetailsProps> = ({ children, address, ab
               ABI is especially important here until this is resolved.
             </div>
           </div>
-        )}
+        )} */}
 
         {abi && <CodeViewer title="ABI" className="flex-grow" children={abi} />}
 
