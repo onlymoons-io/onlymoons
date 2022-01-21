@@ -1802,7 +1802,7 @@
           ]
         },
         "Math": {
-          "address": "0xe598C2c7140EfB14d48F251a1C06787569b407e7",
+          "address": "0x340D6a68d9115a7c6D599acE1C4220213E6BF41e",
           "abi": []
         },
         "OnlyMoons": {
@@ -2090,7 +2090,7 @@
           "abi": []
         },
         "SplitStakingV1": {
-          "address": "0xE3a78edD3fae8878f163F30Fe413cDC0c103336f",
+          "address": "0xD9268f0B75c45C2a5ED52F0F699FEbE2bFE98f1e",
           "abi": [
             {
               "inputs": [],
@@ -2604,7 +2604,7 @@
           ]
         },
         "StakingManagerV1": {
-          "address": "0x41f4394aDfb76b24184083AdAb54438B21ffce28",
+          "address": "0x00E5479966221a4Df897180Eb5d5F110e291fb4C",
           "abi": [
             {
               "inputs": [],
@@ -2942,7 +2942,7 @@
           ]
         },
         "StakingV1": {
-          "address": "0x3eF88A1FDDA98D277Fe083C23E2cA556141Fd33E",
+          "address": "0xA3446600ecB831123741Eec24FAA2b66aE4cB75C",
           "abi": [
             {
               "inputs": [

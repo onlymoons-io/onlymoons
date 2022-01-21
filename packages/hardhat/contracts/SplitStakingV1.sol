@@ -20,6 +20,7 @@ pragma solidity ^0.8.0;
 
 import { IStakingManagerV1 } from "./IStakingManagerV1.sol";
 import { Address } from "./library/Address.sol";
+import { IUniswapV2Pair } from "./library/Dex.sol";
 import { Governable } from "./Governable.sol";
 import { Pausable } from "./Pausable.sol";
 import { IStakingV1 } from "./IStakingV1.sol";
@@ -48,9 +49,9 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
     // use a real value for this, but make sure to subtract
     // the cooldown duration so we can immediately distribute
     // _lastDistributionAt = block.timestamp - _distributionCooldown;
+    _lastDepositAt = block.timestamp;
+    _lastDistributionAt = block.timestamp;
   }
-
-
 
   address internal constant UNSET_ID = address(0);
 
@@ -58,7 +59,7 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
   address internal _lpStakingAddress = UNSET_ID;
 
   IERC20 internal _soloStakingToken;
-  IERC20 internal _lpStakingToken;
+  IUniswapV2Pair internal _lpStakingToken;
 
   /** @dev 0-10000 based percent for fee rewarded for distributing */
   uint16 internal _rewardForDistributing = 200; // 2%
@@ -154,7 +155,7 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
     require(!stake.rewardsAreToken(), "Split rewards cannot be a token");
     _lpStakingAddress = address_;
     (address stakedToken,,,,,) = stake.getStakingData();
-    _lpStakingToken = IERC20(stakedToken);
+    _lpStakingToken = IUniswapV2Pair(stakedToken);
   }
 
   function _ready() internal view returns (bool) {
@@ -177,13 +178,60 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
     rewardsRatio = _getRewardsRatio();
   }
 
-  function _getLiquidityRatio() internal view returns (uint16) {
-    if (!_ready()) {
-      return 1000;
-    }
+  /**
+   * @return main token price in eth
+   */
+  function _getMainTokenPrice() internal view returns (uint256) {
+    if (!_ready())
+      return 0;
 
-    uint256 ratio = _soloStakingToken.balanceOf(address(_lpStakingToken)) * 10000 / _soloStakingToken.totalSupply();
+    address lpAddress = address(_lpStakingToken);
+    uint256 soloBalance = _soloStakingToken.balanceOf(lpAddress);
+    uint256 pairedBalance = _getPairedTokenBalance();
+
+    if (soloBalance == 0 || pairedBalance == 0)
+      return 0;
+    
+    return pairedBalance * 10**18 / soloBalance;
+  }
+
+  function _getPairedTokenBalance() internal view returns (uint256) {
+    if (!_ready())
+      return 0;
+    
+    IERC20 pairedToken = IERC20(
+      _lpStakingToken.token0() == address(_soloStakingToken)
+        ? _lpStakingToken.token1()
+        : _lpStakingToken.token0()
+    );
+
+    return pairedToken.balanceOf(address(_lpStakingToken));
+  }
+
+  /**
+   * @return main token market cap, in eth
+   */
+  function _getMainTokenMarketCap() internal view returns (uint256) {
+    if (!_ready())
+      return 0;
+    
+    return _getMainTokenPrice() * (_soloStakingToken.totalSupply() / 10 ** _soloStakingToken.decimals());
+  }
+
+  function _getLiquidityRatio() internal view returns (uint16) {
+    if (!_ready())
+      return 1000;
+    
+    uint256 marketCap = _getMainTokenMarketCap();
+
+    if (marketCap == 0)
+      return 1000;
+    
+    uint256 ratio = _getPairedTokenBalance() * 10000 / marketCap;
     return uint16(ratio < 10000 ? ratio : 10000);
+
+    // uint256 ratio = _soloStakingToken.balanceOf(address(_lpStakingToken)) * 10000 / _soloStakingToken.totalSupply();
+    // return uint16(ratio < 10000 ? ratio : 10000);
   }
 
   function getLiquidityRatio() external view returns (uint16) {
@@ -202,13 +250,9 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
     return _getRewardsRatio();
   }
 
-  function _getMostRecentDepositOrDistribution() internal view returns (uint256) {
-    return _lastDistributionAt > _lastDepositAt ? _lastDistributionAt : _lastDepositAt;
-  }
-
   function _getAvailableRewards() internal view returns (uint256) {
     uint256 rewardsBalance = address(this).balance;
-    uint256 diff = block.timestamp - _getMostRecentDepositOrDistribution();
+    uint256 diff = block.timestamp - Math.max(_lastDepositAt, _lastDistributionAt);
     uint256 rewards = _cachedRewards;
     rewards += diff * _distributionRewardRate;
     rewards += Math.mulScale(
@@ -217,18 +261,10 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
       10 ** 18
     );
 
-    // uint256 rewards = _cachedRewards + ((block.timestamp - _getMostRecentDepositOrDistribution()) * _distributionRewardRate);
-
     if (rewards < _minimumRewardsForDistribution)
       return 0;
-
-    if (rewards > _maximumRewardsForDistribution && rewards < rewardsBalance)
-      return _maximumRewardsForDistribution;
-
-    if (rewards > rewardsBalance)
-      return rewardsBalance;
-
-    return rewards;
+    
+    return Math.min(rewards, Math.min(rewardsBalance, _maximumRewardsForDistribution));
   }
 
   function getAvailableRewards() external view returns (uint256) {

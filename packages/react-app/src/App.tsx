@@ -140,6 +140,7 @@ const AppContent: React.FC = () => {
             <Routes>
               <Route path="/launches" element={<ComingSoon />} />
               <Route path="/deployer" element={<ComingSoon />} />
+              <Route path="/locker/search/:account" element={<ManageLockers />} />
               <Route path="/locker/account/:account" element={<ManageLockers />} />
               <Route path="/locker/create" element={<CreateLocker />} />
               <Route path="/locker/:chainId/:id" element={<Locker />} />

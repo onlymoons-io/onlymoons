@@ -6,10 +6,11 @@ import { BigNumber, Contract, providers, utils } from 'ethers'
 import { CircularProgressbarWithChildren as CircularProgressbar, buildStyles } from 'react-circular-progressbar'
 import 'react-circular-progressbar/dist/styles.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faExclamation, faCheck, faCircleNotch, faExchangeAlt } from '@fortawesome/free-solid-svg-icons'
+import { faExclamation, faCheck, faCircleNotch, faExchangeAlt, faFileCode } from '@fortawesome/free-solid-svg-icons'
 import humanizeDuration from 'humanize-duration'
 import { UtilContractContext } from '../contracts/Util'
 import { TokenLockerManagerV1ContractContext } from '../contracts/TokenLockerManagerV1'
+import { ModalControllerContext } from '../ModalController'
 import { PriceTrackerContext } from '../contracts/PriceTracker'
 import { TokenData, TokenLockData, LPLockData } from '../../typings'
 import { motion } from 'framer-motion'
@@ -19,7 +20,7 @@ import TokenInput from '../TokenInput'
 import TokenWithValue from '../TokenWithValue'
 import {
   getShortAddress,
-  getExplorerContractLink,
+  // getExplorerContractLink,
   getExplorerTokenLink,
   timestampToDateTimeLocal,
   getNativeCoin,
@@ -29,6 +30,9 @@ import { ERC20ABI } from '../../contracts/external_contracts'
 import DetailsCard, { Detail, Title } from '../DetailsCard'
 import { ContractCacheContext } from '../contracts/ContractCache'
 import Input from '../Input'
+// import CodeViewer from '../CodeViewer'
+import ContractDetails from '../ContractDetails'
+import AddressLink from '../AddressLink'
 // import humanNumber from 'human-number'
 // import Anchor from '../Anchor'
 
@@ -86,6 +90,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
   const { getContract } = useContext(ContractCacheContext)
   const { getTokenData, getLpData } = useContext(UtilContractContext)
   const { contract, getTokenLockData } = useContext(TokenLockerManagerV1ContractContext)
+  const { setCurrentModal } = useContext(ModalControllerContext)
   const [lockData, setLockData] = useState<TokenLockData | undefined>()
   const [lockTokenData, setLockTokenData] = useState<TokenData>()
   const [lockContract, setLockContract] = useState<Contract>()
@@ -391,15 +396,20 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
 
                       <div className="text-sm">
                         Locked by{' '}
-                        <Link to={`/locker/account/${lockData.createdBy}`} className="mt-2 text-indigo-500">
+                        <AddressLink
+                          className="mt-2"
+                          internalUrl={`/locker/search/${lockData.createdBy}`}
+                          address={lockData.createdBy}
+                        />
+                        {/* <Link to={`/locker/search/${lockData.createdBy}`} className="mt-2 text-indigo-500">
                           {getShortAddress(lockData.createdBy)}
-                        </Link>
+                        </Link> */}
                         {lockData.lockOwner !== lockData.createdBy && (
                           <>
                             ,{' '}
                             <span className="whitespace-nowrap">
                               owned by{' '}
-                              <Link to={`/locker/account/${lockData.lockOwner}`} className="mt-2 text-indigo-500">
+                              <Link to={`/locker/search/${lockData.lockOwner}`} className="mt-2 text-indigo-500">
                                 {getShortAddress(lockData.lockOwner)}
                               </Link>
                             </span>
@@ -505,23 +515,13 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                       animate={{ scaleY: 1, y: 0, opacity: 1 }}
                     >
                       <span>Pair: </span>
-                      <a
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-indigo-500"
-                        href={getExplorerTokenLink(getChainId(), lpToken0Data.address)}
-                      >
+                      <Link className="text-indigo-500" to={`/locker/search/${lpToken0Data.address}`}>
                         {lpToken0Data.symbol}
-                      </a>
+                      </Link>
                       <FontAwesomeIcon icon={faExchangeAlt} fixedWidth size="sm" opacity={0.5} />
-                      <a
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-indigo-500"
-                        href={getExplorerTokenLink(getChainId(), lpToken1Data.address)}
-                      >
+                      <Link className="text-indigo-500" to={`/locker/search/${lpToken1Data.address}`}>
                         {lpToken1Data.symbol}
-                      </a>
+                      </Link>
                     </motion.div>
                   )}
 
@@ -553,27 +553,37 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                     <Detail
                       label="Locker address"
                       value={
-                        <a
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-indigo-500"
-                          href={getExplorerContractLink(getChainId(), lockData.contractAddress)}
-                        >
-                          {getShortAddress(lockData.contractAddress)}
-                        </a>
+                        <AddressLink
+                          internalUrl={`/locker/search/${lockData.contractAddress}`}
+                          address={lockData.contractAddress}
+                          definitelyContract={true}
+                        />
+                        // <a
+                        //   target="_blank"
+                        //   rel="noopener noreferrer"
+                        //   className="text-indigo-500"
+                        //   href={getExplorerContractLink(getChainId(), lockData.contractAddress)}
+                        // >
+                        //   {getShortAddress(lockData.contractAddress)}
+                        // </a>
                       }
                     />
                     <Detail
                       label="Token address"
                       value={
-                        <a
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-indigo-500"
-                          href={getExplorerTokenLink(getChainId(), lockData.token)}
-                        >
-                          {getShortAddress(lockData.token)}
-                        </a>
+                        <AddressLink
+                          internalUrl={`/locker/search/${lockData.token}`}
+                          address={lockData.token}
+                          definitelyContract={true}
+                        />
+                        // <a
+                        //   target="_blank"
+                        //   rel="noopener noreferrer"
+                        //   className="text-indigo-500"
+                        //   href={getExplorerTokenLink(getChainId(), lockData.token)}
+                        // >
+                        //   {getShortAddress(lockData.token)}
+                        // </a>
                       }
                     />
 
@@ -721,6 +731,34 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                       label={lockData.unlockTime > Date.now() / 1000 ? 'Unlocks at' : `Unlocked at`}
                       value={new Date(lockData.unlockTime * 1000).toLocaleString()}
                     />
+
+                    <section className="mt-1">
+                      <span
+                        className="cursor-pointer"
+                        onClick={() => {
+                          //
+                          lockContract &&
+                            setCurrentModal(
+                              <ContractDetails
+                                address={lockContract.address}
+                                abi={lockContract.interface.format('json') as string}
+                              />,
+                              // <CodeViewer
+                              //   language="json"
+                              //   syntaxHighlighting={false}
+                              //   children={JSON.stringify(
+                              //     JSON.parse(lockContract?.interface.format('json') as string),
+                              //     null,
+                              //     2,
+                              //   )}
+                              // />,
+                            )
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faFileCode} fixedWidth />{' '}
+                        <span className="text-indigo-600 dark:text-indigo-400 ">More contract details</span>
+                      </span>
+                    </section>
                   </div>
                 </>
               ) : (

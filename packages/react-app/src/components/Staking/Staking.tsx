@@ -18,6 +18,7 @@ import { faChevronDown, faCircleNotch } from '@fortawesome/free-solid-svg-icons'
 import TokenInput from '../TokenInput'
 import { ContractCacheContext } from '../contracts/ContractCache'
 import { SplitStakingV1ContractContext } from '../contracts/SplitStakingV1'
+import AddressLink from '../AddressLink'
 
 const { Web3Provider } = providers
 
@@ -420,29 +421,28 @@ const Staking: React.FC<StakingProps> = ({
                   <Detail
                     label="Staking contract"
                     value={
-                      <a
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-indigo-500"
-                        href={getExplorerContractLink(getChainId(), stakingContract.address)}
-                      >
-                        <span>{getShortAddress(stakingContract.address)}</span>
-                        {/* <FontAwesomeIcon className="ml-1" size="xs" icon={faExternalLinkAlt} /> */}
-                      </a>
+                      <AddressLink
+                        internalUrl={`/staking/search/${stakingContract.address}`}
+                        address={stakingContract.address}
+                      />
                     }
                   />
                   <Detail
                     label={`Token (${stakingTokenData.symbol})`}
                     value={
-                      <a
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-indigo-500"
-                        href={getExplorerTokenLink(getChainId(), _stakingData.stakedToken)}
-                      >
-                        <span>{getShortAddress(_stakingData.stakedToken)}</span>
-                        {/* <FontAwesomeIcon className="ml-1" size="xs" icon={faExternalLinkAlt} /> */}
-                      </a>
+                      <AddressLink
+                        internalUrl={`/staking/search/${_stakingData.stakedToken}`}
+                        address={_stakingData.stakedToken}
+                      />
+                      // <a
+                      //   target="_blank"
+                      //   rel="noopener noreferrer"
+                      //   className="text-indigo-500"
+                      //   href={getExplorerTokenLink(getChainId(), _stakingData.stakedToken)}
+                      // >
+                      //   <span>{getShortAddress(_stakingData.stakedToken)}</span>
+                      //   {/* <FontAwesomeIcon className="ml-1" size="xs" icon={faExternalLinkAlt} /> */}
+                      // </a>
                     }
                   />
                   <Detail

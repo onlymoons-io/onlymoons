@@ -1,5 +1,6 @@
 export { default as getShortAddress } from './getShortAddress'
 export { default as timestampToDateTimeLocal } from './timestampToDateTimeLocal'
+export { default as getExplorerAddressLink } from './getExplorerAddressLink'
 export { default as getExplorerTokenLink } from './getExplorerTokenLink'
 export { default as getExplorerContractLink } from './getExplorerContractLink'
 export { default as getNativeCoin } from './getNativeCoin'

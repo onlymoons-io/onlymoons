@@ -76,7 +76,7 @@ const Header: React.FC<Props> = ({ filterEnabled = true, onFilterInput }) => {
             </Link>
 
             {account ? (
-              <Link to={`/locker/account/${account}`}>
+              <Link to={`/locker/search/${account}`}>
                 <LightButton className="w-full">Your locks</LightButton>
               </Link>
             ) : (

@@ -26,7 +26,7 @@ interface PriceCache {
   timestamp: number
 }
 
-const PRICE_CACHE: Record<string, PriceCache> = {}
+let PRICE_CACHE: Record<string, PriceCache> = {}
 
 const PriceTrackerContextProvider: React.FC = ({ children }) => {
   const { chainId } = useWeb3React()
@@ -118,6 +118,13 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
     },
     [getTokenData, getTokenFromPair],
   )
+
+  // wipe the price cache on network change
+  useEffect(() => {
+    if (typeof chainId === 'undefined' || chainId > -1) {
+      PRICE_CACHE = {}
+    }
+  }, [chainId])
 
   useEffect(() => {
     //
