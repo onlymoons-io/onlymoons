@@ -1,11 +1,14 @@
-import React, { CSSProperties, useRef, useState } from 'react'
+import React, { CSSProperties } from 'react'
+import styled from 'styled-components'
 import tw from 'tailwind-styled-components'
-import { Light as Button } from './Button'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faCopy } from '@fortawesome/free-solid-svg-icons'
-import { useUnmount } from 'react-use'
+import CopyButton from './CopyButton'
 
-const Outer = tw.div`
+const OuterCSS = styled.div`
+  min-height: 320px;
+`
+
+const Outer = tw(OuterCSS)`
+  bg-gray-200
   dark:bg-gray-900
   dark:bg-opacity-50
   p-4
@@ -42,60 +45,25 @@ const PreElem = tw.pre`
   overflow-auto
   text-sm
   whitespace-pre-wrap
+  break-words
 `
 
 export interface CodeViewerProps {
   //
   children: string
-  copyAlertDuration?: number
+  title?: string
   className?: string
   style?: CSSProperties
 }
 
-const CodeViewer: React.FC<CodeViewerProps> = ({ children, copyAlertDuration = 2000, className = '', style = {} }) => {
-  const [isOnCopyCooldown, setIsOnCopyCooldown] = useState<boolean>(false)
-  const copyTime = useRef<number>(0)
-  const copyTimer = useRef<NodeJS.Timeout>()
-
-  useUnmount(() => {
-    setIsOnCopyCooldown(false)
-    copyTimer.current && clearTimeout(copyTimer.current)
-  })
-
+const CodeViewer: React.FC<CodeViewerProps> = ({ children, title = '', className = '', style = {} }) => {
   return (
     <Outer className={className} style={style}>
       <Header>
-        <Title>ABI</Title>
+        <Title>{title}</Title>
 
         <Buttons>
-          <Button
-            disabled={isOnCopyCooldown}
-            onClick={async () => {
-              //
-              try {
-                navigator.clipboard.writeText(children)
-                setIsOnCopyCooldown(true)
-                copyTime.current = Date.now()
-
-                copyTimer.current = setTimeout(() => {
-                  setIsOnCopyCooldown(false)
-                }, copyAlertDuration)
-              } catch (err) {
-                console.error(err)
-              }
-            }}
-          >
-            <FontAwesomeIcon icon={isOnCopyCooldown ? faCheck : faCopy} fixedWidth />{' '}
-            <span>
-              {isOnCopyCooldown ? (
-                <>Copied</>
-              ) : (
-                <>
-                  Copy <span className="hidden md:inline">to clipboard</span>
-                </>
-              )}
-            </span>
-          </Button>
+          <CopyButton text={children} />
         </Buttons>
       </Header>
 

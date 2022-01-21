@@ -21,8 +21,13 @@ const ModalControllerProvider: React.FC = ({ children }) => {
       if (e.key === 'Escape') setCurrentModal(undefined)
     }
 
-    if (currentModal) document.addEventListener('keydown', onKeydown)
-    else document.removeEventListener('keydown', onKeydown)
+    if (currentModal) {
+      document.documentElement.style.setProperty('overflow', 'hidden')
+      document.addEventListener('keydown', onKeydown)
+    } else {
+      document.documentElement.style.setProperty('overflow', 'auto')
+      document.removeEventListener('keydown', onKeydown)
+    }
 
     return () => {
       document.removeEventListener('keydown', onKeydown)
