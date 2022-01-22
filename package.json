@@ -28,6 +28,8 @@
     "deploy:bsctest": "yarn deploy --network bsctest",
     "deploy:metis": "yarn deploy --network metis",
     "deploy:metistest": "yarn deploy --network metistest",
+    "deploy:fuse": "yarn deploy --network fuse",
+    "deploy:fusetest": "yarn deploy --network fusetest",
     "deploy:rinkeby": "yarn deploy --network rinkeby",
     "deploy:ropsten": "yarn deploy --network ropsten",
     "deploy:kovan": "yarn deploy --network kovan",

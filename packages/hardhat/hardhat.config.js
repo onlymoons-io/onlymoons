@@ -177,6 +177,18 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    fuse: {
+      url: "https://rpc.fuse.io/",
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
+    fusetest: {
+      url: "https://rpc.fusespark.io/",
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
     xdai: {
       url: "https://rpc.xdaichain.com/",
       gasPrice: 1000000000,
