@@ -31,6 +31,16 @@
           window.localStorage.getItem('OM_DARKMODE_ENABLED') === '1',
       )
     </script>
+
+    <script>
+      ;(isHTTPS => {
+        if (!isHTTPS) {
+          const url = new URL(window.location.href)
+          url.protocol = 'https:'
+          window.location.assign(url.href)
+        }
+      })(window.location.hostname.startsWith('localhost') || window.location.protocol.startsWith('https'))
+    </script>
   </head>
   <body className="">
     <noscript>You need to enable JavaScript to run this app.</noscript>
