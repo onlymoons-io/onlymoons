@@ -42,6 +42,47 @@ export const networks: Record<number, NetworkData> = {
     isTestNet: true,
     supportedLiquidityPairTokens: [],
   },
+  122: {
+    chainId: 122,
+    name: 'Fuse',
+    shortName: 'Fuse',
+    nativeCurrency: {
+      address: '0x0BE9e53fd7EDaC9F859882AfdDa116645287C629',
+      name: 'Fuse',
+      symbol: 'FUSE',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://explorer.fuse.io/',
+    rpcURL: 'https://rpc.fuse.io/',
+    icon: '/fuse.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      {
+        // WFUSE
+        address: '0x0BE9e53fd7EDaC9F859882AfdDa116645287C629',
+        // WFUSE / DAI lp on app.fuse.fi
+        stablePair: '0x6cF952247f270BDd28d96200D8F97eF0f8F8E090',
+      },
+    ],
+  },
+  123: {
+    chainId: 123,
+    name: 'Fuse Spark (testnet)',
+    shortName: 'Fuse (testnet)',
+    nativeCurrency: {
+      address: '-',
+      name: 'Spark',
+      symbol: 'SPARK',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://explorer.fusespark.io/',
+    rpcURL: 'https://rpc.fusespark.io/',
+    icon: '/fuse.png',
+    isTestNet: true,
+    supportedLiquidityPairTokens: [],
+  },
   588: {
     chainId: 588,
     name: 'Metis Stardust (TESTNET)',

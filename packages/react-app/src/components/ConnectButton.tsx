@@ -2,7 +2,6 @@ import { CSSProperties, FC, useCallback, useContext } from 'react'
 import { useMount } from 'react-use'
 import { useWeb3React } from '@web3-react/core'
 import { InjectedConnector } from '@web3-react/injected-connector'
-import Tooltip from './Tooltip'
 import { getShortAddress } from '../util'
 import { Dark, Light, Primary, Secondary } from './Button'
 import { NotificationCatcherContext } from './NotificationCatcher'
@@ -86,11 +85,9 @@ const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light', className = ''
 
   return (
     <>
-      <Button className={className} style={style} data-tip={true} data-for="connect-button" onClick={onClickConnect}>
+      <Button className={className} style={style} onClick={onClickConnect}>
         {w3.account ? getShortAddress(w3.account) : 'Connect'}
       </Button>
-
-      <Tooltip id="connect-button">Currently available on BSC &amp; Metis Andromeda</Tooltip>
     </>
   )
 }

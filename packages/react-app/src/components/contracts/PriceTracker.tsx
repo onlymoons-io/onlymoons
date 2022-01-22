@@ -84,7 +84,7 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
       const token = getTokenFromPair(lpData)
       const tokenBalance = token === lpData.token0 ? lpData.balance0 : lpData.balance1
       const pairedToken = token === lpData.token0 ? lpData.token1 : lpData.token0
-      const pairedTokenBalance = token === lpData.token0 ? lpData.balance1 : lpData.balance1
+      const pairedTokenBalance = token === lpData.token0 ? lpData.balance1 : lpData.balance0
 
       if (PRICE_CACHE[pairedToken] && Date.now() - PRICE_CACHE[pairedToken].timestamp < 60000) {
         if (!PRICE_CACHE[pairedToken].price) {
