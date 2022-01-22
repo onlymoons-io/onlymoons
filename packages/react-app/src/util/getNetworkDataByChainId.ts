@@ -61,8 +61,8 @@ export const networks: Record<number, NetworkData> = {
       {
         // WFUSE
         address: '0x0BE9e53fd7EDaC9F859882AfdDa116645287C629',
-        // WFUSE / DAI lp on app.fuse.fi
-        stablePair: '0x6cF952247f270BDd28d96200D8F97eF0f8F8E090',
+        // WFUSE / USDT lp on app.fuse.fi
+        stablePair: '0x8a81984D2DF356B49d182910bbB935897450d7e8',
       },
     ],
   },
