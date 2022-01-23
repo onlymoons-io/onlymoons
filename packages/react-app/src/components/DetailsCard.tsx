@@ -4,7 +4,7 @@ import tw from 'tailwind-styled-components'
 import { motion } from 'framer-motion'
 
 export const Outer = tw(motion.div)`
-  
+  h-full
 `
 
 Outer.defaultProps = {
@@ -17,6 +17,9 @@ export const Inner = tw.div`
   dark:bg-gray-800
   dark:text-gray-200
   rounded
+  h-full
+  flex
+  flex-col
 `
 
 export const Section = tw.section`
@@ -48,9 +51,10 @@ export const Header = tw(Section)`
 `
 
 export const Main = tw(Section)`
-  bg-gray-100
-  dark:bg-gray-800
   rounded-b
+  flex-grow
+  flex
+  flex-col
 `
 
 export const Footer = tw(Section)`

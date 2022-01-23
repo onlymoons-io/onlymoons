@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { BigNumber, Contract } from 'ethers'
 import { ContractCacheContext } from './ContractCache'
 import { LPLockData, TokenLockData } from '../../typings'
+import { usePromise } from 'react-use'
 
 export interface ITokenLockerManagerV1ContractContext {
   //
@@ -9,6 +10,7 @@ export interface ITokenLockerManagerV1ContractContext {
   address?: string
   tokenLockerCount: number
 
+  updateTokenLockerCount?: () => Promise<void>
   createTokenLocker?: (tokenAddress: string, amount: BigNumber, unlockTime: number) => Promise<number>
   getTokenLockersForAddress?: (address: string) => Promise<Array<number>>
   getTokenLockData?: (id: number) => Promise<TokenLockData>
@@ -21,6 +23,7 @@ export const TokenLockerManagerV1ContractContext = createContext<ITokenLockerMan
 })
 
 const TokenLockerManagerV1ContractContextProvider: React.FC = ({ children }) => {
+  const mounted = usePromise()
   const { getContract } = useContext(ContractCacheContext)
   const [contract, setContract] = useState<Contract>()
   const [tokenLockerCount, setTokenLockerCount] = useState<number>(0)
@@ -78,6 +81,24 @@ const TokenLockerManagerV1ContractContextProvider: React.FC = ({ children }) => 
     [contract],
   )
 
+  const updateTokenLockerCount = useCallback(async () => {
+    if (!contract) {
+      setTokenLockerCount(0)
+      return
+    }
+
+    try {
+      setTokenLockerCount(await mounted(contract.tokenLockerCount()))
+    } catch (err) {
+      console.error(err)
+      setTokenLockerCount(0)
+    }
+  }, [mounted, contract])
+
+  useEffect(() => {
+    updateTokenLockerCount()
+  }, [updateTokenLockerCount])
+
   useEffect(() => {
     getContract('TokenLockerManagerV1')
       .then(setContract)
@@ -88,22 +109,18 @@ const TokenLockerManagerV1ContractContextProvider: React.FC = ({ children }) => 
   }, [getContract])
 
   useEffect(() => {
-    if (!contract) {
-      setTokenLockerCount(0)
+    if (!contract || !updateTokenLockerCount) {
       return
     }
 
-    contract
-      .tokenLockerCount()
-      .then((_tokenLockerCount: number) => {
-        //
-        setTokenLockerCount(_tokenLockerCount)
-      })
-      .catch((err: Error) => {
-        console.error(err)
-        setTokenLockerCount(0)
-      })
-  }, [contract])
+    contract.on('TokenLockerCreated', updateTokenLockerCount)
+
+    const _contract = contract
+
+    return () => {
+      _contract?.off('TokenLockerCreated', updateTokenLockerCount)
+    }
+  }, [contract, updateTokenLockerCount])
 
   return (
     <TokenLockerManagerV1ContractContext.Provider
@@ -112,6 +129,7 @@ const TokenLockerManagerV1ContractContextProvider: React.FC = ({ children }) => 
         contract,
         address: contract?.address,
         tokenLockerCount,
+        updateTokenLockerCount,
         createTokenLocker,
         getTokenLockersForAddress,
         getTokenLockData,

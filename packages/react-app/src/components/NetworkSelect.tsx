@@ -104,6 +104,7 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
               headerContent={<div className="text-xl">Select network</div>}
               mainContent={
                 <div>
+                  {/** @todo sort this alphabetically by network name */}
                   {Object.keys(contracts).map((key, value, index) => {
                     const _networkData = getNetworkDataByChainId(parseInt(key))
 

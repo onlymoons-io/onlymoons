@@ -9,6 +9,8 @@ import Anchor from '../Anchor'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
 import { getExplorerContractLink } from '../../util'
+import { usePromise } from 'react-use'
+import { LockWatchlist } from './LockWatchlist'
 
 const TopSection = tw.section`
   py-10
@@ -42,18 +44,20 @@ interface Props {
 }
 
 const Header: React.FC<Props> = ({ filterEnabled = true, onFilterInput }) => {
+  const mounted = usePromise()
   const { account, chainId } = useWeb3React()
   const { getContract } = useContext(ContractCacheContext)
+  const { watchlist } = useContext(LockWatchlist)
   const [address, setAddress] = useState<string>()
 
   useEffect(() => {
-    getContract('TokenLockerManagerV1')
+    mounted(getContract('TokenLockerManagerV1'))
       .then(contract => setAddress(contract?.address))
       .catch((err: Error) => {
         console.error(err)
         setAddress(undefined)
       })
-  }, [getContract])
+  }, [mounted, getContract])
 
   return (
     <TopSection>
@@ -81,6 +85,14 @@ const Header: React.FC<Props> = ({ filterEnabled = true, onFilterInput }) => {
               </Link>
             ) : (
               <LightButton disabled={true}>Your locks</LightButton>
+            )}
+
+            {chainId ? (
+              <Link to={`/locker/watchlist`}>
+                <LightButton className="w-full">Watchlist ({(watchlist || []).length})</LightButton>
+              </Link>
+            ) : (
+              <LightButton disabled={true}>Watchlist</LightButton>
             )}
           </div>
 

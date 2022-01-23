@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react'
+import React, { useContext, useEffect, useState, useCallback, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
 import { utils } from 'ethers'
@@ -10,45 +10,90 @@ import Lock from './Lock'
 import NotConnected from '../NotConnected'
 import Header from './Header'
 import { Outer, MidSection, SectionInner, Grid as Locks, Loading as LocksLoading } from '../Layout'
+import { usePromise } from 'react-use'
+import { LockWatchlist } from './LockWatchlist'
 
 const { isAddress, getAddress } = utils
 
-const Locker: React.FC = () => {
+export interface LockerProps {
+  useWatchlist?: boolean
+}
+
+const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
+  const { watchlist } = useContext(LockWatchlist)
+  const mounted = usePromise()
   const { account: accountToCheck, chainId: chainIdToUse, id: idToUse } = useParams()
   const { account, chainId } = useWeb3React()
   const { contract, getTokenLockersForAddress, tokenLockerCount } = useContext(TokenLockerManagerV1ContractContext)
   const [filterInputValue, setFilterInputValue] = useState<string>()
   const [lockIds, setLockIds] = useState<number[]>([])
+  const wasUsingWatchlist = useRef<boolean>(false)
 
   const setupLocks = useCallback(() => {
-    if (!contract || !account || !tokenLockerCount || !getTokenLockersForAddress) {
+    if (!chainId || !contract || !account || !tokenLockerCount || !getTokenLockersForAddress) {
+      setLockIds([])
       return
     }
 
     if (idToUse) {
       setLockIds([parseInt(idToUse)])
+      wasUsingWatchlist.current = false
+    } else if (useWatchlist) {
+      if (wasUsingWatchlist.current) {
+        setLockIds(watchlist?.map(v => parseInt(v)) || [])
+      } else {
+        setLockIds([])
+        mounted(new Promise(done => setTimeout(done, 250))).then(() =>
+          setLockIds(watchlist?.map(v => parseInt(v)) || []),
+        )
+      }
+
+      wasUsingWatchlist.current = true
     } else if (accountToCheck) {
       setLockIds([])
-      getTokenLockersForAddress(getAddress(accountToCheck))
+      mounted(getTokenLockersForAddress(getAddress(accountToCheck)))
         .then(setLockIds)
         .catch((err: Error) => {
           console.error(err)
           setLockIds([])
         })
+      wasUsingWatchlist.current = false
     } else if (filterInputValue) {
       setLockIds([])
       if (isAddress(filterInputValue)) {
-        getTokenLockersForAddress(getAddress(filterInputValue))
+        mounted(getTokenLockersForAddress(getAddress(filterInputValue)))
           .then(setLockIds)
           .catch((err: Error) => {
             console.error(err)
             setLockIds([])
           })
       }
+      wasUsingWatchlist.current = false
     } else {
-      setLockIds(new Array(tokenLockerCount).fill(null).map((val, index) => index))
+      if (wasUsingWatchlist.current) {
+        setLockIds([])
+        mounted(new Promise(done => setTimeout(done, 250))).then(() =>
+          setLockIds(new Array(tokenLockerCount).fill(null).map((val, index) => index)),
+        )
+      } else {
+        setLockIds(new Array(tokenLockerCount).fill(null).map((val, index) => index))
+      }
+
+      wasUsingWatchlist.current = false
     }
-  }, [contract, idToUse, account, accountToCheck, getTokenLockersForAddress, tokenLockerCount, filterInputValue])
+  }, [
+    chainId,
+    mounted,
+    contract,
+    idToUse,
+    account,
+    accountToCheck,
+    getTokenLockersForAddress,
+    tokenLockerCount,
+    filterInputValue,
+    useWatchlist,
+    watchlist,
+  ])
 
   useEffect(setupLocks, [setupLocks])
 
@@ -81,7 +126,6 @@ const Locker: React.FC = () => {
                     .map(id => id)
                     .reverse()
                     .map(lockId => {
-                      // const lockId = tokenLockerCount - index - 1
                       return <Lock key={lockId} lockId={lockId} />
                     })}
                 </Locks>

@@ -1,5 +1,4 @@
 import React, { createContext, useState, useRef } from 'react'
-import { useMount } from 'react-use'
 import { HashRouter as Router, Routes, Route } from 'react-router-dom'
 
 import tw from 'tailwind-styled-components'
@@ -10,6 +9,8 @@ import ContractCacheContextProvider from './components/contracts/ContractCache'
 import UtilContractContextProvider from './components/contracts/Util'
 import TokenLockerManagerV1ContractContextProvider from './components/contracts/TokenLockerManagerV1'
 import PriceTrackerContextProvider from './components/contracts/PriceTracker'
+
+import LockWatchlistProvider from './components/Locker/LockWatchlist'
 
 import FullscreenLoading from './components/FullscreenLoading'
 
@@ -32,8 +33,7 @@ import { Web3ReactProvider } from '@web3-react/core'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 
 import { providers } from 'ethers'
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-// import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
+
 const { Web3Provider } = providers
 
 function getLibrary(provider?: any, connector?: AbstractConnector) {
@@ -120,9 +120,7 @@ const AppContent: React.FC = () => {
               setLeftNavExpanded(true)
             }}
             onMouseLeave={() => {
-              //
               mouseLeaveTimer.current && clearTimeout(mouseLeaveTimer.current)
-
               mouseLeaveTimer.current = setTimeout(() => {
                 setLeftNavExpanded(false)
               }, 500)
@@ -140,11 +138,54 @@ const AppContent: React.FC = () => {
             <Routes>
               <Route path="/launches" element={<ComingSoon />} />
               <Route path="/deployer" element={<ComingSoon />} />
-              <Route path="/locker/search/:account" element={<ManageLockers />} />
-              <Route path="/locker/account/:account" element={<ManageLockers />} />
-              <Route path="/locker/create" element={<CreateLocker />} />
-              <Route path="/locker/:chainId/:id" element={<Locker />} />
-              <Route path="/locker" element={<Locker />} />
+              <Route
+                path="/locker/search/:account"
+                element={
+                  <TokenLockerManagerV1ContractContextProvider>
+                    <LockWatchlistProvider children={<ManageLockers />} />
+                  </TokenLockerManagerV1ContractContextProvider>
+                }
+              />
+              <Route
+                path="/locker/account/:account"
+                element={
+                  <TokenLockerManagerV1ContractContextProvider>
+                    <LockWatchlistProvider children={<ManageLockers />} />
+                  </TokenLockerManagerV1ContractContextProvider>
+                }
+              />
+              <Route
+                path="/locker/create"
+                element={
+                  <TokenLockerManagerV1ContractContextProvider>
+                    <LockWatchlistProvider children={<CreateLocker />} />
+                  </TokenLockerManagerV1ContractContextProvider>
+                }
+              />
+              <Route
+                path="/locker/watchlist"
+                element={
+                  <TokenLockerManagerV1ContractContextProvider>
+                    <LockWatchlistProvider children={<Locker useWatchlist={true} />} />{' '}
+                  </TokenLockerManagerV1ContractContextProvider>
+                }
+              />
+              <Route
+                path="/locker/:chainId/:id"
+                element={
+                  <TokenLockerManagerV1ContractContextProvider>
+                    <LockWatchlistProvider children={<Locker />} />
+                  </TokenLockerManagerV1ContractContextProvider>
+                }
+              />
+              <Route
+                path="/locker"
+                element={
+                  <TokenLockerManagerV1ContractContextProvider>
+                    <LockWatchlistProvider children={<Locker />} />
+                  </TokenLockerManagerV1ContractContextProvider>
+                }
+              />
               <Route path="/staking/create" element={<CreateStaking />} />
               <Route path="/staking" element={<Staking />} />
               <Route path="/governance" element={<ComingSoon />} />
@@ -162,14 +203,6 @@ const AppContent: React.FC = () => {
 }
 
 const App: React.FC = () => {
-  useMount(() => {
-    if (!IS_HTTPS) {
-      const url = new URL(window.location.href)
-      url.protocol = 'https:'
-      window.location.assign(url.href)
-    }
-  })
-
   return IS_HTTPS ? (
     <Web3ReactProvider getLibrary={getLibrary}>
       <Router>
@@ -177,9 +210,7 @@ const App: React.FC = () => {
           <ContractCacheContextProvider>
             <UtilContractContextProvider>
               <PriceTrackerContextProvider>
-                <TokenLockerManagerV1ContractContextProvider>
-                  <AppContent />
-                </TokenLockerManagerV1ContractContextProvider>
+                <AppContent />
               </PriceTrackerContextProvider>
             </UtilContractContextProvider>
           </ContractCacheContextProvider>

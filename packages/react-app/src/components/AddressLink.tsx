@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faExternalLinkAlt, faFileCode } from '@fortawesome/free-solid-svg-icons'
 import Anchor from './Anchor'
+import { usePromise } from 'react-use'
 
 const { Web3Provider: Web3ProviderClass } = providers
 
@@ -34,6 +35,7 @@ const AddressLink: React.FC<AddressLinkProps> = ({
   className = '',
   style = {},
 }) => {
+  const mounted = usePromise()
   const { chainId, connector } = useWeb3React()
   // const [explorerUrl, setExplorerUrl] = useState<string>()
   const [provider, setProvider] = useState<Web3Provider>()
@@ -52,10 +54,10 @@ const AddressLink: React.FC<AddressLinkProps> = ({
 
     if (!IS_CONTRACT_CACHE[chainId]) IS_CONTRACT_CACHE[chainId] = {}
 
-    IS_CONTRACT_CACHE[chainId][address] = (await provider.getCode(address)) !== '0x'
+    IS_CONTRACT_CACHE[chainId][address] = (await mounted(provider.getCode(address))) !== '0x'
 
     return IS_CONTRACT_CACHE[chainId][address]
-  }, [definitelyContract, showContractIcon, chainId, provider, address])
+  }, [mounted, definitelyContract, showContractIcon, chainId, provider, address])
 
   useEffect(() => {
     if (definitelyContract || !showContractIcon || !chainId || !connector) {
@@ -63,30 +65,29 @@ const AddressLink: React.FC<AddressLinkProps> = ({
       return
     }
 
-    connector
-      .getProvider()
+    mounted(connector.getProvider())
       .then(_provider => new Web3ProviderClass(_provider))
       .then(setProvider)
       .catch((err: Error) => {
         console.error(err)
         setProvider(undefined)
       })
-  }, [definitelyContract, chainId, connector, showContractIcon])
+  }, [mounted, definitelyContract, chainId, connector, showContractIcon])
 
   useEffect(() => {
-    getIsContract()
+    mounted(getIsContract())
       .then(setIsContract)
       .catch((err: Error) => {
         console.error(err)
         setIsContract(false)
       })
-  }, [getIsContract])
+  }, [mounted, getIsContract])
 
   return (
     <span className={`inline-flex gap-1 items-center ${className}`}>
       <Link to={internalUrl} className="flex gap-2 items-center" style={style}>
         {isContract && <FontAwesomeIcon icon={faFileCode} opacity={0.8} />}
-        <span className="text-indigo-600 dark:text-indigo-500">{linkText || getShortAddress(address)}</span>
+        <span className="text-indigo-600 dark:text-indigo-400">{linkText || getShortAddress(address)}</span>
       </Link>
 
       {chainId ? (

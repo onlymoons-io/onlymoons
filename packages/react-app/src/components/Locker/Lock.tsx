@@ -1,46 +1,41 @@
 import React, { useState, useEffect, useCallback, useContext, useRef } from 'react'
-import { useUnmount, useIntersection } from 'react-use'
+import { useUnmount, useIntersection, usePromise, useMount, useInterval } from 'react-use'
 import { Link } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
 import { BigNumber, Contract, providers, utils } from 'ethers'
 import { CircularProgressbarWithChildren as CircularProgressbar, buildStyles } from 'react-circular-progressbar'
 import 'react-circular-progressbar/dist/styles.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faExclamation, faCheck, faCircleNotch, faExchangeAlt, faFileCode } from '@fortawesome/free-solid-svg-icons'
+import {
+  faExclamation,
+  faCheck,
+  faCircleNotch,
+  faExchangeAlt,
+  faFileCode,
+  faLock,
+  faStar,
+  faWrench,
+  faLockOpen,
+} from '@fortawesome/free-solid-svg-icons'
+import { faStar as faStarOutline } from '@fortawesome/free-regular-svg-icons'
 import humanizeDuration from 'humanize-duration'
 import { UtilContractContext } from '../contracts/Util'
 import { TokenLockerManagerV1ContractContext } from '../contracts/TokenLockerManagerV1'
 import { ModalControllerContext } from '../ModalController'
-import { PriceTrackerContext } from '../contracts/PriceTracker'
 import { TokenData, TokenLockData, LPLockData } from '../../typings'
 import { motion } from 'framer-motion'
-import { Primary as PrimaryButton } from '../Button'
+import { Primary as PrimaryButton, Light as Button } from '../Button'
 import Tooltip from '../Tooltip'
 import TokenInput from '../TokenInput'
 import TokenWithValue from '../TokenWithValue'
-import {
-  getShortAddress,
-  // getExplorerContractLink,
-  // getExplorerTokenLink,
-  timestampToDateTimeLocal,
-  getNativeCoin,
-  getFormattedAmount,
-} from '../../util'
+import { getShortAddress, timestampToDateTimeLocal, getNativeCoin, getFormattedAmount } from '../../util'
 import { ERC20ABI } from '../../contracts/external_contracts'
 import DetailsCard, { Detail, Title } from '../DetailsCard'
 import { ContractCacheContext } from '../contracts/ContractCache'
 import Input from '../Input'
-// import CodeViewer from '../CodeViewer'
 import ContractDetails from '../ContractDetails'
 import AddressLink from '../AddressLink'
-// import humanNumber from 'human-number'
-// import Anchor from '../Anchor'
-
-// const reallyHumanNumber = (n: number) => {
-//   return n < 1
-//     ? n.toLocaleString('en', { maximumFractionDigits: 18 })
-//     : humanNumber(n, _n => _n.toLocaleString('en', { maximumFractionDigits: 2 }))
-// }
+import { LockWatchlist } from './LockWatchlist'
 
 const { Web3Provider } = providers
 
@@ -84,11 +79,11 @@ export interface LockProps {
 }
 
 const Lock: React.FC<LockProps> = ({ lockId }) => {
+  const mounted = usePromise()
+  const { isWatching, addToWatchlist, removeFromWatchlist } = useContext(LockWatchlist)
   const { account, chainId, connector } = useWeb3React()
-  const { isSupportedPair, getTokenFromPair, getPriceForPair, getStablePairAddress } =
-    useContext(PriceTrackerContext) || {}
   const { getContract } = useContext(ContractCacheContext)
-  const { getTokenData, getLpData } = useContext(UtilContractContext)
+  const { getTokenData } = useContext(UtilContractContext)
   const { contract, getTokenLockData } = useContext(TokenLockerManagerV1ContractContext)
   const { setCurrentModal } = useContext(ModalControllerContext)
   const [lockData, setLockData] = useState<TokenLockData | undefined>()
@@ -123,30 +118,34 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
   const firstVisible = useRef<boolean>(false)
   const currentlyVisible = useRef<boolean>(false)
   const [isVisible, setIsVisible] = useState<boolean>(false)
-  const [priceForPair, setPriceForPair] = useState<number>(-1)
-
-  useUnmount(() => {
-    firstVisible.current = false
-    setLockData(undefined)
-  })
-
-  // const getChainId = useCallback(() => {
-  //   return chainId || 0
-  // }, [chainId])
+  const [manageExpanded, setManageExpanded] = useState<boolean>(false)
 
   const updateLockData = useCallback(() => {
     if (typeof lockId !== 'number' || !contract || !getTokenLockData || !currentlyVisible.current) return
 
-    getTokenLockData(lockId)
+    mounted(getTokenLockData(lockId))
       .then(lockData => setLockData(lockData))
       .catch(console.error)
-  }, [contract, getTokenLockData, lockId])
+  }, [mounted, contract, getTokenLockData, lockId])
 
   useEffect(updateLockData, [updateLockData])
 
-  useEffect(() => {
-    setIsVisible((currentlyVisible.current = intersection && intersection.intersectionRatio > 0 ? true : false))
+  useMount(updateLockData)
+
+  useUnmount(() => {
+    firstVisible.current = false
+    currentlyVisible.current = false
+    setLockData(undefined)
+  })
+
+  const updateIsVisible = useCallback(() => {
+    currentlyVisible.current = intersection && intersection.intersectionRatio > 0 ? true : false
+    setIsVisible(currentlyVisible.current)
   }, [intersection])
+
+  useEffect(updateIsVisible, [updateIsVisible])
+
+  useInterval(updateIsVisible, 2000)
 
   useEffect(() => {
     if (firstVisible.current) return
@@ -168,8 +167,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
       return
     }
 
-    connector
-      .getProvider()
+    mounted(connector.getProvider())
       .then(provider =>
         setTokenContract(new Contract(lockData.token, ERC20ABI, new Web3Provider(provider).getSigner())),
       )
@@ -178,10 +176,10 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
         setTokenContract(undefined)
       })
 
-    getTokenData(lockData.token)
+    mounted(getTokenData(lockData.token))
       .then(result => setLockTokenData(result))
       .catch(console.error)
-  }, [contract, connector, lockData, getTokenData])
+  }, [mounted, contract, connector, lockData, getTokenData])
 
   useEffect(() => {
     if (!lockData) {
@@ -189,13 +187,13 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
       return
     }
 
-    getContract('TokenLockerV1', { address: lockData.contractAddress })
+    mounted(getContract('TokenLockerV1', { address: lockData.contractAddress }))
       .then(setLockContract)
       .catch((err: Error) => {
         console.error(err)
         setLockContract(undefined)
       })
-  }, [lockData, getContract])
+  }, [mounted, lockData, getContract])
 
   useEffect(() => {
     if (!account || !tokenContract || !lockTokenData || !lockContract || !lockData) {
@@ -212,8 +210,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
       setCanSubmitExtend(true)
     }
 
-    tokenContract
-      .allowance(account, lockContract.address)
+    mounted<BigNumber>(tokenContract.allowance(account, lockContract.address))
       .then((allowance_: BigNumber) =>
         setIsExtendApproved(allowance_.gte(utils.parseUnits(depositTokens, lockTokenData.decimals))),
       )
@@ -221,7 +218,17 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
         console.error(err)
         setIsExtendApproved(false)
       })
-  }, [account, lockContract, lockTokenData, isExtending, depositTokens, tokenContract, extendedUnlockTime, lockData])
+  }, [
+    mounted,
+    account,
+    lockContract,
+    lockTokenData,
+    isExtending,
+    depositTokens,
+    tokenContract,
+    extendedUnlockTime,
+    lockData,
+  ])
 
   useEffect(() => {
     if (!lockContract || !lockData || !lockData.isLpToken) {
@@ -229,14 +236,13 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
       return
     }
 
-    lockContract
-      .getLpData()
+    mounted<LPLockData>(lockContract.getLpData())
       .then((result: LPLockData) => setLpLockData(result))
       .catch((err: Error) => {
         // console.error(err)
         setLpLockData(undefined)
       })
-  }, [lockContract, lockData])
+  }, [mounted, lockContract, lockData])
 
   useEffect(() => {
     if (!lpLockData || !getTokenData || !lpLockData.hasLpData) {
@@ -245,7 +251,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
       return
     }
 
-    Promise.all([getTokenData(lpLockData.token0), getTokenData(lpLockData.token1)])
+    mounted(Promise.all([getTokenData(lpLockData.token0), getTokenData(lpLockData.token1)]))
       .then(([token0Data, token1Data]) => {
         setLpToken0Data(token0Data)
         setLpToken1Data(token1Data)
@@ -255,7 +261,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
         setLpToken0Data(undefined)
         setLpToken1Data(undefined)
       })
-  }, [lpLockData, getTokenData])
+  }, [mounted, lpLockData, getTokenData])
 
   useEffect(() => {
     if (!lockContract || !account || !lockData || lockData.lockOwner !== account || !connector) {
@@ -263,16 +269,14 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
       return
     }
 
-    //
-    connector
-      .getProvider()
-      .then(_provider => new Web3Provider(_provider).getBalance(lockContract.address))
+    mounted(connector.getProvider())
+      .then(_provider => mounted(new Web3Provider(_provider).getBalance(lockContract.address)))
       .then(setClaimableEth)
       .catch((err: Error) => {
         console.error(err)
         setClaimableEth(BigNumber.from(0))
       })
-  }, [account, lockContract, connector, lockData])
+  }, [mounted, account, lockContract, connector, lockData])
 
   useEffect(() => {
     if (
@@ -288,17 +292,15 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
 
     setCheckingTokenBalance(true)
 
-    //
-    connector
-      .getProvider()
+    mounted(connector.getProvider())
       .then(provider => new Contract(claimTokenAddress, ERC20ABI, new Web3Provider(provider)))
-      .then(claimTokenContract => claimTokenContract.balanceOf(lockData.contractAddress))
+      .then(claimTokenContract => mounted<BigNumber>(claimTokenContract.balanceOf(lockData.contractAddress)))
       .then(setClaimableTokens)
       .catch((err: Error) => {
         console.error(err)
       })
       .then(() => setCheckingTokenBalance(false))
-  }, [lockData, connector, claimTokenAddress])
+  }, [mounted, lockData, connector, claimTokenAddress])
 
   useEffect(() => {
     if (!getTokenData || !claimTokenAddress || claimTokenAddress === '') {
@@ -306,75 +308,15 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
       return
     }
 
-    getTokenData(claimTokenAddress)
+    mounted(getTokenData(claimTokenAddress))
       .then(setClaimTokenData)
       .catch((err: Error) => {
         console.error(err)
       })
-  }, [getTokenData, claimTokenAddress])
-
-  useEffect(() => {
-    if (
-      lpLockData &&
-      lockTokenData &&
-      lpToken0Data &&
-      lpToken1Data &&
-      getLpData &&
-      isSupportedPair &&
-      getStablePairAddress &&
-      getTokenFromPair &&
-      getPriceForPair &&
-      isSupportedPair(lpLockData)
-    ) {
-      const stablePairAddress = getStablePairAddress(lpLockData)
-
-      if (stablePairAddress) {
-        getLpData(stablePairAddress)
-          .then(stableLpData => {
-            if (!stableLpData) {
-              return Promise.reject(new Error('Could not get stable LP data'))
-            }
-
-            return Promise.resolve(stableLpData)
-          })
-          .then(getPriceForPair)
-          // .then(n => parseFloat(utils.formatEther(n)))
-          .then(p => {
-            // console.log(p)
-            setPriceForPair(p)
-          })
-          .catch((err: Error) => {
-            console.error(err)
-            setPriceForPair(0)
-          })
-      } else {
-        setPriceForPair(0)
-      }
-      //
-
-      // getPriceForPair(lpLockData)
-      //   .then(n => parseFloat(utils.formatEther(n)))
-      //   .then(setPriceForPair)
-      //   .catch((err: Error) => {
-      //     console.error(err)
-      //   })
-    } else {
-      setPriceForPair(0)
-    }
-  }, [
-    lpLockData,
-    lockTokenData,
-    lpToken0Data,
-    lpToken1Data,
-    isSupportedPair,
-    getTokenFromPair,
-    getPriceForPair,
-    getLpData,
-    getStablePairAddress,
-  ])
+  }, [mounted, getTokenData, claimTokenAddress])
 
   return (
-    <div ref={intersectionRef} style={{ minHeight: '380px' }}>
+    <div ref={intersectionRef} style={{ minHeight: '360px' }}>
       {!intersection ||
         (intersection.intersectionRatio > 0 && (
           <DetailsCard
@@ -391,7 +333,6 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                             {lockTokenData && <span className="text-sm">({lockTokenData.symbol || '...'})</span>}
                           </Link>
                         </div>
-                        {/* <Link to={`/locker/${chainId}/${lockId}`}>{lockTokenData?.symbol || '...'}</Link> */}
                       </Title>
 
                       <div className="text-sm">
@@ -401,9 +342,6 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                           internalUrl={`/locker/search/${lockData.createdBy}`}
                           address={lockData.createdBy}
                         />
-                        {/* <Link to={`/locker/search/${lockData.createdBy}`} className="mt-2 text-indigo-500">
-                          {getShortAddress(lockData.createdBy)}
-                        </Link> */}
                         {lockData.lockOwner !== lockData.createdBy && (
                           <>
                             ,{' '}
@@ -470,32 +408,104 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                     </Tooltip>
                   </div>
 
-                  {/* {lpToken0Data && lpToken1Data && (
-              <motion.div
-                className="px-4 flex items-center gap-1 bg-yellow-100 dark:bg-yellow-100 dark:bg-opacity-10 border-b border-gray-200 dark:border-transparent absolute left-0 right-0 -bottom-4 z-10"
-                initial={{ scaleY: 0, y: '-100%', opacity: 0 }}
-                animate={{ scaleY: 1, y: 0, opacity: 1 }}
-              >
-                <span>Pair: </span>
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-indigo-500"
-                  href={getExplorerTokenLink(getChainId(), lpToken0Data.address)}
-                >
-                  {lpToken0Data.symbol}
-                </a>
-                <FontAwesomeIcon icon={faExchangeAlt} fixedWidth size="sm" opacity={0.5} />
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-indigo-500"
-                  href={getExplorerTokenLink(getChainId(), lpToken1Data.address)}
-                >
-                  {lpToken1Data.symbol}
-                </a>
-              </motion.div>
-            )} */}
+                  {/* <Detail
+                    label={`${lockTokenData?.symbol || 'Tokens'} locked`}
+                    value={`${getFormattedAmount(lockData.balance, lockTokenData?.decimals)} (${utils.formatUnits(
+                      lockData.balance.mul(10000).div(lockData.totalSupply),
+                      2,
+                    )}%)`}
+                  /> */}
+
+                  <div className="mt-2 pt-4 border-t dark:border-gray-800 text-center text-2xl">
+                    <FontAwesomeIcon
+                      className="mr-1"
+                      icon={BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) ? faLockOpen : faLock}
+                      opacity={0.3}
+                      fixedWidth
+                    />
+                    {getFormattedAmount(lockData.balance, lockTokenData?.decimals)} (
+                    {utils.formatUnits(lockData.balance.mul(10000).div(lockData.totalSupply), 2)}%)
+                  </div>
+
+                  {lpToken0Data && lpToken1Data && (
+                    <motion.div
+                      className="px-8 pt-3 mt-4 grid grid-cols-3 items-center gap-1 border-t dark:border-gray-800 text-sm font-extralight"
+                      initial={{ scaleY: 0, y: '-100%', opacity: 0 }}
+                      animate={{ scaleY: 1, y: 0, opacity: 1 }}
+                    >
+                      <div className="flex flex-col justify-center items-center">
+                        <AddressLink
+                          className="text-lg"
+                          internalUrl={`/locker/search/${lpToken0Data.address}`}
+                          address={lpToken0Data.address}
+                          linkText={lpToken0Data.symbol}
+                          showContractIcon={false}
+                        />
+
+                        <TokenWithValue
+                          amount={(() => {
+                            if (!lpLockData || !lockTokenData) {
+                              return BigNumber.from(0)
+                            }
+                            let val: BigNumber
+
+                            try {
+                              val = lpLockData.balance0
+                                .mul(BigNumber.from(10).pow(lpToken0Data.decimals))
+                                .div(
+                                  lockData.totalSupply
+                                    .mul(BigNumber.from(10).pow(lpToken0Data.decimals))
+                                    .div(lockData.balance),
+                                )
+                            } catch (err) {
+                              val = BigNumber.from(0)
+                            }
+
+                            return val
+                          })()}
+                          tokenData={lpToken0Data}
+                          showSymbol={false}
+                        />
+                      </div>
+
+                      <FontAwesomeIcon className="m-auto" icon={faExchangeAlt} fixedWidth size="1x" opacity={0.5} />
+
+                      <div className="flex flex-col justify-center items-center">
+                        <AddressLink
+                          className="text-lg"
+                          internalUrl={`/locker/search/${lpToken1Data.address}`}
+                          address={lpToken1Data.address}
+                          linkText={lpToken1Data.symbol}
+                          showContractIcon={false}
+                        />
+
+                        <TokenWithValue
+                          amount={(() => {
+                            if (!lpLockData || !lockTokenData) {
+                              return BigNumber.from(0)
+                            }
+                            let val: BigNumber
+
+                            try {
+                              val = lpLockData.balance1
+                                .mul(BigNumber.from(10).pow(lpToken1Data.decimals))
+                                .div(
+                                  lockData.totalSupply
+                                    .mul(BigNumber.from(10).pow(lpToken1Data.decimals))
+                                    .div(lockData.balance),
+                                )
+                            } catch (err) {
+                              val = BigNumber.from(0)
+                            }
+
+                            return val
+                          })()}
+                          tokenData={lpToken1Data}
+                          showSymbol={false}
+                        />
+                      </div>
+                    </motion.div>
+                  )}
                 </>
               ) : (
                 // lockData is not ready
@@ -508,257 +518,122 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
               //
               lockData ? (
                 <>
-                  {lpToken0Data && lpToken1Data && (
-                    <motion.div
-                      className="px-4 flex items-center gap-1 bg-yellow-100 bg-opacity-50 dark:bg-yellow-200 dark:bg-opacity-5 border-b border-gray-200 dark:border-transparent absolute left-0 right-0 top-0 z-10"
-                      initial={{ scaleY: 0, y: '-100%', opacity: 0 }}
-                      animate={{ scaleY: 1, y: 0, opacity: 1 }}
-                    >
-                      <span>Pair: </span>
-                      <Link className="text-indigo-500" to={`/locker/search/${lpToken0Data.address}`}>
-                        {lpToken0Data.symbol}
-                      </Link>
-                      <FontAwesomeIcon icon={faExchangeAlt} fixedWidth size="sm" opacity={0.5} />
-                      <Link className="text-indigo-500" to={`/locker/search/${lpToken1Data.address}`}>
-                        {lpToken1Data.symbol}
-                      </Link>
-                    </motion.div>
-                  )}
+                  <div className="flex-grow flex flex-col gap-2">
+                    <div className=" flex-col gap-2">
+                      <Detail
+                        label="Lock address"
+                        value={
+                          <AddressLink
+                            internalUrl={`/locker/search/${lockData.contractAddress}`}
+                            address={lockData.contractAddress}
+                            definitelyContract={true}
+                          />
+                        }
+                      />
+                      <Detail
+                        label={`${lockTokenData?.symbol || '...'} address`}
+                        value={
+                          <AddressLink
+                            internalUrl={`/locker/search/${lockData.token}`}
+                            address={lockData.token}
+                            definitelyContract={true}
+                          />
+                        }
+                      />
 
-                  {/* {lpToken0Data && lpToken1Data ? (
-                    <div className="dark:bg-gray-900 dark:bg-opacity-50 p-4 rounded text-xl self-start mb-2 flex justify-center items-center gap-1">
-                      <Anchor
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        href={getExplorerTokenLink(chainId || 0, lpToken0Data.address)}
-                      >
-                        {lpToken0Data.symbol}
-                      </Anchor>
-
-                      <FontAwesomeIcon icon={faExchangeAlt} opacity={0.25} fixedWidth />
-
-                      <Anchor
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        href={getExplorerTokenLink(chainId || 0, lpToken1Data.address)}
-                      >
-                        {lpToken1Data.symbol}
-                      </Anchor>
-                    </div>
-                  ) : (
-                    <></>
-                  )} */}
-
-                  <div className="flex-grow flex flex-col gap-2 mt-4">
-                    <Detail
-                      label="Locker address"
-                      value={
-                        <AddressLink
-                          internalUrl={`/locker/search/${lockData.contractAddress}`}
-                          address={lockData.contractAddress}
-                          definitelyContract={true}
-                        />
-                        // <a
-                        //   target="_blank"
-                        //   rel="noopener noreferrer"
-                        //   className="text-indigo-500"
-                        //   href={getExplorerContractLink(getChainId(), lockData.contractAddress)}
-                        // >
-                        //   {getShortAddress(lockData.contractAddress)}
-                        // </a>
-                      }
-                    />
-                    <Detail
-                      label="Token address"
-                      value={
-                        <AddressLink
-                          internalUrl={`/locker/search/${lockData.token}`}
-                          address={lockData.token}
-                          definitelyContract={true}
-                        />
-                        // <a
-                        //   target="_blank"
-                        //   rel="noopener noreferrer"
-                        //   className="text-indigo-500"
-                        //   href={getExplorerTokenLink(getChainId(), lockData.token)}
-                        // >
-                        //   {getShortAddress(lockData.token)}
-                        // </a>
-                      }
-                    />
-
-                    <Detail
+                      {/* <Detail
                       label={`${lockTokenData?.symbol || 'Tokens'} locked`}
                       value={`${getFormattedAmount(lockData.balance, lockTokenData?.decimals)} (${utils.formatUnits(
                         lockData.balance.mul(10000).div(lockData.totalSupply),
                         2,
                       )}%)`}
-                      // value={`${utils.commify(
-                      //   utils.formatUnits(lockData.balance, lockTokenData?.decimals || 18),
-                      // )} (${utils.formatUnits(lockData.balance.mul(10000).div(lockData.totalSupply), 2)}%)`}
-                    />
-                    {/* <Detail label="Percent of supply" value={``} /> */}
+                    /> */}
 
-                    {lpLockData &&
-                      lockTokenData &&
-                      lpToken0Data &&
-                      lpToken1Data &&
-                      isSupportedPair &&
-                      getTokenFromPair &&
-                      priceForPair >= 0 &&
-                      isSupportedPair(lpLockData) &&
-                      (getTokenFromPair(lpLockData) === lpLockData.token0 ? (
+                      <Detail label="Locked at" value={new Date(lockData.createdAt * 1000).toLocaleString()} />
+                      <Detail
+                        label={lockData.unlockTime > Date.now() / 1000 ? 'Unlocks at' : `Unlocked at`}
+                        value={new Date(lockData.unlockTime * 1000).toLocaleString()}
+                      />
+
+                      {/* <section className="mt-1">
+                        <span
+                          className="cursor-pointer"
+                          onClick={() => {
+                            lockContract &&
+                              setCurrentModal(
+                                <ContractDetails
+                                  address={lockContract.address}
+                                  abi={lockContract.interface.format('json') as string}
+                                />,
+                              )
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faFileCode} fixedWidth />{' '}
+                          <span className="text-indigo-600 dark:text-indigo-400 ">More contract details</span>
+                        </span>
+                      </section> */}
+                    </div>
+
+                    <div className="flex justify-between items-center border-t dark:border-gray-700 pt-2 mt-1">
+                      <div className="flex items-center gap-2">
                         <>
-                          <Detail
-                            label={`Locked ${lpToken1Data.symbol} value`}
-                            value={(() => {
-                              let val: BigNumber
+                          <Button
+                            data-tip={true}
+                            data-for={`more-contract-details-tooltip-${lockData.id}`}
+                            onClick={() => {
+                              lockContract &&
+                                setCurrentModal(
+                                  <ContractDetails
+                                    address={lockContract.address}
+                                    abi={lockContract.interface.format('json') as string}
+                                  />,
+                                )
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faFileCode} fixedWidth />
+                          </Button>
 
-                              try {
-                                val = lpLockData.balance1
-                                  .mul(BigNumber.from(10).pow(lpToken1Data.decimals))
-                                  .div(
-                                    lockData.totalSupply
-                                      .mul(BigNumber.from(10).pow(lockTokenData.decimals))
-                                      .div(lockData.balance),
-                                  )
-                              } catch (err) {
-                                val = BigNumber.from(0)
-                              }
-
-                              return <TokenWithValue amount={val} tokenData={lpToken1Data} />
-                            })()}
-                          />
-
-                          {/* <Detail
-                            label={`Price per ${lpToken0Data.symbol}`}
-                            value={(() => {
-                              let val: string
-
-                              try {
-                                val = `${utils.commify(
-                                  utils.formatUnits(
-                                    lpLockData.balance1
-                                      .mul(BigNumber.from(10).pow(lpToken0Data.decimals))
-                                      .div(lpLockData.balance0),
-                                    lpToken1Data.decimals,
-                                  ),
-                                )}`
-                              } catch (err) {
-                                // console.error(err)
-                                val = '0'
-                              }
-
-                              return `${val} ${lpToken1Data.symbol}`
-                            })()}
-                          /> */}
+                          <Tooltip place="bottom" id={`more-contract-details-tooltip-${lockData.id}`}>
+                            More contract details
+                          </Tooltip>
                         </>
-                      ) : (
+
                         <>
-                          <Detail
-                            label={`Locked ${lpToken0Data.symbol} value`}
-                            value={(() => {
-                              let val: BigNumber
+                          <Button
+                            data-tip={true}
+                            data-for={`watchlist-tooltip-${lockData.id}`}
+                            onClick={() =>
+                              lockData && isWatching && addToWatchlist && removeFromWatchlist
+                                ? isWatching(lockData.id)
+                                  ? removeFromWatchlist(lockData.id)
+                                  : addToWatchlist(lockData.id)
+                                : undefined
+                            }
+                          >
+                            <FontAwesomeIcon
+                              icon={isWatching && isWatching(lockData.id) ? faStar : faStarOutline}
+                              fixedWidth
+                            />
+                          </Button>
 
-                              try {
-                                val = lpLockData.balance0
-                                  .mul(BigNumber.from(10).pow(lpToken0Data.decimals))
-                                  .div(
-                                    lockData.totalSupply
-                                      .mul(BigNumber.from(10).pow(lockTokenData.decimals))
-                                      .div(lockData.balance),
-                                  )
-                              } catch (err) {
-                                val = BigNumber.from(0)
-                              }
-
-                              return <TokenWithValue amount={val} tokenData={lpToken0Data} />
-                            })()}
-                            // value={(() => {
-                            //   let val: string
-
-                            //   try {
-                            //     val = `${utils.commify(
-                            //       utils.formatUnits(
-                            //         lpLockData.balance0
-                            //           .mul(BigNumber.from(10).pow(lpToken0Data.decimals))
-                            //           .div(
-                            //             lockData.totalSupply
-                            //               .mul(BigNumber.from(10).pow(lockTokenData.decimals))
-                            //               .div(lockData.balance),
-                            //           ),
-                            //         lpToken0Data.decimals,
-                            //       ),
-                            //     )}`
-                            //   } catch (err) {
-                            //     // console.error(err)
-                            //     val = '0'
-                            //   }
-
-                            //   return `${val} ${lpToken0Data.symbol} ($${humanNumber(parseFloat(val) * priceForPair, n =>
-                            //     n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-                            //   )})`
-                            // })()}
-                          />
-
-                          {/* <Detail
-                            label={`Price per ${lpToken1Data.symbol}`}
-                            value={(() => {
-                              let val: string
-
-                              try {
-                                val = `${utils.commify(
-                                  utils.formatUnits(
-                                    lpLockData.balance0
-                                      .mul(BigNumber.from(10).pow(lpToken1Data.decimals))
-                                      .div(lpLockData.balance1),
-                                    lpToken0Data.decimals,
-                                  ),
-                                )}`
-                              } catch (err) {
-                                // console.error(err)
-                                val = '0'
-                              }
-
-                              return `${val} ${lpToken0Data.symbol}`
-                            })()}
-                          /> */}
+                          <Tooltip place="bottom" id={`watchlist-tooltip-${lockData.id}`}>
+                            {isWatching && isWatching(lockData.id) ? 'Remove from ' : 'Add to '}watchlist
+                          </Tooltip>
                         </>
-                      ))}
+                      </div>
 
-                    <Detail label="Locked at" value={new Date(lockData.createdAt * 1000).toLocaleString()} />
-                    <Detail
-                      label={lockData.unlockTime > Date.now() / 1000 ? 'Unlocks at' : `Unlocked at`}
-                      value={new Date(lockData.unlockTime * 1000).toLocaleString()}
-                    />
-
-                    <section className="mt-1">
-                      <span
-                        className="cursor-pointer"
-                        onClick={() => {
-                          //
-                          lockContract &&
-                            setCurrentModal(
-                              <ContractDetails
-                                address={lockContract.address}
-                                abi={lockContract.interface.format('json') as string}
-                              />,
-                              // <CodeViewer
-                              //   language="json"
-                              //   syntaxHighlighting={false}
-                              //   children={JSON.stringify(
-                              //     JSON.parse(lockContract?.interface.format('json') as string),
-                              //     null,
-                              //     2,
-                              //   )}
-                              // />,
-                            )
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faFileCode} fixedWidth />{' '}
-                        <span className="text-indigo-600 dark:text-indigo-400 ">More contract details</span>
-                      </span>
-                    </section>
+                      <div className="flex items-center gap-2">
+                        {lockData.lockOwner === account ? (
+                          <>
+                            <Button onClick={() => setManageExpanded(!manageExpanded)}>
+                              <FontAwesomeIcon icon={faWrench} fixedWidth /> <span className="ml-1 ">Manage</span>
+                            </Button>
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </>
               ) : (
@@ -771,7 +646,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
             }
             footerContent={
               lockData ? (
-                lockData.lockOwner === account && lockContract ? (
+                lockData.lockOwner === account && lockContract && manageExpanded ? (
                   <>
                     <section className="text-gray-100 grid grid-cols-1 sm:grid-cols-2 w-full gap-2">
                       <PrimaryButton className="flex-grow" onClick={() => setExtendVisible(!extendVisible)}>
@@ -787,9 +662,8 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                         onClick={() => {
                           //
                           setIsWithdrawing(true)
-                          lockContract
-                            .withdraw()
-                            .then((tx: any) => tx.wait())
+                          mounted(lockContract.withdraw())
+                            .then((tx: any) => mounted(tx.wait()))
                             .then(() => {
                               updateLockData()
                               setIsWithdrawing(false)
@@ -808,34 +682,6 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                           spin
                         />
                       </PrimaryButton>
-
-                      {/* <PrimaryButton
-                  onClick={() => {
-                    if (!lockContract) return
-
-                    lockContract
-                      .withdrawEth()
-                      .then((tx: any) => tx.wait())
-                      .then((tx: any) => console.log(tx))
-                      .catch(console.error)
-                  }}
-                >
-                  Recover ETH
-                </PrimaryButton>
-
-                <PrimaryButton
-                  onClick={() => {
-                    if (!lockContract) return
-
-                    lockContract
-                      .withdrawToken('token address')
-                      .then((tx: any) => tx.wait())
-                      .then((tx: any) => console.log(tx))
-                      .catch(console.error)
-                  }}
-                >
-                  Recover tokens
-                </PrimaryButton> */}
                     </section>
 
                     {extendVisible && lockContract && lockData && lockTokenData && (
@@ -863,12 +709,13 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                           onClick={() => {
                             if (isExtendApproved) {
                               setIsExtending(true)
-                              lockContract
-                                .deposit(
+                              mounted(
+                                lockContract.deposit(
                                   utils.parseUnits(depositTokens || '0', lockTokenData.decimals),
                                   extendedUnlockTime,
-                                )
-                                .then((tx: any) => tx.wait())
+                                ),
+                              )
+                                .then((tx: any) => mounted(tx.wait()))
                                 .then(() => {
                                   setIsExtending(false)
                                   updateLockData()
@@ -880,9 +727,13 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                                 })
                             } else if (tokenContract && lockContract && lockTokenData) {
                               setIsExtending(true)
-                              tokenContract
-                                .approve(lockContract.address, utils.parseUnits(depositTokens, lockTokenData.decimals))
-                                .then((tx: any) => tx.wait())
+                              mounted(
+                                tokenContract.approve(
+                                  lockContract.address,
+                                  utils.parseUnits(depositTokens, lockTokenData.decimals),
+                                ),
+                              )
+                                .then((tx: any) => mounted(tx.wait()))
                                 .then(() => {
                                   setIsExtendApproved(true)
                                   setIsExtending(false)
@@ -911,11 +762,10 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                           disabled={claimingEth}
                           className="w-full"
                           onClick={async () => {
-                            //
                             setClaimingEth(true)
 
                             try {
-                              await (await lockContract.withdrawEth()).wait()
+                              await mounted((await mounted<any>(lockContract.withdrawEth())).wait())
                               setClaimableEth(BigNumber.from(0))
                             } catch (err) {
                               console.error(err)
@@ -967,9 +817,10 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                           onClick={async () => {
                             setClaimingTokens(true)
 
-                            //
                             try {
-                              await (await lockContract.withdrawToken(claimTokenData.address)).wait()
+                              await mounted(
+                                (await mounted<any>(lockContract.withdrawToken(claimTokenData.address))).wait(),
+                              )
                               setClaimableTokens(BigNumber.from(0))
                             } catch (err) {
                               console.error(err)
@@ -1001,7 +852,11 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                           setTransferringOwnership(true)
 
                           try {
-                            await (await lockContract.transferOwnership(utils.getAddress(newOwnerAddress))).wait()
+                            await mounted(
+                              (
+                                await mounted<any>(lockContract.transferOwnership(utils.getAddress(newOwnerAddress)))
+                              ).wait(),
+                            )
                           } catch (err) {
                             console.error(err)
                           }

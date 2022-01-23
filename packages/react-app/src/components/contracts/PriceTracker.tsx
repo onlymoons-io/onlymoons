@@ -4,7 +4,7 @@ import { BigNumber, utils } from 'ethers'
 import { LPData, NetworkData } from '../../typings'
 import { getNetworkDataByChainId } from '../../util'
 import { useWeb3React } from '@web3-react/core'
-import { useInterval } from 'react-use'
+import { useInterval, usePromise } from 'react-use'
 
 export interface IPriceTrackerContext {
   readonly networkData?: NetworkData
@@ -29,10 +29,11 @@ interface PriceCache {
 let PRICE_CACHE: Record<string, PriceCache> = {}
 
 const PriceTrackerContextProvider: React.FC = ({ children }) => {
+  const mounted = usePromise()
   const { chainId } = useWeb3React()
   const { contract, getLpData, getTokenData } = useContext(UtilContractContext)
   const [networkData, setNetworkData] = useState<NetworkData>()
-  const [lpData, setLpData] = useState<LPData>()
+  const [nativeStablePair, setNativeStablePair] = useState<string>()
   const [nativeCoinPrice, setNativeCoinPrice] = useState<number>()
 
   const isSupportedToken = useCallback(
@@ -86,11 +87,11 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
       const pairedToken = token === lpData.token0 ? lpData.token1 : lpData.token0
       const pairedTokenBalance = token === lpData.token0 ? lpData.balance1 : lpData.balance0
 
-      if (PRICE_CACHE[pairedToken] && Date.now() - PRICE_CACHE[pairedToken].timestamp < 60000) {
+      if (PRICE_CACHE[pairedToken] && Date.now() - PRICE_CACHE[pairedToken].timestamp < 29000) {
         if (!PRICE_CACHE[pairedToken].price) {
           await new Promise(done => setTimeout(done, 1000))
 
-          return await getPriceForPair(lpData, attempts, attemptNum++)
+          return await mounted(getPriceForPair(lpData, attempts, attemptNum++))
         }
 
         return PRICE_CACHE[pairedToken].price
@@ -101,7 +102,7 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
         timestamp: Date.now(),
       }
 
-      const [tokenData, pairedTokenData] = await Promise.all([getTokenData(token), getTokenData(pairedToken)])
+      const [tokenData, pairedTokenData] = await mounted(Promise.all([getTokenData(token), getTokenData(pairedToken)]))
 
       if (!tokenData || !pairedTokenData) {
         return 0
@@ -116,7 +117,7 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
 
       return PRICE_CACHE[pairedToken].price
     },
-    [getTokenData, getTokenFromPair],
+    [mounted, getTokenData, getTokenFromPair],
   )
 
   // wipe the price cache on network change
@@ -141,46 +142,38 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
   }, [chainId])
 
   useEffect(() => {
-    if (!chainId || !getLpData || !networkData) {
-      setLpData(undefined)
+    if (!getLpData || !networkData) {
+      setNativeStablePair(undefined)
       return
     }
 
     const { stablePair } =
       networkData.supportedLiquidityPairTokens.find(_pair => _pair.address === networkData.nativeCurrency.address) || {}
 
-    if (!stablePair) {
-      setLpData(undefined)
-      return
-    }
-
-    getLpData(stablePair)
-      .then((lpData?: LPData) =>
-        lpData ? Promise.resolve(lpData) : Promise.reject(new Error('Could not get LP data')),
-      )
-      .then(setLpData)
-      .catch((err: Error) => {
-        console.error(err)
-        setLpData(undefined)
-      })
-  }, [chainId, getLpData, networkData])
+    setNativeStablePair(stablePair)
+  }, [getLpData, networkData])
 
   const updateNativeCoinPrice = useCallback(() => {
-    if (!lpData || !getPriceForPair) {
+    if (!nativeStablePair || !getLpData || !getPriceForPair) {
       setNativeCoinPrice(0)
       return
     }
 
-    getPriceForPair(lpData)
+    mounted(getLpData(nativeStablePair))
+      .then(result => {
+        if (!result) return Promise.reject(new Error('Failed to get stable pair LP data'))
+
+        return mounted(getPriceForPair(result))
+      })
       .then(setNativeCoinPrice)
       .catch(err => {
         console.error(err)
         setNativeCoinPrice(0)
       })
-  }, [lpData, getPriceForPair])
+  }, [mounted, nativeStablePair, getLpData, getPriceForPair])
 
   useEffect(updateNativeCoinPrice, [updateNativeCoinPrice])
-  useInterval(updateNativeCoinPrice, 61000)
+  useInterval(updateNativeCoinPrice, 30000)
 
   return (
     <PriceTrackerContext.Provider

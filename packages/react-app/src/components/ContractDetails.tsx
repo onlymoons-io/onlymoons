@@ -9,6 +9,7 @@ import { faFileCode, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { ModalControllerContext } from './ModalController'
 import { Light as Button } from './Button'
 import CopyButton from './CopyButton'
+import { usePromise } from 'react-use'
 // import { getExplorerAddressLink } from '../util'
 
 const { Web3Provider } = providers
@@ -54,6 +55,7 @@ export interface ContractDetailsProps {
 }
 
 const ContractDetails: React.FC<ContractDetailsProps> = ({ children, address, abi, className = '', style = {} }) => {
+  const mounted = usePromise()
   const { connector } = useWeb3React()
   const { closeModal } = useContext(ModalControllerContext)
   const [bytecode, setBytecode] = useState<string>()
@@ -64,8 +66,7 @@ const ContractDetails: React.FC<ContractDetailsProps> = ({ children, address, ab
       return
     }
 
-    connector
-      .getProvider()
+    mounted(connector.getProvider())
       .then(provider => new Web3Provider(provider).getCode(address))
       // remove the first 2 characters if they are 0x (they should be)
       .then(result => (result.startsWith('0x') ? result.substring(2) : result))
@@ -74,7 +75,7 @@ const ContractDetails: React.FC<ContractDetailsProps> = ({ children, address, ab
         console.error(err)
         setBytecode(undefined)
       })
-  }, [connector, address])
+  }, [mounted, connector, address])
 
   return (
     <Outer className={className} style={style}>

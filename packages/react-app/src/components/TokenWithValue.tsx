@@ -7,6 +7,7 @@ import { useWeb3React } from '@web3-react/core'
 import { getNetworkDataByChainId, getFormattedAmount } from '../util'
 import { LPData, NetworkData, TokenData } from '../typings'
 import humanNumber from 'human-number'
+import { usePromise } from 'react-use'
 
 const { formatUnits } = utils
 
@@ -14,7 +15,7 @@ const Outer = tw.div`
   flex
   justify-start
   items-center
-  gap-2
+  gap-1
 `
 
 const Amount = tw.div`
@@ -32,11 +33,19 @@ const ValueInner = tw.span`
 export interface TokenWithValueProps {
   amount: BigNumber
   tokenData: TokenData
+  showSymbol?: boolean
   showAmount?: boolean
   showValue?: boolean
 }
 
-const TokenWithValue: React.FC<TokenWithValueProps> = ({ amount, tokenData, showAmount = true, showValue = true }) => {
+const TokenWithValue: React.FC<TokenWithValueProps> = ({
+  amount,
+  tokenData,
+  showSymbol = true,
+  showAmount = true,
+  showValue = true,
+}) => {
+  const mounted = usePromise()
   const { chainId } = useWeb3React()
   const { getLpData } = useContext(UtilContractContext)
   const { isSupportedToken, getPriceForPair } = useContext(PriceTrackerContext) || {}
@@ -67,7 +76,7 @@ const TokenWithValue: React.FC<TokenWithValueProps> = ({ amount, tokenData, show
       return
     }
 
-    getLpData(supportedPair.stablePair)
+    mounted(getLpData(supportedPair.stablePair))
       .then((lpData?: LPData) =>
         lpData ? Promise.resolve(lpData) : Promise.reject(new Error('Failed to get LP data')),
       )
@@ -78,7 +87,7 @@ const TokenWithValue: React.FC<TokenWithValueProps> = ({ amount, tokenData, show
       })
 
     // getPriceForPair(networkData.supportedLiquidityPairTokens.find())
-  }, [tokenData.address, supported, networkData, getLpData])
+  }, [mounted, tokenData.address, supported, networkData, getLpData])
 
   // useEffect(() => {
   //   if (!lpData || !getTokenData || !showValue) {
@@ -100,20 +109,20 @@ const TokenWithValue: React.FC<TokenWithValueProps> = ({ amount, tokenData, show
       return
     }
 
-    getPriceForPair(lpData)
+    mounted(getPriceForPair(lpData))
       .then(setPrice)
       .catch((err: Error) => {
         console.error(err)
         setPrice(0)
       })
-  }, [lpData, getPriceForPair])
+  }, [mounted, lpData, getPriceForPair])
 
   return (
     <Outer>
       {showAmount ? (
         <>
           <Amount>
-            {getFormattedAmount(amount, tokenData.decimals)} {tokenData.symbol}
+            {getFormattedAmount(amount, tokenData.decimals)} {showSymbol ? tokenData.symbol : <></>}
             {/* {humanNumber(parseFloat(formatUnits(amount, tokenData.decimals)), n =>
               n.toLocaleString(undefined, { maximumFractionDigits: tokenData.decimals }),
             )}{' '}

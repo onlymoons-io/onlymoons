@@ -1,5 +1,5 @@
 import { CSSProperties, FC, useCallback, useContext } from 'react'
-import { useMount } from 'react-use'
+import { useMount, usePromise } from 'react-use'
 import { useWeb3React } from '@web3-react/core'
 import { InjectedConnector } from '@web3-react/injected-connector'
 import { getShortAddress } from '../util'
@@ -14,6 +14,7 @@ export interface ConnectButtonProps {
 }
 
 const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light', className = '', style = {} }) => {
+  const mounted = usePromise()
   const w3 = useWeb3React()
   const { push: pushNotification } = useContext(NotificationCatcherContext)
 
@@ -49,7 +50,7 @@ const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light', className = ''
       window.localStorage.setItem('ONLYMOONS_AUTO_CONNECT', '0')
     } else {
       // not connected
-      connect()
+      mounted(connect())
         .then(() => window.localStorage.setItem('ONLYMOONS_AUTO_CONNECT', '1'))
         .catch(err => {
           console.error(err)
@@ -62,13 +63,13 @@ const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light', className = ''
             })
         })
     }
-  }, [w3, connect, pushNotification])
+  }, [mounted, w3, connect, pushNotification])
 
   // this auto connect should maybe not be in the button component.
   // it makes more sense to live in App.tsx or something.
   useMount(() => {
     if (window.localStorage.getItem('ONLYMOONS_AUTO_CONNECT') === '1') {
-      connect().catch(err => {
+      mounted(connect()).catch(err => {
         console.error(err)
 
         // open the error modal
