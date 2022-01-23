@@ -325,11 +325,14 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
               lockData ? (
                 <>
                   <div className="flex justify-between items-center">
-                    <div className="flex flex-col">
+                    <div className="flex flex-col overflow-hidden mr-4">
                       <Title className="flex-col">
-                        <div className="self-start">
-                          <Link to={`/locker/${chainId}/${lockId}`}>
-                            {lockTokenData?.name || '...'}{' '}
+                        <div className="self-start flex max-w-full">
+                          <Link
+                            to={`/locker/${chainId}/${lockId}`}
+                            className="flex-shrink whitespace-nowrap overflow-hidden flex gap-2 items-baseline"
+                          >
+                            <span className="overflow-hidden overflow-ellipsis">{lockTokenData?.name || '...'} </span>
                             {lockTokenData && <span className="text-sm">({lockTokenData.symbol || '...'})</span>}
                           </Link>
                         </div>
@@ -357,7 +360,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                     </div>
 
                     <div
-                      className="cursor-default"
+                      className="flex-shrink-0 cursor-default"
                       style={{ maxWidth: '64px' }}
                       data-tip={true}
                       data-for={`lock-status-${lockData.id}`}
@@ -416,7 +419,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                     )}%)`}
                   /> */}
 
-                  <div className="mt-2 pt-4 border-t dark:border-gray-800 text-center text-2xl">
+                  <div className="mt-4 pt-4 border-t dark:border-gray-800 text-center text-2xl">
                     <FontAwesomeIcon
                       className="mr-1"
                       icon={BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) ? faLockOpen : faLock}
