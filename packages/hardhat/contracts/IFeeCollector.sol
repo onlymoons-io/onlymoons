@@ -19,5 +19,10 @@
 pragma solidity ^0.8.0;
 
 interface IFeeCollector {
-  function setFeesContract(address contractAddress_) external;
+  function setAddressExemptFromFees(address account, bool value) external;
+  function isAddressExemptFromFees(address account) external view returns (bool);
+  function getFeeAmountForType(string memory feeType) external view returns (uint256);
+  function setFeeAmountForType(string memory feeType, uint256 amount) external;
+  function feesContract() external view returns (address);
+  function setFeesContract(address payable contractAddress_) external;
 }

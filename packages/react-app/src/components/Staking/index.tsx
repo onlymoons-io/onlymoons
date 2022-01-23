@@ -1,20 +1,8 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react'
-// import { useUnmount } from 'react-use'
 import { useParams } from 'react-router-dom'
-// import tw from 'tailwind-styled-components'
 import { useWeb3React } from '@web3-react/core'
-// import { /*BigNumber, Contract, utils,*/ providers } from 'ethers'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  // faCircleNotch,
-  // faBalanceScale,
-  // faBalanceScaleLeft,
-  // faBalanceScaleRight,
-  // faExternalLinkAlt,
-  faSadTear,
-  // faInfoCircle,
-} from '@fortawesome/free-solid-svg-icons'
-// import { motion } from 'framer-motion'
+import { faSadTear } from '@fortawesome/free-solid-svg-icons'
 import SplitStakingV1ContractContextProvider from '../contracts/SplitStakingV1'
 import StakingManagerV1ContractContextProvider, { StakingManagerV1ContractContext } from '../contracts/StakingManagerV1'
 import Staking from './Staking'
@@ -22,36 +10,16 @@ import NotConnected from '../NotConnected'
 import { StakingData /*SplitStakingRewardsData, AllRewardsForAddress, StakingDataForAccount*/ } from '../../typings'
 import Button from '../Button'
 import { Outer, MidSection, SectionInner, Grid } from '../Layout'
-// import { NotificationCatcherContext } from '../NotificationCatcher'
-// import { getExplorerContractLink, getNativeCoin, getShortAddress } from '../../util'
-// import humanNumber from 'human-number'
-// import { Web3Provider as Web3ProviderClass } from '@ethersproject/providers'
-// import { ERC20ABI } from '../../contracts/external_contracts'
-// import contracts from '../../contracts/production_contracts.json'
-// import Tooltip from '../Tooltip'
 import SplitStaking from './SplitStaking'
+import { usePromise } from 'react-use'
 
 // const { Web3Provider } = providers
 
 const StakingComponent: React.FC = () => {
+  const mounted = usePromise()
   const { account: accountToCheck, chainId: chainIdToUse, id: idToUse } = useParams()
   const { account, chainId } = useWeb3React()
-  const {
-    stakingEnabledOnNetwork,
-    contract,
-    count,
-    // globalStakingData,
-    // getStakingDataByAddress,
-    getStakingDataById,
-    // distribute,
-    // canDistribute,
-    // claimAll,
-    // claimSplitStaking,
-    // getSplitStakingRewardsForAddress,
-    // getStakingRewards,
-    // getRewardsRatio,
-  } = useContext(StakingManagerV1ContractContext)
-  // const { push: pushNotification } = useContext(NotificationCatcherContext)
+  const { stakingEnabledOnNetwork, contract, count, getStakingDataById } = useContext(StakingManagerV1ContractContext)
   const [stakingInstances, setStakingInstances] = useState<Array<StakingData>>([])
   const [sortedStakingInstances, setSortedStakingInstances] = useState<Array<StakingData>>([])
   const [viewMode, setViewMode] = useState<'split' | 'all'>('split')
@@ -70,7 +38,7 @@ const StakingComponent: React.FC = () => {
     }
 
     if (idToUse) {
-      getStakingDataById(parseInt(idToUse))
+      mounted(getStakingDataById(parseInt(idToUse)))
         .then(result => setStakingInstances([result]))
         .catch(console.error)
     } else if (accountToCheck) {
@@ -80,11 +48,11 @@ const StakingComponent: React.FC = () => {
       //     .catch(console.error),
       // )
     } else if (viewMode === 'all') {
-      Promise.all(new Array(count).fill(null).map((val, index) => getStakingDataById(index)))
+      mounted(Promise.all(new Array(count).fill(null).map((val, index) => getStakingDataById(index))))
         .then((results: Array<StakingData>) => setStakingInstances(results))
         .catch(console.error)
     }
-  }, [contract, idToUse, account, accountToCheck, getStakingDataById, count, viewMode])
+  }, [mounted, contract, idToUse, account, accountToCheck, getStakingDataById, count, viewMode])
 
   useEffect(setupAllStaking, [setupAllStaking])
 

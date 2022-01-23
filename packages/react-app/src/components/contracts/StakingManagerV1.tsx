@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
-import { Contract } from 'ethers'
+import { BigNumber, Contract } from 'ethers'
 import { ContractCacheContext } from './ContractCache'
 import { StakingData, GlobalStakingData, AllRewardsForAddress } from '../../typings'
 
@@ -11,6 +11,7 @@ export interface IStakingManagerV1ContractContext {
   globalStakingData?: GlobalStakingData
 
   stakingEnabledOnNetwork?: (chainId?: number) => boolean
+  getFeeAmountForType?: (feeType: string) => Promise<BigNumber>
   createStaking?: (tokenAddress: string, name: string, lockDurationDays: number) => Promise<number>
   getStakingDataByAddress?: (address: string) => Promise<StakingData>
   getStakingDataById?: (id: number) => Promise<StakingData>
@@ -38,15 +39,33 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
     }
   }
 
+  const getFeeAmountForType: (feeType: string) => Promise<BigNumber> = useCallback(
+    async (feeType: string) => {
+      return (await contract?.getFeeAmountForType(feeType)) || BigNumber.from(0)
+    },
+    [contract],
+  )
+
   const createStaking = useCallback(
     async (tokenAddress: string, name: string, lockDurationDays: number) => {
-      const result = await (await contract?.createStaking(tokenAddress, name, lockDurationDays)).wait()
+      const feeAmount = await getFeeAmountForType('CreateStaking')
+
+      const result = await (
+        await contract?.createStaking(
+          tokenAddress,
+          // rewards token address - pass 0 address here for eth rewards
+          '0x0000000000000000000000000000000000000000',
+          name,
+          lockDurationDays,
+          { value: feeAmount },
+        )
+      ).wait()
 
       const createdEvent = result.events.find((e: any) => e.event === 'StakingCreated')
 
       return createdEvent?.args?.id || 0
     },
-    [contract],
+    [contract, getFeeAmountForType],
   )
 
   const getStakingDataByAddress = useCallback(
@@ -113,6 +132,7 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
               count,
               owner,
               stakingEnabledOnNetwork,
+              getFeeAmountForType,
               createStaking,
               getStakingDataByAddress,
               getStakingDataById,

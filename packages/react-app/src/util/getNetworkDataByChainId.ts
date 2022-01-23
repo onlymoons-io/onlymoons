@@ -128,18 +128,18 @@ export const networks: Record<number, NetworkData> = {
         // pair w/ m.USDT on standard.tech
         stablePair: '0x6e90e50c8A04824104dB4B456b7EdEa3469d9b5F',
       },
-      // m.USDT
-      {
-        address: '0xbB06DCA3AE6887fAbF931640f67cab3e3a16F4dC',
-        // pair w/ Metis on tethys
-        stablePair: '0x8121113eB9952086deC3113690Af0538BB5506fd',
-      },
-      // m.USDC
-      {
-        address: '0xEA32A96608495e54156Ae48931A7c20f0dcc1a21',
-        // pair w/ Metis on tethys
-        stablePair: '0xDd7dF3522a49e6e1127bf1A1d3bAEa3bc100583B',
-      },
+      // // m.USDT
+      // {
+      //   address: '0xbB06DCA3AE6887fAbF931640f67cab3e3a16F4dC',
+      //   // pair w/ Metis on tethys
+      //   stablePair: '0x8121113eB9952086deC3113690Af0538BB5506fd',
+      // },
+      // // m.USDC
+      // {
+      //   address: '0xEA32A96608495e54156Ae48931A7c20f0dcc1a21',
+      //   // pair w/ Metis on tethys
+      //   stablePair: '0xDd7dF3522a49e6e1127bf1A1d3bAEa3bc100583B',
+      // },
     ],
   },
 }

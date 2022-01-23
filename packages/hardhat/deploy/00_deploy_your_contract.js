@@ -6,15 +6,15 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  // const mathLibrary = await deploy("Math", {
-  //   from: deployer,
-  //   log: true,
-  // });
+  const mathLibrary = await deploy("Math", {
+    from: deployer,
+    log: true,
+  });
 
-  // const safeERC20Library = await deploy("SafeERC20", {
-  //   from: deployer,
-  //   log: true,
-  // });
+  const safeERC20Library = await deploy("SafeERC20", {
+    from: deployer,
+    log: true,
+  });
 
   // const safeMathLibrary = await deploy("SafeMath", {
   //   from: deployer,
@@ -76,42 +76,63 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     log: true,
   });
 
-  // const stakingManagerV1 = await deploy("StakingManagerV1", {
-  //   from: deployer,
-  //   log: true,
-  //   // args: [],
-  //   libraries: {
-  //     Math: mathLibrary.address,
-  //   },
-  // });
+  const splitStakingV1 = await deploy("SplitStakingV1", {
+    from: deployer,
+    log: true,
+    // args: [],
+    libraries: {
+      Math: mathLibrary.address,
+    },
+  });
 
-  // const stakingV1 = await deploy("StakingV1", {
-  //   from: deployer,
-  //   log: true,
-  //   args: [
-  //     // address owner_,
-  //     deployer,
-  //     // address tokenAddress_,
-  //     testToken.address,
-  //     // string memory name_,
-  //     "Solo",
-  //     // uint16 lockDurationDays_
-  //     0,
-  //   ],
-  //   libraries: {
-  //     Math: mathLibrary.address,
-  //     SafeERC20: safeERC20Library.address,
-  //   },
-  // });
+  const fees = await deploy("Fees", {
+    from: deployer,
+    log: true,
+    args: [
+      // address payable treasuryFeeAddress_
+      deployer,
+      // address payable stakingFeeAddress_
+      splitStakingV1.address,
+    ],
+  });
 
-  // const splitStakingV1 = await deploy("SplitStakingV1", {
-  //   from: deployer,
-  //   log: true,
-  //   // args: [],
-  //   libraries: {
-  //     Math: mathLibrary.address,
-  //   },
-  // });
+  const stakingFactoryV1 = await deploy("StakingFactoryV1", {
+    from: deployer,
+    log: true,
+    args: [],
+  });
+
+  const stakingManagerV1 = await deploy("StakingManagerV1", {
+    from: deployer,
+    log: true,
+    args: [
+      // factory address
+      stakingFactoryV1.address,
+      fees.address,
+    ],
+    libraries: {
+      Math: mathLibrary.address,
+    },
+  });
+
+  const stakingV1 = await deploy("StakingV1", {
+    from: deployer,
+    log: true,
+    args: [
+      // address owner_,
+      deployer,
+      // address tokenAddress_,
+      testToken.address,
+      // string memory name_,
+      "Solo",
+      // uint16 lockDurationDays_
+      0,
+    ],
+    libraries: {
+      Math: mathLibrary.address,
+      SafeERC20: safeERC20Library.address,
+    },
+  });
 
   /*
     // Getting a previously deployed contract

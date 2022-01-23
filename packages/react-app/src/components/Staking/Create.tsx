@@ -13,6 +13,7 @@ import StakingManagerV1ContractContextProvider, { StakingManagerV1ContractContex
 import { UtilContractContext } from '../contracts/Util'
 // import Header from './Header'
 import { Outer, MidSection, SectionInner } from '../Layout'
+import { usePromise } from 'react-use'
 
 const { isAddress } = utils
 
@@ -35,6 +36,7 @@ const StyledInput = tw(InputCSS)`
 `
 
 const Create: React.FC = () => {
+  const mounted = usePromise()
   const navigate = useNavigate()
   const { chainId } = useWeb3React()
   const { createStaking } = useContext(StakingManagerV1ContractContext)
@@ -60,7 +62,7 @@ const Create: React.FC = () => {
       if (isAddress(e.currentTarget.value)) {
         const address = e.currentTarget.value
 
-        getTokenData(address)
+        mounted(getTokenData(address))
           .then(result => {
             console.log(result)
             setLoadingTokenData(false)
@@ -69,7 +71,7 @@ const Create: React.FC = () => {
           .catch(console.error)
       }
     },
-    [getTokenData],
+    [mounted, getTokenData],
   )
 
   const onClickSubmit = useCallback(() => {
@@ -81,7 +83,7 @@ const Create: React.FC = () => {
     setIsSubmitting(true)
     setCanSubmit(false)
 
-    createStaking(tokenData.address, nameRef.current?.value || tokenData.symbol, 0)
+    mounted(createStaking(tokenData.address, nameRef.current?.value || tokenData.symbol, 0))
       .then((id: number) => {
         setCanSubmit(true)
         setIsSubmitting(false)
@@ -91,7 +93,7 @@ const Create: React.FC = () => {
         setCanSubmit(true)
         setIsSubmitting(false)
       })
-  }, [tokenData, chainId, createStaking, navigate])
+  }, [mounted, tokenData, chainId, createStaking, navigate])
 
   return (
     <Outer>

@@ -23,80 +23,59 @@ import { Address } from "./library/Address.sol";
 import { Governable } from "./Governable.sol";
 import { Pausable } from "./Pausable.sol";
 import { IDCounter } from "./IDCounter.sol";
-import { StakingV1 } from "./StakingV1.sol";
-import { StakingTokenV1 } from "./StakingTokenV1.sol";
-import { IERC20 } from "./library/IERC20.sol";
-import { ReentrancyGuard } from "./library/ReentrancyGuard.sol";
+import { FeeCollector } from "./FeeCollector.sol";
+import { IStakingV1 } from "./IStakingV1.sol";
+import { IStakingFactoryV1 } from "./IStakingFactoryV1.sol";
 
-struct AccountBountyRewards {
-  uint256 count;
-  uint256 claimed;
-}
-
-contract StakingManagerV1 is IStakingManagerV1, Governable, Pausable, IDCounter, ReentrancyGuard {
+contract StakingManagerV1 is IStakingManagerV1, Governable, Pausable, IDCounter, FeeCollector {
   using Address for address payable;
 
   /** @dev set the deployer as both owner and governor initially */
-  constructor() Governable(_msgSender(), _msgSender()) {}
+  constructor(address factoryAddress, address payable feesAddress) Governable(_msgSender(), _msgSender()) {
+    _factory = IStakingFactoryV1(factoryAddress);
+    _setFeesContract(feesAddress);
+    _excludedFromFees[_msgSender()] = true;
+    _feeTypeAmountMap[FEE_TYPE_CREATE_STAKING] = 5 * 10 ** 17; // 0.5eth
+  }
 
-  mapping(uint40 => StakingV1) private _staking;
+  string internal constant FEE_TYPE_CREATE_STAKING = "CreateStaking";
+
+  IStakingFactoryV1 internal _factory;
+
+  mapping(uint40 => IStakingV1) private _staking;
   mapping(address => uint40) private _stakingAddressMap;
 
-  function _createStaking(
-    address tokenAddress_,
-    string memory name_,
-    uint16 lockDurationDays_
-  ) internal virtual {
-    uint40 id = uint40(_next());
+  function factory() external view returns (address) {
+    return address(_factory);
+  }
 
-    _staking[id] = new StakingV1(
-      _msgSender(),
-      tokenAddress_,
-      name_,
-      lockDurationDays_
-    );
-
-    _stakingAddressMap[address(_staking[id])] = id;
-
-    emit CreatedStaking(id, address(_staking[id]));
+  function setFactory(address value) external onlyOwner {
+    _factory = IStakingFactoryV1(value);
   }
 
   function createStaking(
     address tokenAddress_,
-    string memory name_,
-    uint16 lockDurationDays_
-  ) external virtual override onlyNotPaused {
-    _createStaking(tokenAddress_, name_, lockDurationDays_);
-  }
-
-  function _createStakingToken(
-    address tokenAddress_,
     address rewardsTokenAddress_,
     string memory name_,
-    uint16 lockDurationDays_  
-  ) internal virtual {
+    uint16 lockDurationDays_
+  ) external payable virtual override onlyNotPaused onlyCorrectFee(FEE_TYPE_CREATE_STAKING) {
+    if (_msgSender() != _owner())
+      _fees.sendValue(msg.value);
+
     uint40 id = uint40(_next());
 
-    _staking[id] = new StakingTokenV1(
-      _msgSender(),
-      tokenAddress_,
-      rewardsTokenAddress_,
-      name_,
-      lockDurationDays_
+    _staking[id] = IStakingV1(
+      _factory.createStaking(
+        tokenAddress_,
+        rewardsTokenAddress_,
+        name_,
+        lockDurationDays_
+      )
     );
 
     _stakingAddressMap[address(_staking[id])] = id;
 
     emit CreatedStaking(id, address(_staking[id]));
-  }
-
-  function createStakingToken(
-    address tokenAddress_,
-    address rewardsTokenAddress_,
-    string memory name_,
-    uint16 lockDurationDays_  
-  ) external virtual override onlyNotPaused {
-    _createStakingToken(tokenAddress_, rewardsTokenAddress_, name_, lockDurationDays_);
   }
 
   function _getStakingDataById(uint40 id) internal virtual view returns (
@@ -155,13 +134,9 @@ contract StakingManagerV1 is IStakingManagerV1, Governable, Pausable, IDCounter,
     }
   }
 
-  function _claimAll(address account, bool revertOnFailure, bool doAutoClaim) internal virtual {
+  function claimAll() external virtual override {
     for (uint40 i = 0; i < _count && gasleft() > 100000; i++) {
-      _staking[i].claimFor(account, revertOnFailure, doAutoClaim);
+      _staking[i].claimFor(_msgSender(), false, false);
     }
-  }
-
-  function claimAll() external virtual override nonReentrant {
-    _claimAll(_msgSender(), false, false);
   }
 }

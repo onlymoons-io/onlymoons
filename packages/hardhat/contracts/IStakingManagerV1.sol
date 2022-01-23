@@ -23,15 +23,10 @@ interface IStakingManagerV1 {
 
   function createStaking(
     address tokenAddress_,
-    string memory name_,
-    uint16 lockDurationDays_
-  ) external;
-  function createStakingToken(
-    address tokenAddress_,
     address rewardsTokenAddress_,
     string memory name_,
-    uint16 lockDurationDays_  
-  ) external;
+    uint16 lockDurationDays_
+  ) external payable;
   function getStakingDataByAddress(address address_) external view returns (
     address contractAddress,
     address stakedToken,
