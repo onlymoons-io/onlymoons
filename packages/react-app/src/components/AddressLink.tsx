@@ -18,7 +18,7 @@ const IS_CONTRACT_CACHE: Record<number, Record<string, boolean>> = {}
 export interface AddressLinkProps {
   //
   address: string
-  internalUrl: string
+  internalUrl?: string
   linkText?: string
   definitelyContract?: boolean
   showContractIcon?: boolean
@@ -84,14 +84,28 @@ const AddressLink: React.FC<AddressLinkProps> = ({
   }, [mounted, getIsContract])
 
   return (
-    <span className={`inline-flex gap-1 items-center ${className}`}>
-      <Link to={internalUrl} className="flex gap-2 items-center" style={style}>
-        {isContract && <FontAwesomeIcon icon={faFileCode} opacity={0.8} />}
-        <span className="text-indigo-600 dark:text-indigo-400">{linkText || getShortAddress(address)}</span>
-      </Link>
+    <span className={`inline-flex gap-1 items-center max-w-full ${className}`}>
+      {internalUrl ? (
+        <Link to={internalUrl} className="flex-shrink overflow-hidden flex gap-2 items-center" style={style}>
+          {isContract && <FontAwesomeIcon icon={faFileCode} opacity={0.8} />}
+          <span className="text-indigo-600 dark:text-indigo-400 overflow-hidden overflow-ellipsis">
+            {linkText || getShortAddress(address)}
+          </span>
+        </Link>
+      ) : (
+        <>
+          {isContract && <FontAwesomeIcon icon={faFileCode} opacity={0.8} />}
+          <span className="text-indigo-600 dark:text-indigo-400">{linkText || getShortAddress(address)}</span>
+        </>
+      )}
 
       {chainId ? (
-        <Anchor target="_blank" rel="noopener noreferrer" href={getExplorerAddressLink(chainId, address)}>
+        <Anchor
+          className="flex-shrink-0"
+          target="_blank"
+          rel="noopener noreferrer"
+          href={getExplorerAddressLink(chainId, address)}
+        >
           <FontAwesomeIcon icon={faExternalLinkAlt} fixedWidth />
         </Anchor>
       ) : (

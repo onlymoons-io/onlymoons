@@ -1,5 +1,14 @@
 import React, { ReactNode, createContext, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import tw from 'tailwind-styled-components'
+
+const ModalOuter = tw.div`
+  flex
+  justify-center
+  items-center
+  w-full
+  max-w-lg
+`
 
 export interface IModalControllerContext {
   currentModal?: ReactNode
@@ -34,6 +43,12 @@ const ModalControllerProvider: React.FC = ({ children }) => {
     }
   }, [currentModal])
 
+  const clickCloseHandler = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      setCurrentModal(undefined)
+    }
+  }
+
   return (
     <ModalControllerContext.Provider
       value={{
@@ -54,18 +69,16 @@ const ModalControllerProvider: React.FC = ({ children }) => {
         }}
         animate={currentModal ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.1 }}
-        onClick={e => {
-          if (e.target === e.currentTarget) {
-            setCurrentModal(undefined)
-          }
-        }}
+        onClick={clickCloseHandler}
       >
         <motion.div
+          className="w-full h-full flex justify-center items-center"
           initial={{ scale: 0.8 }}
           animate={{ scale: currentModal ? 1 : 0.8 }}
           transition={{ duration: 0.15 }}
+          onClick={clickCloseHandler}
         >
-          {currentModal}
+          <ModalOuter>{currentModal}</ModalOuter>
         </motion.div>
       </motion.div>
     </ModalControllerContext.Provider>

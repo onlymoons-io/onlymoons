@@ -19,14 +19,14 @@
 pragma solidity ^0.8.0;
 
 import { ILaunchManagerV1 } from "./ILaunchManagerV1.sol";
-import { Authorizable } from "./Authorizable.sol";
+import { Governable } from "./Governable.sol";
 import { Pausable } from "./Pausable.sol";
 import { IDCounter } from "./IDCounter.sol";
 import { LaunchV1 } from "./LaunchV1.sol";
 import { IERC20 } from "./library/IERC20.sol";
 import { FeeCollector } from "./FeeCollector.sol";
 
-contract LaunchManagerV1 is ILaunchManagerV1, Authorizable, Pausable, IDCounter, FeeCollector {
+contract LaunchManagerV1 is ILaunchManagerV1, Governable, Pausable, IDCounter, FeeCollector {
   event LaunchCreated(
     uint40 indexed id,
     address indexed launchAddress,
@@ -36,7 +36,7 @@ contract LaunchManagerV1 is ILaunchManagerV1, Authorizable, Pausable, IDCounter,
     uint40 endsAt
   );
 
-  constructor() Authorizable(_msgSender()) {
+  constructor() Governable(_msgSender(), _msgSender()) {
     //
   }
 

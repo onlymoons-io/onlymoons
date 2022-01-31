@@ -2,6 +2,7 @@ import { CSSProperties, FC, useCallback, useContext } from 'react'
 import { useMount, usePromise } from 'react-use'
 import { useWeb3React } from '@web3-react/core'
 import { InjectedConnector } from '@web3-react/injected-connector'
+import { NetworkConnector } from '@web3-react/network-connector'
 import { getShortAddress } from '../util'
 import { Dark, Light, Primary, Secondary } from './Button'
 import { NotificationCatcherContext } from './NotificationCatcher'
@@ -15,7 +16,7 @@ export interface ConnectButtonProps {
 
 const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light', className = '', style = {} }) => {
   const mounted = usePromise()
-  const w3 = useWeb3React()
+  const { account, activate, connector, deactivate } = useWeb3React()
   const { push: pushNotification } = useContext(NotificationCatcherContext)
 
   const getButton = () => {
@@ -32,20 +33,26 @@ const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light', className = ''
   }
 
   const connect = useCallback(async () => {
-    await w3.activate(
+    if (connector instanceof NetworkConnector) {
+      deactivate()
+
+      await new Promise(done => setTimeout(done, 250))
+    }
+
+    await activate(
       new InjectedConnector({
         supportedChainIds: Object.keys(contracts).map(chainId => parseInt(chainId)),
       }),
       undefined,
       true,
     )
-  }, [w3])
+  }, [activate, connector, deactivate])
 
   const onClickConnect = useCallback(() => {
-    if (w3.account) {
+    if (account) {
       // already connected
       // TODO: open a menu instead of logging out
-      w3.deactivate()
+      deactivate()
 
       window.localStorage.setItem('ONLYMOONS_AUTO_CONNECT', '0')
     } else {
@@ -63,7 +70,7 @@ const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light', className = ''
             })
         })
     }
-  }, [mounted, w3, connect, pushNotification])
+  }, [mounted, account, deactivate, connect, pushNotification])
 
   // this auto connect should maybe not be in the button component.
   // it makes more sense to live in App.tsx or something.
@@ -87,7 +94,7 @@ const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light', className = ''
   return (
     <>
       <Button className={className} style={style} onClick={onClickConnect}>
-        {w3.account ? getShortAddress(w3.account) : 'Connect'}
+        {account ? getShortAddress(account) : 'Connect'}
       </Button>
     </>
   )

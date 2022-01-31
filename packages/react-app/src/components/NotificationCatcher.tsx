@@ -24,8 +24,10 @@ const NotificationInner = tw.div`
   rounded
   p-5
   mt-5
+  mx-4
   pointer-events-auto
   relative
+  max-w-lg
 `
 
 const NotificationClose = tw.div`
@@ -37,8 +39,11 @@ const NotificationClose = tw.div`
   w-7
   h-7
   rounded-full
-  bg-indigo-500
-  text-gray-100
+  bg-gray-100
+  dark:bg-gray-900
+  border-2
+  text-gray-900
+  dark:text-gray-100
   text-opacity-80
   flex
   justify-center
@@ -96,10 +101,10 @@ const NotificationCatcherContextProvider: React.FC<NotificationCatcherContextPro
     <NotificationCatcherContext.Provider
       value={{
         push(notification: INotification | Error | string) {
-          if (notification instanceof Error) {
+          if (notification instanceof Error || ((notification as any).message && (notification as any).code)) {
             console.error(notification)
             notifications.push({
-              message: notification.message,
+              message: `${(notification as any).message} - ${(notification as any).data?.message}`,
               level: 'error',
             })
           } else if (typeof notification === 'string') {
@@ -136,6 +141,15 @@ const NotificationCatcherContextProvider: React.FC<NotificationCatcherContextPro
                 {activeNotification.message}
 
                 <NotificationClose
+                  className={
+                    activeNotification.level === 'error'
+                      ? 'border-red-500'
+                      : activeNotification.level === 'warning'
+                      ? 'border-yellow-600'
+                      : activeNotification.level === 'success'
+                      ? 'border-green-500'
+                      : 'border-blue-500'
+                  }
                   onClick={() => {
                     //
                     nextNotification()

@@ -39,7 +39,11 @@
           url.protocol = 'https:'
           window.location.assign(url.href)
         }
-      })(window.location.hostname.startsWith('localhost') || window.location.protocol.startsWith('https'))
+      })(
+        window.location.hostname.startsWith('localhost') ||
+          window.location.hostname.startsWith('192.168.1.') ||
+          window.location.protocol.startsWith('https'),
+      )
     </script>
   </head>
   <body className="">

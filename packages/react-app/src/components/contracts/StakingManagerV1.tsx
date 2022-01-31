@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
-import { Contract } from 'ethers'
+import { BigNumber, Contract } from 'ethers'
 import { ContractCacheContext } from './ContractCache'
 import { StakingData, GlobalStakingData, AllRewardsForAddress } from '../../typings'
+import { FeesContractContext } from '../contracts/Fees'
+import { usePromise } from 'react-use'
 
 export interface IStakingManagerV1ContractContext {
   contract?: Contract
@@ -11,7 +13,13 @@ export interface IStakingManagerV1ContractContext {
   globalStakingData?: GlobalStakingData
 
   stakingEnabledOnNetwork?: (chainId?: number) => boolean
-  createStaking?: (tokenAddress: string, name: string, lockDurationDays: number) => Promise<number>
+  getFeeAmountForType?: (feeType: string) => Promise<BigNumber>
+  createStaking?: (
+    stakingType: number,
+    tokenAddress: string,
+    lockDurationDays?: number,
+    data?: BigNumber[],
+  ) => Promise<number>
   getStakingDataByAddress?: (address: string) => Promise<StakingData>
   getStakingDataById?: (id: number) => Promise<StakingData>
   getAllRewardsForAddress?: (account: string) => Promise<AllRewardsForAddress>
@@ -24,6 +32,8 @@ export const StakingManagerV1ContractContext = createContext<IStakingManagerV1Co
 })
 
 const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
+  const mounted = usePromise()
+  const { getFeeAmountForType } = useContext(FeesContractContext)
   const { getContract } = useContext(ContractCacheContext)
   const [contract, setContract] = useState<Contract>()
   const [count, setCount] = useState<number>(0)
@@ -39,14 +49,24 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
   }
 
   const createStaking = useCallback(
-    async (tokenAddress: string, name: string, lockDurationDays: number) => {
-      const result = await (await contract?.createStaking(tokenAddress, name, lockDurationDays)).wait()
+    async (stakingType: number, tokenAddress: string, lockDurationDays: number = 0, data: BigNumber[] = []) => {
+      if (!getFeeAmountForType) {
+        throw new Error('getFeeAmountForType is not defined')
+      }
+
+      const result = await mounted<any>(
+        (
+          await contract?.createStaking(stakingType, tokenAddress, lockDurationDays, data, {
+            value: await getFeeAmountForType('DeployStaking'),
+          })
+        ).wait(),
+      )
 
       const createdEvent = result.events.find((e: any) => e.event === 'StakingCreated')
 
       return createdEvent?.args?.id || 0
     },
-    [contract],
+    [mounted, contract, getFeeAmountForType],
   )
 
   const getStakingDataByAddress = useCallback(
@@ -75,13 +95,13 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
   )
 
   useEffect(() => {
-    getContract('StakingManagerV1')
+    mounted(getContract('StakingManagerV1'))
       .then(setContract)
       .catch((err: Error) => {
         console.error(err)
         setContract(undefined)
       })
-  }, [getContract])
+  }, [mounted, getContract])
 
   useEffect(() => {
     if (!contract) {
@@ -90,7 +110,7 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
       return
     }
 
-    Promise.all([contract.count(), contract.owner()])
+    mounted(Promise.all([contract.count(), contract.owner()]))
       .then(([_count, _owner]) => {
         setCount(_count.toNumber())
         setOwner(_owner)
@@ -100,7 +120,7 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
         setCount(0)
         setOwner(undefined)
       })
-  }, [contract])
+  }, [mounted, contract])
 
   return (
     <StakingManagerV1ContractContext.Provider
@@ -113,6 +133,7 @@ const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
               count,
               owner,
               stakingEnabledOnNetwork,
+              getFeeAmountForType,
               createStaking,
               getStakingDataByAddress,
               getStakingDataById,

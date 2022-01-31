@@ -1,4 +1,4 @@
-import React, { createContext, useState, useRef } from 'react'
+import React, { createContext, useState, useRef, useEffect } from 'react'
 import { HashRouter as Router, Routes, Route } from 'react-router-dom'
 
 import tw from 'tailwind-styled-components'
@@ -9,6 +9,7 @@ import ContractCacheContextProvider from './components/contracts/ContractCache'
 import UtilContractContextProvider from './components/contracts/Util'
 import TokenLockerManagerV1ContractContextProvider from './components/contracts/TokenLockerManagerV1'
 import PriceTrackerContextProvider from './components/contracts/PriceTracker'
+import FeesContractContextProvider from './components/contracts/Fees'
 
 import LockWatchlistProvider from './components/Locker/LockWatchlist'
 
@@ -21,7 +22,7 @@ import Locker from './components/Locker'
 import ManageLockers from './components/Locker/Account'
 import CreateLocker from './components/Locker/Create'
 import Staking from './components/Staking'
-import CreateStaking from './components/Staking/Create'
+// import CreateStaking from './components/Staking/Create'
 import DarkModeToggle from './components/DarkModeToggle'
 import ModalControllerProvider from './components/ModalController'
 import ComingSoon from './components/ComingSoon'
@@ -29,10 +30,14 @@ import Faucets from './components/Faucets'
 
 import './App.css'
 
-import { Web3ReactProvider } from '@web3-react/core'
+import { networks } from './util/getNetworkDataByChainId'
+
+import { useWeb3React, Web3ReactProvider } from '@web3-react/core'
 import { AbstractConnector } from '@web3-react/abstract-connector'
+import { NetworkConnector } from '@web3-react/network-connector'
 
 import { providers } from 'ethers'
+import { usePromise } from 'react-use'
 
 const { Web3Provider } = providers
 
@@ -87,7 +92,10 @@ const RightArea = tw.div`
 `
 
 /** this will always be true on localhost, because we don't care about https */
-const IS_HTTPS = window.location.hostname === 'localhost' || window.location.protocol.startsWith('https')
+const IS_HTTPS =
+  window.location.hostname.startsWith('localhost') ||
+  window.location.hostname.startsWith('192.168.1.') ||
+  window.location.protocol.startsWith('https')
 
 export interface IAppNavState {
   leftNavExpanded: boolean
@@ -186,8 +194,10 @@ const AppContent: React.FC = () => {
                   </TokenLockerManagerV1ContractContextProvider>
                 }
               />
-              <Route path="/staking/create" element={<CreateStaking />} />
-              <Route path="/staking" element={<Staking />} />
+              {/* <Route path="/staking/create" element={<CreateStaking />} /> */}
+              <Route path="/staking/deploy" element={<Staking viewMode="deploy" />} />
+              <Route path="/staking/all" element={<Staking viewMode="all" />} />
+              <Route path="/staking" element={<Staking viewMode="split" />} />
               <Route path="/governance" element={<ComingSoon />} />
               <Route path="/faucet" element={<Faucets />} />
               <Route path="/stats" element={<ComingSoon />} />
@@ -202,20 +212,66 @@ const AppContent: React.FC = () => {
   )
 }
 
+const AppWeb3: React.FC = () => {
+  const mounted = usePromise()
+  const { account, activate, connector, chainId } = useWeb3React()
+  const [connecting, setConnecting] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (chainId !== undefined) {
+      window.localStorage.setItem('OM_DEFAULT_CHAINID', chainId.toString())
+    }
+  }, [chainId])
+
+  useEffect(() => {
+    if (!connecting && !account && !connector && window.localStorage.getItem('ONLYMOONS_AUTO_CONNECT') !== '1') {
+      setConnecting(true)
+      // if (connector && !(connector instanceof NetworkConnector)) {
+      //   return
+      // }
+
+      // connector instanceof NetworkConnector && deactivate()
+
+      const urls: Record<number, string> = {}
+
+      Object.keys(networks)
+        .map(chainId => parseInt(chainId))
+        .forEach(chainId => {
+          urls[chainId] = networks[chainId].rpcURL
+        })
+
+      mounted(
+        activate(
+          new NetworkConnector({
+            urls,
+            defaultChainId: parseInt(window.localStorage.getItem('OM_DEFAULT_CHAINID') ?? '56'),
+          }),
+        ),
+      ).then(() => setConnecting(false))
+    }
+  }, [mounted, account, activate, connector, connecting])
+
+  return (
+    <Router>
+      <NotificationCatcherContextProvider>
+        <ContractCacheContextProvider>
+          <UtilContractContextProvider>
+            <PriceTrackerContextProvider>
+              <FeesContractContextProvider>
+                <AppContent />
+              </FeesContractContextProvider>
+            </PriceTrackerContextProvider>
+          </UtilContractContextProvider>
+        </ContractCacheContextProvider>
+      </NotificationCatcherContextProvider>
+    </Router>
+  )
+}
+
 const App: React.FC = () => {
   return IS_HTTPS ? (
     <Web3ReactProvider getLibrary={getLibrary}>
-      <Router>
-        <NotificationCatcherContextProvider>
-          <ContractCacheContextProvider>
-            <UtilContractContextProvider>
-              <PriceTrackerContextProvider>
-                <AppContent />
-              </PriceTrackerContextProvider>
-            </UtilContractContextProvider>
-          </ContractCacheContextProvider>
-        </NotificationCatcherContextProvider>
-      </Router>
+      <AppWeb3 />
     </Web3ReactProvider>
   ) : (
     <FullscreenLoading children="Redirecting to HTTPS..." />

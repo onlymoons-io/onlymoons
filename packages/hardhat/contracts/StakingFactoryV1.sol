@@ -18,37 +18,50 @@
 
 pragma solidity ^0.8.0;
 
-interface IStakingManagerV1 {
-  event CreatedStaking(uint40 indexed id, address contractAddress);
+import { IStakingFactoryV1 } from "./IStakingFactoryV1.sol";
+import { StakingV1 } from "./StakingV1.sol";
+import { StakingTokenV1 } from "./StakingTokenV1.sol";
+import { Ownable } from "./Ownable.sol";
+import { Pausable } from "./Pausable.sol";
 
-  function gasLeftLimit() external view returns (uint256);
-  function setGasLeftLimit(uint256 value) external;
-  function factory() external view returns (address);
-  function setFactory(address value) external;
+// staking types:
+// 0 - eth reflection
+// 1 - token reflection
+
+contract StakingFactoryV1 is IStakingFactoryV1, Ownable, Pausable {
+  constructor() Ownable(_msgSender()) {}
+
   function createStaking(
     uint8 stakingType_,
     address tokenAddress_,
     uint16 lockDurationDays_,
     uint256[] memory typeData_
-  ) external payable;
-  function getStakingDataByAddress(address address_) external view returns (
-    address contractAddress,
-    uint8 stakingType,
-    address stakedToken,
-    uint8 decimals,
-    uint256 totalStaked,
-    uint256 totalRewards,
-    uint256 totalClaimed
-  );
-  function getStakingDataById(uint40 id) external view returns (
-    address contractAddress,
-    uint8 stakingType,
-    address stakedToken,
-    uint8 decimals,
-    uint256 totalStaked,
-    uint256 totalRewards,
-    uint256 totalClaimed
-  );
-  function getAllRewardsForAddress(address account) external view returns (uint256 pending, uint256 claimed);
-  function claimAll() external;
+  ) external virtual override onlyNotPaused returns (address) {
+    require(stakingType_ < 2, "Invalid staking type");
+
+    StakingV1 stakingContract;
+
+    if (stakingType_ == 0) {
+      // eth reflection
+      stakingContract = new StakingV1(
+        _msgSender(),
+        tokenAddress_,
+        lockDurationDays_
+      );
+    } else if (stakingType_ == 1) {
+      // token reflection
+      stakingContract = new StakingTokenV1(
+        _msgSender(),
+        tokenAddress_,
+        // typeData_[0] is the rewards token address
+        address(uint160(typeData_[0])),
+        lockDurationDays_
+      );
+    }
+
+    // TODO implement release-over-time staking contracts,
+    // or add that functionality to the existing contracts
+
+    return address(stakingContract);
+  }
 }

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useCallback, useRef } from 'react'
-import { useUnmount } from 'react-use'
+import { usePromise, useUnmount } from 'react-use'
 // import { useParams } from 'react-router-dom'
 import tw from 'tailwind-styled-components'
 import { useWeb3React } from '@web3-react/core'
@@ -50,6 +50,7 @@ const SplitStakingTopSectionInner = tw.div`
 
 const SplitStakingComponent: React.FC = () => {
   // const { account: accountToCheck, chainId: chainIdToUse, id: idToUse } = useParams()
+  const mounted = usePromise()
   const { account, chainId, connector } = useWeb3React()
   const {
     // stakingEnabledOnNetwork,
@@ -115,19 +116,22 @@ const SplitStakingComponent: React.FC = () => {
       return
     }
 
-    Promise.all([
-      //
-      connector
-        .getProvider()
-        .then(
-          provider => new Contract(soloStakingData.contractAddress, stakingAbi, new Web3Provider(provider).getSigner()),
-        ),
-      connector
-        .getProvider()
-        .then(
-          provider => new Contract(lpStakingData.contractAddress, stakingAbi, new Web3Provider(provider).getSigner()),
-        ),
-    ])
+    mounted(
+      Promise.all([
+        //
+        connector
+          .getProvider()
+          .then(
+            provider =>
+              new Contract(soloStakingData.contractAddress, stakingAbi, new Web3Provider(provider).getSigner()),
+          ),
+        connector
+          .getProvider()
+          .then(
+            provider => new Contract(lpStakingData.contractAddress, stakingAbi, new Web3Provider(provider).getSigner()),
+          ),
+      ]),
+    )
       .then(([_soloStakingContract, _lpStakingContract]) => {
         setSoloStakingContract(_soloStakingContract)
         setLpStakingContract(_lpStakingContract)
@@ -137,7 +141,7 @@ const SplitStakingComponent: React.FC = () => {
         setSoloStakingContract(undefined)
         setLpStakingContract(undefined)
       })
-  }, [contract, soloStakingData, lpStakingData, connector, stakingAbi])
+  }, [mounted, contract, soloStakingData, lpStakingData, connector, stakingAbi])
 
   useEffect(() => {
     if (!getStakingDataByAddress || !globalStakingData?.ready) {
@@ -146,10 +150,12 @@ const SplitStakingComponent: React.FC = () => {
       return
     }
 
-    Promise.all([
-      getStakingDataByAddress(globalStakingData.soloStakingAddress),
-      getStakingDataByAddress(globalStakingData.lpStakingAddress),
-    ])
+    mounted(
+      Promise.all([
+        getStakingDataByAddress(globalStakingData.soloStakingAddress),
+        getStakingDataByAddress(globalStakingData.lpStakingAddress),
+      ]),
+    )
       .then(([_soloStakingData, _lpStakingData]) => {
         setSoloStakingData(_soloStakingData)
         setLpStakingData(_lpStakingData)
@@ -157,7 +163,7 @@ const SplitStakingComponent: React.FC = () => {
       .catch(err => {
         console.error(err)
       })
-  }, [getStakingDataByAddress, globalStakingData])
+  }, [mounted, getStakingDataByAddress, globalStakingData])
 
   const updateAllRewardsAmount = useCallback(() => {
     if (!account || !getSplitStakingRewardsForAddress) {
@@ -168,7 +174,7 @@ const SplitStakingComponent: React.FC = () => {
       return
     }
 
-    getSplitStakingRewardsForAddress(account)
+    mounted(getSplitStakingRewardsForAddress(account))
       .then(setAllRewardsAmount)
       .catch((err: Error) => {
         // ignore this error for now
@@ -176,7 +182,7 @@ const SplitStakingComponent: React.FC = () => {
         // this gets called before the staking manager contract
         // is ready, and always shows the error on first load
       })
-  }, [account, getSplitStakingRewardsForAddress])
+  }, [mounted, account, getSplitStakingRewardsForAddress])
 
   useEffect(updateAllRewardsAmount, [updateAllRewardsAmount])
 
@@ -186,14 +192,13 @@ const SplitStakingComponent: React.FC = () => {
       return
     }
 
-    //
-    getStakingRewards()
+    mounted(getStakingRewards())
       .then(setSplitStakingRewards)
       .catch((err: Error) => {
         console.error(err)
         setSplitStakingRewards(undefined)
       })
-  }, [getStakingRewards])
+  }, [mounted, getStakingRewards])
 
   useEffect(updateSplitStakingRewards, [updateSplitStakingRewards])
 
@@ -203,14 +208,13 @@ const SplitStakingComponent: React.FC = () => {
       return
     }
 
-    connector
-      .getProvider()
+    mounted(connector.getProvider())
       .then((_provider: any) => setProvider(new Web3Provider(_provider)))
       .catch((err: Error) => {
         console.error(err)
         setProvider(undefined)
       })
-  }, [connector])
+  }, [mounted, connector])
 
   useEffect(() => {
     if (!provider) {
@@ -262,7 +266,7 @@ const SplitStakingComponent: React.FC = () => {
       return
     }
 
-    getRewardsRatio()
+    mounted(getRewardsRatio())
       .then(result => {
         setRewardsRatio(result)
       })
@@ -270,7 +274,7 @@ const SplitStakingComponent: React.FC = () => {
         pushNotification && pushNotification(err)
         console.error(err)
       })
-  }, [globalStakingData, getRewardsRatio, pushNotification])
+  }, [mounted, globalStakingData, getRewardsRatio, pushNotification])
 
   useEffect(() => {
     if (!globalStakingData || !connector) {
@@ -281,8 +285,7 @@ const SplitStakingComponent: React.FC = () => {
     // set initial rewards ratio
     setRewardsRatio(globalStakingData.rewardsRatio)
 
-    connector
-      .getProvider()
+    mounted(connector.getProvider())
       .then(provider =>
         setTokenContract(new Contract(globalStakingData.mainToken, ERC20ABI, new Web3Provider(provider).getSigner())),
       )
@@ -290,7 +293,7 @@ const SplitStakingComponent: React.FC = () => {
         console.error(err)
         setTokenContract(undefined)
       })
-  }, [globalStakingData, connector])
+  }, [mounted, globalStakingData, connector])
 
   useEffect(() => {
     if (!account || !tokenContract) {
@@ -319,12 +322,12 @@ const SplitStakingComponent: React.FC = () => {
       return
     }
 
-    //
-    Promise.all([
-      //
-      soloStakingContract.getStakingDataForAccount(account),
-      lpStakingContract.getStakingDataForAccount(account),
-    ])
+    mounted(
+      Promise.all([
+        soloStakingContract.getStakingDataForAccount(account),
+        lpStakingContract.getStakingDataForAccount(account),
+      ]),
+    )
       .then(([_soloStakingData, _lpStakingData]) => {
         //
         setSoloStakingDataForAccount(_soloStakingData)
@@ -335,7 +338,7 @@ const SplitStakingComponent: React.FC = () => {
         setSoloStakingDataForAccount(undefined)
         setLpStakingDataForAccount(undefined)
       })
-  }, [account, soloStakingContract, lpStakingContract])
+  }, [mounted, account, soloStakingContract, lpStakingContract])
 
   const getEstimatedRewards: () => BigNumber = useCallback(() => {
     if (
@@ -453,10 +456,16 @@ const SplitStakingComponent: React.FC = () => {
                                   </Button> */}
                       </div>{' '}
                       <div className="text-xl">
-                        {humanNumber(parseFloat(utils.formatEther(allRewardsAmount.claimed)), n =>
-                          n.toLocaleString('en', { maximumFractionDigits: 5 }),
-                        )}{' '}
-                        {getNativeCoin(chainId || 0).symbol}
+                        {account ? (
+                          <>
+                            {humanNumber(parseFloat(utils.formatEther(allRewardsAmount.claimed)), n =>
+                              n.toLocaleString('en', { maximumFractionDigits: 5 }),
+                            )}{' '}
+                            {getNativeCoin(chainId || 0).symbol}
+                          </>
+                        ) : (
+                          <>-</>
+                        )}
                       </div>
                     </div>
 
@@ -478,12 +487,18 @@ const SplitStakingComponent: React.FC = () => {
                         Pending rewards <FontAwesomeIcon icon={faInfoCircle} />
                       </div>{' '}
                       <div className="text-xl">
-                        ~
-                        {humanNumber(
-                          parseFloat(utils.formatEther(allRewardsAmount.pending.add(getEstimatedRewards()))),
-                          n => n.toLocaleString('en', { maximumFractionDigits: 5 }),
-                        )}{' '}
-                        {getNativeCoin(chainId || 0).symbol}
+                        {account ? (
+                          <>
+                            ~
+                            {humanNumber(
+                              parseFloat(utils.formatEther(allRewardsAmount.pending.add(getEstimatedRewards()))),
+                              n => n.toLocaleString('en', { maximumFractionDigits: 5 }),
+                            )}{' '}
+                            {getNativeCoin(chainId || 0).symbol}
+                          </>
+                        ) : (
+                          <>-</>
+                        )}
                       </div>
                     </div>
 
@@ -525,13 +540,14 @@ const SplitStakingComponent: React.FC = () => {
                     className="w-full"
                     disabled={
                       // !claimAll || allRewardsAmount.pending.eq(0) || claimingAll
+                      !account ||
                       claimingAll ||
                       !(
                         (distribute &&
                           splitStakingRewards &&
                           !splitStakingRewards.combinedRewards.eq(0) &&
                           canDistribute) ||
-                        (claimSplitStaking && allRewardsAmount.pending.eq(0))
+                        (claimSplitStaking && !allRewardsAmount.pending.eq(0))
                       )
 
                       // !distribute ||

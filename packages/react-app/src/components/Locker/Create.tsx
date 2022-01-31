@@ -16,6 +16,7 @@ import { timestampToDateTimeLocal } from '../../util'
 import Header from './Header'
 import TokenInput from '../TokenInput'
 import { Outer, MidSection, SectionInner } from '../Layout'
+import { usePromise } from 'react-use'
 
 const { Web3Provider } = providers
 const { isAddress } = utils
@@ -56,6 +57,7 @@ const AddressInput = tw(AddressInputCSS)`
 `
 
 const Create: React.FC = () => {
+  const mounted = usePromise()
   const navigate = useNavigate()
   const { account, chainId, connector } = useWeb3React()
   const { address: lockerManagerAddress, createTokenLocker } = useContext(TokenLockerManagerV1ContractContext)
@@ -90,11 +92,11 @@ const Create: React.FC = () => {
       if (isAddress(e.currentTarget.value)) {
         const address = e.currentTarget.value
 
-        isLpToken(address)
+        mounted(isLpToken(address))
           .then(result => setLpToken(result))
           .catch(() => setLpToken(false))
 
-        getTokenData(address)
+        mounted(getTokenData(address))
           .then(result => {
             setLoadingTokenData(false)
             setTokenData(result)
@@ -102,7 +104,7 @@ const Create: React.FC = () => {
           .catch(console.error)
       }
     },
-    [getTokenData, isLpToken],
+    [mounted, getTokenData, isLpToken],
   )
 
   useEffect(() => {
@@ -111,13 +113,13 @@ const Create: React.FC = () => {
       return
     }
 
-    getLpData(tokenData.address)
+    mounted(getLpData<LPLockData>(tokenData.address))
       .then(lpData => setLpLockData(lpData))
       .catch(err => {
         console.error(err)
         setLpLockData(undefined)
       })
-  }, [lpToken, tokenData, getLpData])
+  }, [mounted, lpToken, tokenData, getLpData])
 
   useEffect(() => {
     if (!lpLockData || !getTokenData) {
@@ -127,7 +129,7 @@ const Create: React.FC = () => {
     }
 
     //
-    Promise.all([getTokenData(lpLockData.token0), getTokenData(lpLockData.token1)])
+    mounted(Promise.all([getTokenData(lpLockData.token0), getTokenData(lpLockData.token1)]))
       .then(([token0Data, token1Data]) => {
         setLpToken0Data(token0Data)
         setLpToken1Data(token1Data)
@@ -137,7 +139,7 @@ const Create: React.FC = () => {
         setLpToken0Data(undefined)
         setLpToken1Data(undefined)
       })
-  }, [lpLockData, getTokenData])
+  }, [mounted, lpLockData, getTokenData])
 
   useEffect(() => {
     if (!tokenData || !connector) {
@@ -146,8 +148,7 @@ const Create: React.FC = () => {
     }
 
     //
-    connector
-      .getProvider()
+    mounted(connector.getProvider())
       .then(_provider => {
         //
         if (!_provider) return Promise.reject(new Error('Invalid provider'))
@@ -158,7 +159,7 @@ const Create: React.FC = () => {
         console.error(err)
         setContract(undefined)
       })
-  }, [tokenData, connector])
+  }, [mounted, tokenData, connector])
 
   const checkApproval = useCallback(() => {
     //
@@ -168,14 +169,13 @@ const Create: React.FC = () => {
     }
 
     //
-    contract
-      .allowance(account, lockerManagerAddress)
+    mounted<BigNumber>(contract.allowance(account, lockerManagerAddress))
       .then((_allowance: BigNumber) => setApproved(_allowance.gte(utils.parseUnits(amount, tokenData.decimals))))
       .catch((err: Error) => {
         console.error(err)
         setApproved(false)
       })
-  }, [account, contract, lockerManagerAddress, amount, tokenData])
+  }, [mounted, account, contract, lockerManagerAddress, amount, tokenData])
 
   useEffect(checkApproval, [checkApproval])
 
@@ -190,7 +190,7 @@ const Create: React.FC = () => {
 
     if (approved) {
       // already approved. make the request
-      createTokenLocker(tokenData.address, utils.parseUnits(amount, tokenData.decimals), unlockTime)
+      mounted(createTokenLocker(tokenData.address, utils.parseUnits(amount, tokenData.decimals), unlockTime))
         .then((id: number) => {
           setCanSubmit(true)
           setIsSubmitting(false)
@@ -203,9 +203,8 @@ const Create: React.FC = () => {
         })
     } else {
       // not approved. send approval request first
-      contract
-        .approve(lockerManagerAddress, utils.parseUnits(amount, tokenData.decimals))
-        .then((result: any) => result.wait())
+      mounted(contract.approve(lockerManagerAddress, utils.parseUnits(amount, tokenData.decimals)))
+        .then((result: any) => mounted(result.wait()))
         .then((tx: any) => {
           checkApproval()
           setCanSubmit(true)
@@ -218,6 +217,7 @@ const Create: React.FC = () => {
         })
     }
   }, [
+    mounted,
     account,
     approved,
     contract,

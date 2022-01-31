@@ -24,7 +24,7 @@ import { TokenLockerManagerV1ContractContext } from '../contracts/TokenLockerMan
 import { ModalControllerContext } from '../ModalController'
 import { TokenData, TokenLockData, LPLockData } from '../../typings'
 import { motion } from 'framer-motion'
-import { Primary as PrimaryButton, Light as Button } from '../Button'
+import { Primary as PrimaryButton, Ghost as Button } from '../Button'
 import Tooltip from '../Tooltip'
 import TokenInput from '../TokenInput'
 import TokenWithValue from '../TokenWithValue'
@@ -121,12 +121,15 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
   const [manageExpanded, setManageExpanded] = useState<boolean>(false)
 
   const updateLockData = useCallback(() => {
-    if (typeof lockId !== 'number' || !contract || !getTokenLockData || !currentlyVisible.current) return
+    if (typeof lockId !== 'number' || !contract || !getTokenLockData || !currentlyVisible.current || !chainId) {
+      setLockData(undefined)
+      return
+    }
 
     mounted(getTokenLockData(lockId))
       .then(lockData => setLockData(lockData))
       .catch(console.error)
-  }, [mounted, contract, getTokenLockData, lockId])
+  }, [mounted, contract, getTokenLockData, lockId, chainId])
 
   useEffect(updateLockData, [updateLockData])
 
@@ -137,6 +140,14 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
     currentlyVisible.current = false
     setLockData(undefined)
   })
+
+  // useEffect(() => {
+  //   if (chainId) {
+  //     setLockData(undefined)
+  //   } else {
+  //     setLockData(undefined)
+  //   }
+  // }, [chainId])
 
   const updateIsVisible = useCallback(() => {
     currentlyVisible.current = intersection && intersection.intersectionRatio > 0 ? true : false
@@ -432,7 +443,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
 
                   {lpToken0Data && lpToken1Data && (
                     <motion.div
-                      className="px-8 pt-3 mt-4 grid grid-cols-3 items-center gap-1 border-t dark:border-gray-800 text-sm font-extralight"
+                      className="px-4 pt-3 mt-4 grid grid-cols-3 items-center border-t dark:border-gray-800 text-sm font-extralight"
                       initial={{ scaleY: 0, y: '-100%', opacity: 0 }}
                       animate={{ scaleY: 1, y: 0, opacity: 1 }}
                     >

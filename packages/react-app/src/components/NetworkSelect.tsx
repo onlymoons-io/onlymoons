@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect, useCallback, CSSProperties } from 'react'
 import { useWeb3React } from '@web3-react/core'
+import { NetworkConnector } from '@web3-react/network-connector'
 import { Light as LightButton } from './Button'
 import { getNetworkDataByChainId } from '../util'
 import { NetworkData } from '../typings'
@@ -7,6 +8,8 @@ import { ModalControllerContext } from './ModalController'
 import DetailsCard from './DetailsCard'
 import contracts from '../contracts/production_contracts.json'
 import { PriceTrackerContext } from './contracts/PriceTracker'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faWrench } from '@fortawesome/free-solid-svg-icons'
 
 interface ErrorInterface {
   code: number
@@ -49,10 +52,14 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
   const switchNetwork = useCallback(
     async (targetChainId: number) => {
       try {
-        await provider.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: `0x${targetChainId.toString(16)}` }],
-        })
+        if (connector instanceof NetworkConnector) {
+          connector.changeChainId(targetChainId)
+        } else {
+          await provider.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: `0x${targetChainId.toString(16)}` }],
+          })
+        }
       } catch (error) {
         if ((error as ErrorInterface).code === 4902) {
           try {
@@ -87,7 +94,7 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
 
       closeModal()
     },
-    [provider, closeModal],
+    [provider, closeModal, connector],
   )
 
   return !chainId ? (
@@ -101,6 +108,8 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
           //
           setCurrentModal(
             <DetailsCard
+              className="h-96"
+              innerClassName="h-96"
               headerContent={<div className="text-xl">Select network</div>}
               mainContent={
                 <div>
@@ -114,10 +123,7 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
                       <div
                         key={key}
                         className="flex gap-3 items-center p-4 cursor-pointer hover:bg-gray-500 hover:bg-opacity-10"
-                        onClick={() => {
-                          //
-                          switchNetwork(_networkData.chainId)
-                        }}
+                        onClick={() => switchNetwork(_networkData.chainId)}
                       >
                         {_networkData.icon && (
                           <img
@@ -140,7 +146,13 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
         {networkData?.icon && (
           <img alt={networkData?.name || ''} width={20} height={20} src={`/network-icons${networkData.icon}`} />
         )}
-        <span>{networkData?.shortName || 'Unknown'}</span>
+        {networkData?.isTestNet && (
+          <FontAwesomeIcon
+            className="text-red-300 bg-gray-800 rounded-full p-1 transform-gpu scale-125"
+            icon={faWrench}
+          />
+        )}
+        <span>{networkData?.nativeCurrency.symbol || '???'}</span>
         {nativeCoinPrice ? (
           <span className="ml-1 opacity-60">
             $

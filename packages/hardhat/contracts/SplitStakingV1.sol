@@ -49,8 +49,8 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
     // use a real value for this, but make sure to subtract
     // the cooldown duration so we can immediately distribute
     // _lastDistributionAt = block.timestamp - _distributionCooldown;
-    _lastDepositAt = block.timestamp;
-    _lastDistributionAt = block.timestamp;
+    _lastActionAt = block.timestamp;
+    // _lastDistributionAt = block.timestamp;
   }
 
   address internal constant UNSET_ID = address(0);
@@ -62,9 +62,10 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
   IUniswapV2Pair internal _lpStakingToken;
 
   /** @dev 0-10000 based percent for fee rewarded for distributing */
-  uint16 internal _rewardForDistributing = 200; // 2%
+  uint16 internal _rewardForDistributing = 300; // 3%
 
-  uint256 internal _distributionRewardRate = 1000 * 10 ** 10;
+  // TODO 5 eth per day is high currently, but it's easier to test with. change this later.
+  uint256 internal _distributionRewardRate = uint256(5 * 10 ** 18) / 1 days; // 5 eth per day
   uint256 internal _distributionRewardAmountModifier = 1000 * 10 ** 11;
 
   uint256 internal _totalRewards = 0;
@@ -78,8 +79,8 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
   uint256 internal _maximumRewardsForDistribution = 35 * 10 ** 16; // 0.35 eth
   /** @dev start this at a low value for testing, since waiting is no good. increase this on mainnets */
   uint256 internal _distributionCooldown = 0; // minutes;
-  uint256 internal _lastDistributionAt = 0;
-  uint256 internal _lastDepositAt = 0;
+  // uint256 internal _lastDistributionAt = 0;
+  uint256 internal _lastActionAt = 0;
 
   /** @dev 0 = auto, 1 = only lp, 2 = only solo */
   uint8 internal _rewardsMode = 0;
@@ -146,7 +147,7 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
     IStakingV1 stake = IStakingV1(address_);
     require(!stake.rewardsAreToken(), "Split rewards cannot be a token");
     _soloStakingAddress = address_;
-    (address stakedToken,,,,,) = stake.getStakingData();
+    (,address stakedToken,,,,) = stake.getStakingData();
     _soloStakingToken = IERC20(stakedToken);
   }
 
@@ -154,11 +155,11 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
     IStakingV1 stake = IStakingV1(address_);
     require(!stake.rewardsAreToken(), "Split rewards cannot be a token");
     _lpStakingAddress = address_;
-    (address stakedToken,,,,,) = stake.getStakingData();
+    (,address stakedToken,,,,) = stake.getStakingData();
     _lpStakingToken = IUniswapV2Pair(stakedToken);
   }
 
-  function _ready() internal view returns (bool) {
+  function _ready() internal virtual view returns (bool) {
     return _soloStakingAddress != UNSET_ID && _lpStakingAddress != UNSET_ID;
   }
 
@@ -181,7 +182,7 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
   /**
    * @return main token price in eth
    */
-  function _getMainTokenPrice() internal view returns (uint256) {
+  function _getMainTokenPrice() internal virtual view returns (uint256) {
     if (!_ready())
       return 0;
 
@@ -195,7 +196,11 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
     return pairedBalance * 10**18 / soloBalance;
   }
 
-  function _getPairedTokenBalance() internal view returns (uint256) {
+  function getMainTokenPrice() external view returns (uint256) {
+    return _getMainTokenPrice();
+  }
+
+  function _getPairedTokenBalance() internal virtual view returns (uint256) {
     if (!_ready())
       return 0;
     
@@ -211,19 +216,24 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
   /**
    * @return main token market cap, in eth
    */
-  function _getMainTokenMarketCap() internal view returns (uint256) {
+  function _getMainTokenMarketCap() internal virtual view returns (uint256) {
     if (!_ready())
       return 0;
     
     return _getMainTokenPrice() * (_soloStakingToken.totalSupply() / 10 ** _soloStakingToken.decimals());
   }
 
-  function _getLiquidityRatio() internal view returns (uint16) {
+  function getMainTokenMarketCap() external view returns (uint256) {
+    return _getMainTokenMarketCap();
+  }
+
+  function _getLiquidityRatio() internal virtual view returns (uint16) {
     if (!_ready())
       return 1000;
     
     uint256 marketCap = _getMainTokenMarketCap();
 
+    // avoid dividing by zero, even though market cap should never be 0
     if (marketCap == 0)
       return 1000;
     
@@ -238,7 +248,13 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
     return _getLiquidityRatio();
   }
 
-  function _getRewardsRatio() internal view returns (uint16) {
+  function _getRewardsRatio() internal virtual view returns (uint16) {
+    if (_rewardsMode == 1) {
+      return 0;
+    } else if (_rewardsMode == 2) {
+      return 10000;
+    }
+
     uint16 liquidityRatio = _getLiquidityRatio();
 
     return liquidityRatio <= 1000
@@ -250,9 +266,21 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
     return _getRewardsRatio();
   }
 
-  function _getAvailableRewards() internal view returns (uint256) {
+  /**
+   * @param rewards amount of rewards to clamp
+   * @param subtractAmount amount to subtract from contract balance - used when depositing
+   */
+  function _clampRewards(uint256 rewards, uint256 subtractAmount) internal virtual view returns (uint256) {
+    if (rewards < _minimumRewardsForDistribution)
+      return 0;
+
+    return Math.min(rewards, Math.min(address(this).balance - subtractAmount, _maximumRewardsForDistribution));
+  }
+
+  function _getAvailableRewardsUnclamped() internal virtual view returns (uint256) {
     uint256 rewardsBalance = address(this).balance;
-    uint256 diff = block.timestamp - Math.max(_lastDepositAt, _lastDistributionAt);
+    if (rewardsBalance == 0) return 0;
+    uint256 diff = block.timestamp - _lastActionAt;
     uint256 rewards = _cachedRewards;
     rewards += diff * _distributionRewardRate;
     rewards += Math.mulScale(
@@ -260,18 +288,19 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
       diff * _distributionRewardAmountModifier,
       10 ** 18
     );
-
-    if (rewards < _minimumRewardsForDistribution)
-      return 0;
     
-    return Math.min(rewards, Math.min(rewardsBalance, _maximumRewardsForDistribution));
+    return rewards;
+  }
+
+  function _getAvailableRewards() internal virtual view returns (uint256) {
+    return _clampRewards(_getAvailableRewardsUnclamped(), 0);
   }
 
   function getAvailableRewards() external view returns (uint256) {
     return _getAvailableRewards();
   }
 
-  function _canDistribute() internal view returns (bool) {
+  function _canDistribute() internal virtual view returns (bool) {
     return (
       (
         _rewardsMode == 0 && _ready()
@@ -287,16 +316,16 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
     return _canDistribute();
   }
 
-  function _getStakingRewards(bool includeDistributorReward) internal view returns (
+  function _getStakingRewards(bool includeDistributorReward) internal virtual view returns (
     uint256 combinedRewards,
     uint256 soloStakingRewards,
     uint256 lpStakingRewards,
     uint256 distributorReward,
     uint256 totalRewards,
-    uint256 waitingRewards,
-    uint256 lastDistributionAt
+    uint256 waitingRewards
+    // uint256 lastDistributionAt
   ){
-    lastDistributionAt = _lastDistributionAt;
+    // lastDistributionAt = _lastDistributionAt;
     totalRewards = _totalRewards;
     waitingRewards = address(this).balance;
     combinedRewards = _getAvailableRewards();
@@ -328,13 +357,13 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
     uint256 lpStakingRewards,
     uint256 distributorReward,
     uint256 totalRewards,
-    uint256 waitingRewards,
-    uint256 lastDistributionAt
+    uint256 waitingRewards
+    // uint256 lastDistributionAt
   ){
     return _getStakingRewards(true);
   }
 
-  function _distribute(address payable distributor, bool revertOnFailure) internal {
+  function _distribute(address payable distributor, bool revertOnFailure) internal virtual {
     if (!_canDistribute()) {
       if (revertOnFailure)
         revert("Cannot distribute");
@@ -345,7 +374,7 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
       uint256 combinedRewards,
       uint256 soloStakingRewards,
       uint256 lpStakingRewards,
-      uint256 distributorReward,,,
+      uint256 distributorReward,,
     // contracts are exempt from receiving rewards - sorry not sorry
     ) = _getStakingRewards(!distributor.isContract());
 
@@ -359,7 +388,7 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
 
     // keep track of the last timestamp that we're distributing rewards,
     // so we can use the cooldown feature to limit the number of rewards transactions.
-    _lastDistributionAt = block.timestamp;
+    _lastActionAt = block.timestamp;
 
     if (soloStakingRewards != 0)
       payable(_soloStakingAddress).sendValue(soloStakingRewards);
@@ -398,7 +427,7 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
     claimed = _bountyRewards[account].claimed + soloClaimed + lpClaimed;
   }
 
-  function _claimByAddress(address account, address address_, bool revertOnFailure, bool doAutoClaim) internal {
+  function _claimByAddress(address account, address address_, bool revertOnFailure, bool doAutoClaim) internal virtual {
     if (address_ != UNSET_ID)
       IStakingV1(address_).claimFor(account, revertOnFailure, doAutoClaim);
     else if (revertOnFailure)
@@ -406,7 +435,7 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
   }
 
   /** NOTE!!! this currently doesn't revert when there's nothing to do */
-  function _claimSplitStaking(address account) internal {
+  function _claimSplitStaking(address account) internal virtual {
     _distribute(payable(account), false);
     _claimByAddress(account, _soloStakingAddress, false, false);
     _claimByAddress(account, _lpStakingAddress, false, false);
@@ -416,15 +445,29 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
     _claimSplitStaking(_msgSender());
   }
 
-  function _depositEth(address account, uint256 amount) internal onlyNotPaused {
-    require(amount != 0, "Receive value cannot be 0");
+  function _depositEth(address account, uint256 amount) internal virtual onlyNotPaused {
+    require(amount != 0, "Amount cannot be 0");
     require(_ready(), "Split staking is not ready");
 
-    if (address(this).balance == 0)
-      _lastDistributionAt = block.timestamp;
+    // subtract the incoming amount from the balance to get the old balance
+    uint256 oldBalance = address(this).balance - amount;
 
-    _cachedRewards = _getAvailableRewards();
-    _lastDepositAt = block.timestamp;
+    if (oldBalance == 0) {
+      // if the balance was 0, we definitely have 0 cached rewards
+      _cachedRewards = 0;
+    } else {
+      // cache the rewards before resetting _lastDistributionAt
+      uint256 unclampedRewards = _getAvailableRewardsUnclamped();
+
+      if (unclampedRewards > _minimumRewardsForDistribution || unclampedRewards > oldBalance) {
+        // clamp rewards, and subtract the incoming amount
+        _cachedRewards = _clampRewards(unclampedRewards, amount);
+      } else {
+        _cachedRewards = unclampedRewards;
+      }
+    }
+
+    _lastActionAt = block.timestamp;
     _totalRewards += amount;
 
     emit DepositedEth(account, amount);
@@ -433,7 +476,7 @@ contract SplitStakingV1 is Governable, Pausable, ReentrancyGuard {
   /**
    * @dev receive eth for split staking rewards
    */
-  receive() external payable nonReentrant {
+  receive() external virtual payable nonReentrant {
     _depositEth(_msgSender(), msg.value);
   }
 }

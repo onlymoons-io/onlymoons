@@ -25,6 +25,7 @@ interface IStakingV1 {
   event WithdrewTokens(address indexed account, uint256 amount);
   event ClaimedRewards(address indexed account, uint256 amount);
 
+  // function stakingType() external view returns (uint8);
   function rewardsAreToken() external pure returns (bool);
   function autoClaimEnabled() external view returns (bool);
   function setAutoClaimEnabled(bool value) external;
@@ -40,8 +41,8 @@ interface IStakingV1 {
   function setAutoClaimGasLimit(uint256 value) external;
   function token() external view returns (address);
   function getStakingData() external view returns (
+    uint8 stakingType,
     address stakedToken,
-    string memory name,
     uint8 decimals,
     uint256 totalStaked,
     uint256 totalRewards,

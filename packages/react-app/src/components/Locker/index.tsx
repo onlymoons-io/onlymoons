@@ -23,14 +23,15 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
   const { watchlist } = useContext(LockWatchlist)
   const mounted = usePromise()
   const { account: accountToCheck, chainId: chainIdToUse, id: idToUse } = useParams()
-  const { account, chainId } = useWeb3React()
+  const { chainId, connector } = useWeb3React()
   const { contract, getTokenLockersForAddress, tokenLockerCount } = useContext(TokenLockerManagerV1ContractContext)
   const [filterInputValue, setFilterInputValue] = useState<string>()
   const [lockIds, setLockIds] = useState<number[]>([])
   const wasUsingWatchlist = useRef<boolean>(false)
+  const setupLockTimer = useRef<NodeJS.Timeout>()
 
   const setupLocks = useCallback(() => {
-    if (!chainId || !contract || !account || !tokenLockerCount || !getTokenLockersForAddress) {
+    if (!chainId || !contract || !connector || !tokenLockerCount || !getTokenLockersForAddress) {
       setLockIds([])
       return
     }
@@ -71,7 +72,6 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
       wasUsingWatchlist.current = false
     } else {
       if (wasUsingWatchlist.current) {
-        setLockIds([])
         mounted(new Promise(done => setTimeout(done, 250))).then(() =>
           setLockIds(new Array(tokenLockerCount).fill(null).map((val, index) => index)),
         )
@@ -86,7 +86,8 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
     mounted,
     contract,
     idToUse,
-    account,
+    // account,
+    connector,
     accountToCheck,
     getTokenLockersForAddress,
     tokenLockerCount,
@@ -95,7 +96,18 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
     watchlist,
   ])
 
-  useEffect(setupLocks, [setupLocks])
+  // useEffect(setupLocks, [setupLocks])
+
+  useEffect(() => {
+    setLockIds([])
+    if (!chainId || !contract || !connector) return
+    setupLockTimer.current && clearTimeout(setupLockTimer.current)
+    mounted(
+      new Promise(done => {
+        setupLockTimer.current = setTimeout(done, 250)
+      }),
+    ).then(setupLocks)
+  }, [chainId, mounted, contract, connector, setupLocks])
 
   return (
     <Outer>
@@ -103,7 +115,7 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
 
       <MidSection>
         <SectionInner>
-          {account ? (
+          {connector ? (
             <div className="flex flex-col justify-center w-full items-center gap-4">
               {typeof idToUse !== 'undefined' && lockIds[0] && parseInt(idToUse) === lockIds[0] ? (
                 <div className="w-full md:max-w-md">
