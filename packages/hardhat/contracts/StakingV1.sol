@@ -40,6 +40,9 @@ struct StakerData {
   uint256 lastClaim;
 }
 
+/**
+ * eth reflection - also base contract for token reflection
+ */
 contract StakingV1 is IStakingV1, Authorizable, Pausable, ReentrancyGuard {
   /** libraries */
   using Address for address payable;
@@ -48,21 +51,16 @@ contract StakingV1 is IStakingV1, Authorizable, Pausable, ReentrancyGuard {
   constructor(
     address owner_,
     address tokenAddress_,
-    string memory name_,
     uint16 lockDurationDays_
   ) Authorizable(owner_) {
     //
     _token = IERC20(tokenAddress_);
-    _name = name_;
     _decimals = _token.decimals();
     _lockDurationDays = lockDurationDays_;
   }
 
   /** @dev reference to the staked token */
   IERC20 internal immutable _token;
-
-  /** @dev name of this staking instance */
-  string internal _name;
 
   /** @dev cached copy of the staked token decimals value */
   uint8 internal immutable _decimals;
@@ -107,6 +105,14 @@ contract StakingV1 is IStakingV1, Authorizable, Pausable, ReentrancyGuard {
   // modifier autoClaimAfter {
   //   _;
   //   _autoClaim();
+  // }
+
+  function _stakingType() internal virtual view returns (uint8) {
+    return 0;
+  }
+
+  // function stakingType() external virtual override view returns (uint8) {
+  //   return _stakingType();
   // }
 
   function _totalRewards() internal virtual view returns (uint256) {
@@ -184,15 +190,15 @@ contract StakingV1 is IStakingV1, Authorizable, Pausable, ReentrancyGuard {
   }
 
   function getStakingData() external virtual override view returns (
+    uint8 stakingType,
     address stakedToken,
-    string memory name,
     uint8 decimals,
     uint256 totalStaked,
     uint256 totalRewards,
     uint256 totalClaimed
   ) {
+    stakingType = _stakingType();
     stakedToken = address(_token);
-    name = _name;
     decimals = _decimals;
     totalStaked = _totalStaked;
     totalRewards = _totalRewards();
@@ -351,7 +357,7 @@ contract StakingV1 is IStakingV1, Authorizable, Pausable, ReentrancyGuard {
       _autoClaimQueueReverse[account] = 0;
     }
 
-    // transfer eth after modifying internal state
+    // transfer tokens after modifying internal state
     _token.safeTransfer(account, amount);
 
     emit WithdrewTokens(account, amount);

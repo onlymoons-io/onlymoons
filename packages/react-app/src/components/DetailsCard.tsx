@@ -55,6 +55,7 @@ export const Main = tw(Section)`
   flex-grow
   flex
   flex-col
+  overflow-auto
 `
 
 export const Footer = tw(Section)`
@@ -85,6 +86,7 @@ export interface DetailsCardProps {
   mainContent?: ReactNode
   footerContent?: ReactNode
   className?: string
+  innerClassName?: string
   style?: CSSProperties
 }
 
@@ -94,6 +96,7 @@ const DetailsCard: React.FC<DetailsCardProps> = ({
   mainContent,
   footerContent,
   className = '',
+  innerClassName = '',
   style = {},
 }) => {
   const [elemScale, setElemScale] = useState<number>(initialScale)
@@ -101,8 +104,8 @@ const DetailsCard: React.FC<DetailsCardProps> = ({
   useMount(() => setElemScale(1))
 
   return (
-    <Outer animate={{ scale: elemScale }}>
-      <Inner style={style} className={className}>
+    <Outer className={className} animate={{ scale: elemScale }}>
+      <Inner style={style} className={innerClassName}>
         {/* header */}
         <Header children={headerContent} />
 

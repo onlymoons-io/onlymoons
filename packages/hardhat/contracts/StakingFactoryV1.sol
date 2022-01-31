@@ -34,7 +34,6 @@ contract StakingFactoryV1 is IStakingFactoryV1, Ownable, Pausable {
   function createStaking(
     uint8 stakingType_,
     address tokenAddress_,
-    string memory name_,
     uint16 lockDurationDays_,
     uint256[] memory typeData_
   ) external virtual override onlyNotPaused returns (address) {
@@ -47,7 +46,6 @@ contract StakingFactoryV1 is IStakingFactoryV1, Ownable, Pausable {
       stakingContract = new StakingV1(
         _msgSender(),
         tokenAddress_,
-        name_,
         lockDurationDays_
       );
     } else if (stakingType_ == 1) {
@@ -57,7 +55,6 @@ contract StakingFactoryV1 is IStakingFactoryV1, Ownable, Pausable {
         tokenAddress_,
         // typeData_[0] is the rewards token address
         address(uint160(typeData_[0])),
-        name_,
         lockDurationDays_
       );
     }

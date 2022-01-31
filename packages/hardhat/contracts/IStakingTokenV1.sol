@@ -18,11 +18,9 @@
 
 pragma solidity ^0.8.0;
 
-interface IStakingFactoryV1 {
-  function createStaking(
-    uint8 stakingType_,
-    address tokenAddress_,
-    uint16 lockDurationDays_,
-    uint256[] memory data_
-  ) external returns (address);
+import { IStakingV1 } from "./IStakingV1.sol";
+
+interface IStakingTokenV1 is IStakingV1 {
+  function rewardsToken() external view returns (address);
+  function recoverEth() external;
 }

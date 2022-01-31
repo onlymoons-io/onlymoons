@@ -39,10 +39,10 @@ export interface StakingData {
   readonly id: number
   /** address contractAddress */
   readonly contractAddress: string
+  /** uint8 stakingType */
+  readonly stakingType: number
   /** address stakedToken */
   readonly stakedToken: string
-  /** string memory name */
-  readonly name: string
   /** uint8 decimals */
   readonly decimals: number
   /** uint256 totalStaked */

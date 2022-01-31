@@ -97,7 +97,7 @@ const Header: React.FC<Props> = ({ filterEnabled = true, onFilterInput }) => {
           </div>
 
           <Input
-            disabled={!account || !filterEnabled}
+            disabled={!chainId || !filterEnabled}
             color="dark"
             placeholder="Filter by address"
             className="w-full md:w-auto"

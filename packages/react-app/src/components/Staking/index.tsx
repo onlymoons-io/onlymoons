@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSadTear } from '@fortawesome/free-solid-svg-icons'
 import SplitStakingV1ContractContextProvider from '../contracts/SplitStakingV1'
 import StakingManagerV1ContractContextProvider, { StakingManagerV1ContractContext } from '../contracts/StakingManagerV1'
+// import { ModalControllerContext } from '../ModalController'
 import Staking from './Staking'
 import NotConnected from '../NotConnected'
 import { StakingData /*SplitStakingRewardsData, AllRewardsForAddress, StakingDataForAccount*/ } from '../../typings'
@@ -12,17 +13,24 @@ import Button from '../Button'
 import { Outer, MidSection, SectionInner, Grid } from '../Layout'
 import SplitStaking from './SplitStaking'
 import { usePromise } from 'react-use'
+import CreateStaking from './Create'
 
 // const { Web3Provider } = providers
 
-const StakingComponent: React.FC = () => {
+export interface StakingProps {
+  //
+  viewMode: 'split' | 'all' | 'deploy'
+}
+
+const StakingComponent: React.FC<StakingProps> = ({ viewMode }) => {
   const mounted = usePromise()
+  // const { setCurrentModal } = useContext(ModalControllerContext)
   const { account: accountToCheck, chainId: chainIdToUse, id: idToUse } = useParams()
-  const { account, chainId } = useWeb3React()
+  const { connector, chainId } = useWeb3React()
   const { stakingEnabledOnNetwork, contract, count, getStakingDataById } = useContext(StakingManagerV1ContractContext)
   const [stakingInstances, setStakingInstances] = useState<Array<StakingData>>([])
   const [sortedStakingInstances, setSortedStakingInstances] = useState<Array<StakingData>>([])
-  const [viewMode, setViewMode] = useState<'split' | 'all'>('split')
+  // const [_viewMode, setViewMode] = useState<'split' | 'all'>(viewMode)
 
   useEffect(() => {
     if (chainId && chainIdToUse && chainId !== parseInt(chainIdToUse)) {
@@ -32,7 +40,7 @@ const StakingComponent: React.FC = () => {
   }, [chainId, chainIdToUse])
 
   const setupAllStaking = useCallback(() => {
-    if (!contract || !account || !count || !getStakingDataById) {
+    if (!contract || !count || !getStakingDataById) {
       setStakingInstances([])
       return
     }
@@ -52,7 +60,7 @@ const StakingComponent: React.FC = () => {
         .then((results: Array<StakingData>) => setStakingInstances(results))
         .catch(console.error)
     }
-  }, [mounted, contract, idToUse, account, accountToCheck, getStakingDataById, count, viewMode])
+  }, [mounted, contract, idToUse, accountToCheck, getStakingDataById, count, viewMode])
 
   useEffect(setupAllStaking, [setupAllStaking])
 
@@ -60,7 +68,8 @@ const StakingComponent: React.FC = () => {
     setSortedStakingInstances(
       [...stakingInstances].sort(
         //
-        (a, b) => (a.name > b.name ? -1 : a.name < b.name ? 1 : 0),
+        (a, b) => (a.id > b.id ? 1 : a.id < b.id ? -1 : 0),
+        // (a, b) => (a.name > b.name ? -1 : a.name < b.name ? 1 : 0),
       ),
     )
   }, [stakingInstances])
@@ -68,26 +77,44 @@ const StakingComponent: React.FC = () => {
   return (
     <Outer>
       <div className="bg-gray-200 dark:bg-gray-900 border-b border-gray-300 dark:border-gray-800 p-2 flex justify-center items-center">
-        <Button
-          className={`rounded-l-none rounded-r-none border-b-2 ${
-            viewMode === 'split'
-              ? 'text-indigo-600 dark:text-indigo-400 border-indigo-400'
-              : 'text-gray-600 dark:text-gray-400 border-transparent'
-          }`}
-          onClick={() => setViewMode('split')}
-        >
-          Split staking
-        </Button>
-        <Button
-          className={`rounded-l-none rounded-r-none border-b-2 ${
-            viewMode === 'all'
-              ? 'text-indigo-600 dark:text-indigo-400 border-indigo-400'
-              : 'text-gray-600 dark:text-gray-400 border-transparent'
-          }`}
-          onClick={() => setViewMode('all')}
-        >
-          All ({count})
-        </Button>
+        <Link to="/staking">
+          <Button
+            className={`rounded-l-none rounded-r-none border-b-2 ${
+              viewMode === 'split'
+                ? 'text-indigo-600 dark:text-indigo-400 border-indigo-400'
+                : 'text-gray-600 dark:text-gray-400 border-transparent'
+            }`}
+            // onClick={() => setViewMode('split')}
+          >
+            Split staking
+          </Button>
+        </Link>
+
+        <Link to="/staking/all">
+          <Button
+            className={`rounded-l-none rounded-r-none border-b-2 ${
+              viewMode === 'all'
+                ? 'text-indigo-600 dark:text-indigo-400 border-indigo-400'
+                : 'text-gray-600 dark:text-gray-400 border-transparent'
+            }`}
+            // onClick={() => setViewMode('all')}
+          >
+            All ({count})
+          </Button>
+        </Link>
+
+        <Link to="/staking/deploy">
+          <Button
+            className={`rounded-l-none rounded-r-none border-b-2 ${
+              viewMode === 'deploy'
+                ? 'text-indigo-600 dark:text-indigo-400 border-indigo-400'
+                : 'text-gray-600 dark:text-gray-400 border-transparent'
+            }`}
+            // onClick={() => setViewMode('all')}
+          >
+            Deploy
+          </Button>
+        </Link>
       </div>
 
       <MidSection>
@@ -99,7 +126,7 @@ const StakingComponent: React.FC = () => {
               </div>
               <div className="text-lg">Staking is not available on this network</div>
             </div>
-          ) : account ? (
+          ) : connector ? (
             <div className="flex flex-col justify-center w-full items-center gap-4">
               {typeof idToUse !== 'undefined' &&
               sortedStakingInstances[0] &&
@@ -116,13 +143,33 @@ const StakingComponent: React.FC = () => {
               // )
               viewMode === 'all' ? (
                 <Grid>
+                  {/* <Button
+                    className="flex flex-col gap-4 justify-center items-center border dark:border-gray-800"
+                    style={{ minHeight: '200px' }}
+                    onClick={() => setCurrentModal(<CreateStaking />)}
+                  >
+                    <FontAwesomeIcon icon={faPlus} size="3x" className="text-indigo-400" opacity={0.75} />
+
+                    <div className="text-xl font-extralight">Deploy your own</div>
+                  </Button> */}
                   {sortedStakingInstances.map((stakingData: StakingData) => (
                     <Staking key={stakingData.contractAddress} stakingData={stakingData} />
                   ))}
                 </Grid>
               ) : viewMode === 'split' ? (
                 <SplitStaking />
+              ) : viewMode === 'deploy' ? (
+                <div className="w-full max-w-md">
+                  <CreateStaking />
+                </div>
               ) : (
+                // <div className="w-full flex justify-between items-start">
+                //   <div className="flex-shrink-0 w-full max-w-md">
+                //     <CreateStaking />
+                //   </div>
+
+                //   <div className="flex-grow">Your staking contracts</div>
+                // </div>
                 // view mode not defined
                 <></>
               )}
@@ -136,11 +183,11 @@ const StakingComponent: React.FC = () => {
   )
 }
 
-const StakingComponentWrapper: React.FC = () => {
+const StakingComponentWrapper: React.FC<StakingProps> = props => {
   return (
     <StakingManagerV1ContractContextProvider>
       <SplitStakingV1ContractContextProvider>
-        <StakingComponent />
+        <StakingComponent {...props} />
       </SplitStakingV1ContractContextProvider>
     </StakingManagerV1ContractContextProvider>
   )

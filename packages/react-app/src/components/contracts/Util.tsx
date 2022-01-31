@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { Contract } from 'ethers'
 import { ContractCacheContext } from './ContractCache'
-import { TokenData, LPLockData } from '../../typings'
+import { TokenData, LPData } from '../../typings'
+import { usePromise } from 'react-use'
 
 export class UtilContract extends Contract {
   //
@@ -11,7 +12,7 @@ export interface IUtilContractContext {
   contract?: UtilContract
   getTokenData?: (address: string) => Promise<TokenData | undefined>
   isLpToken?: (address: string) => Promise<boolean>
-  getLpData?: (address: string) => Promise<LPLockData | undefined>
+  getLpData?: <T = LPData>(address: string) => Promise<T | undefined>
 }
 
 export const UtilContractContext = createContext<IUtilContractContext>({
@@ -19,17 +20,18 @@ export const UtilContractContext = createContext<IUtilContractContext>({
 })
 
 const UtilContractContextProvider: React.FC = ({ children }) => {
+  const mounted = usePromise()
   const { getContract } = useContext(ContractCacheContext)
   const [contract, setContract] = useState<UtilContract>()
 
   useEffect(() => {
-    getContract('Util')
+    mounted(getContract('Util'))
       .then(setContract)
       .catch((err: Error) => {
         console.error(err)
         setContract(undefined)
       })
-  }, [getContract])
+  }, [mounted, getContract])
 
   return (
     <UtilContractContext.Provider
@@ -43,7 +45,7 @@ const UtilContractContextProvider: React.FC = ({ children }) => {
 
                 return {
                   address,
-                  ...(await contract.getTokenData(address)),
+                  ...(await mounted<Omit<TokenData, 'address'>>(contract.getTokenData(address))),
                 }
               },
               isLpToken: async (address: string) => {

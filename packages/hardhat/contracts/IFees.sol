@@ -19,6 +19,10 @@
 pragma solidity ^0.8.0;
 
 interface IFees {
+  function getFeeAmountForType(string memory feeType) external view returns (uint256);
+  function setFeeAmountForType(string memory feeType, uint256 amount) external;
+  function setAddressExemptFromFees(address account, bool value) external;
+  function isAddressExemptFromFees(address account) external view returns (bool);
   function feesDistributed() external view returns (uint256 total, uint256 treasury, uint256 staking);
   function treasuryFeeAddress() external view returns (address);
   function setTreasuryFeeAddress(address payable value) external;

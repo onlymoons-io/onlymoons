@@ -18,12 +18,17 @@
 
 pragma solidity ^0.8.0;
 
+import { IStakingV1 } from "./IStakingV1.sol";
+import { IStakingTokenV1 } from "./IStakingTokenV1.sol";
 import { StakingV1 } from "./StakingV1.sol";
 import { Address } from "./library/Address.sol";
 import { IERC20 } from "./library/IERC20.sol";
 import { SafeERC20 } from "./library/SafeERC20.sol";
 
-contract StakingTokenV1 is StakingV1 {
+/**
+ * token reflection
+ */
+contract StakingTokenV1 is IStakingV1, IStakingTokenV1, StakingV1 {
   using Address for address payable;
   using SafeERC20 for IERC20;
 
@@ -31,12 +36,10 @@ contract StakingTokenV1 is StakingV1 {
     address owner_,
     address tokenAddress_,
     address rewardsTokenAddress_,
-    string memory name_,
     uint16 lockDurationDays_
   ) StakingV1(
     owner_,
     tokenAddress_,
-    name_,
     lockDurationDays_
   ) {
     //
@@ -45,11 +48,15 @@ contract StakingTokenV1 is StakingV1 {
 
   IERC20 internal immutable _rewardsToken;
 
+  function _stakingType() internal virtual override view returns (uint8) {
+    return 1;
+  }
+
   function rewardsToken() external virtual view returns (address) {
     return address(_rewardsToken);
   }
 
-  function rewardsAreToken() public virtual override pure returns (bool) {
+  function rewardsAreToken() public virtual override(IStakingV1, StakingV1) pure returns (bool) {
     return true;
   }
 

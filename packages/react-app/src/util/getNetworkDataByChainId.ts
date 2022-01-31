@@ -30,7 +30,7 @@ export const networks: Record<number, NetworkData> = {
     name: 'Binance Smart Chain (testnet)',
     shortName: 'BSC (testnet)',
     nativeCurrency: {
-      address: '-',
+      address: '0xae13d989dac2f0debff460ac112a837c89baa7cd',
       name: 'Binance Coin',
       symbol: 'BNB',
       decimals: 18,
@@ -40,7 +40,13 @@ export const networks: Record<number, NetworkData> = {
     rpcURL: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
     icon: '/bsc.png',
     isTestNet: true,
-    supportedLiquidityPairTokens: [],
+    supportedLiquidityPairTokens: [
+      {
+        address: '0xae13d989dac2f0debff460ac112a837c89baa7cd',
+        // pair w/ USDT on https://pancake.kiemtienonline360.com/
+        stablePair: '0xf855e52ecc8b3b795ac289f85f6fd7a99883492b',
+      },
+    ],
   },
   122: {
     chainId: 122,

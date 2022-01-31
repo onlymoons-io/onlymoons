@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { Contract } from 'ethers'
 import { ContractCacheContext } from './ContractCache'
 import { GlobalStakingData, SplitStakingRewardsData, AllRewardsForAddress } from '../../typings'
+import { usePromise } from 'react-use'
 
 export interface ISplitStakingV1ContractContext {
   //
@@ -27,6 +28,7 @@ export const SplitStakingV1ContractContext = createContext<ISplitStakingV1Contra
 })
 
 const SplitStakingV1ContractContextProvider: React.FC = ({ children }) => {
+  const mounted = usePromise()
   const { getContract } = useContext(ContractCacheContext)
   const [contract, setContract] = useState<Contract>()
   const [owner, setOwner] = useState<string>()
@@ -75,13 +77,13 @@ const SplitStakingV1ContractContextProvider: React.FC = ({ children }) => {
   }, [contract])
 
   useEffect(() => {
-    getContract('SplitStakingV1')
+    mounted(getContract('SplitStakingV1'))
       .then(setContract)
       .catch((err: Error) => {
         console.error(err)
         setContract(undefined)
       })
-  }, [getContract])
+  }, [mounted, getContract])
 
   useEffect(() => {
     if (!contract) {
@@ -89,14 +91,13 @@ const SplitStakingV1ContractContextProvider: React.FC = ({ children }) => {
       return
     }
 
-    contract
-      .owner()
+    mounted<string | undefined>(contract.owner())
       .then(setOwner)
       .catch((err: Error) => {
         console.error(err)
         setOwner(undefined)
       })
-  }, [contract])
+  }, [mounted, contract])
 
   useEffect(() => {
     if (!contract) {
@@ -104,12 +105,12 @@ const SplitStakingV1ContractContextProvider: React.FC = ({ children }) => {
       return
     }
 
-    getGlobalStakingData()
+    mounted(getGlobalStakingData())
       .then(setGlobalStakingData)
       .catch(err => {
         console.error(err)
       })
-  }, [contract, getGlobalStakingData])
+  }, [mounted, contract, getGlobalStakingData])
 
   useEffect(() => {
     if (!contract) {
@@ -117,13 +118,12 @@ const SplitStakingV1ContractContextProvider: React.FC = ({ children }) => {
       return
     }
 
-    contract
-      .canDistribute()
+    mounted<boolean>(contract.canDistribute())
       .then(setCanDistribute)
       .catch((err: Error) => {
         console.error(err)
       })
-  }, [contract])
+  }, [mounted, contract])
 
   return (
     <SplitStakingV1ContractContext.Provider

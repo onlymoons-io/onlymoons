@@ -1,10 +1,13 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
 import { UtilContractContext } from './Util'
-import { BigNumber, utils } from 'ethers'
+import { BigNumber, utils, providers } from 'ethers'
 import { LPData, NetworkData } from '../../typings'
 import { getNetworkDataByChainId } from '../../util'
 import { useWeb3React } from '@web3-react/core'
-import { useInterval, usePromise } from 'react-use'
+import { usePromise } from 'react-use'
+import { Web3Provider as Web3ProviderClass } from '@ethersproject/providers'
+
+const { Web3Provider } = providers
 
 export interface IPriceTrackerContext {
   readonly networkData?: NetworkData
@@ -30,11 +33,14 @@ let PRICE_CACHE: Record<string, PriceCache> = {}
 
 const PriceTrackerContextProvider: React.FC = ({ children }) => {
   const mounted = usePromise()
-  const { chainId } = useWeb3React()
+  const { chainId, connector } = useWeb3React()
+  const [provider, setProvider] = useState<Web3ProviderClass>()
   const { contract, getLpData, getTokenData } = useContext(UtilContractContext)
   const [networkData, setNetworkData] = useState<NetworkData>()
   const [nativeStablePair, setNativeStablePair] = useState<string>()
   const [nativeCoinPrice, setNativeCoinPrice] = useState<number>()
+  const lastNativeCoinPriceUpdate = useRef<number>(0)
+  const retryTimerRef = useRef<NodeJS.Timeout>()
 
   const isSupportedToken = useCallback(
     (token: string) => {
@@ -87,9 +93,12 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
       const pairedToken = token === lpData.token0 ? lpData.token1 : lpData.token0
       const pairedTokenBalance = token === lpData.token0 ? lpData.balance1 : lpData.balance0
 
-      if (PRICE_CACHE[pairedToken] && Date.now() - PRICE_CACHE[pairedToken].timestamp < 29000) {
+      if (PRICE_CACHE[pairedToken] && Date.now() - PRICE_CACHE[pairedToken].timestamp < 10000) {
         if (!PRICE_CACHE[pairedToken].price) {
-          await new Promise(done => setTimeout(done, 1000))
+          await new Promise(done => {
+            retryTimerRef.current && clearTimeout(retryTimerRef.current)
+            retryTimerRef.current = setTimeout(done, 1000)
+          })
 
           return await mounted(getPriceForPair(lpData, attempts, attemptNum++))
         }
@@ -105,6 +114,7 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
       const [tokenData, pairedTokenData] = await mounted(Promise.all([getTokenData(token), getTokenData(pairedToken)]))
 
       if (!tokenData || !pairedTokenData) {
+        delete PRICE_CACHE[pairedToken]
         return 0
       }
 
@@ -115,6 +125,12 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
         ),
       )
 
+      // don't cache when the price is 0
+      if (PRICE_CACHE[pairedToken].price <= 0) {
+        delete PRICE_CACHE[pairedToken]
+        return 0
+      }
+
       return PRICE_CACHE[pairedToken].price
     },
     [mounted, getTokenData, getTokenFromPair],
@@ -122,9 +138,8 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
 
   // wipe the price cache on network change
   useEffect(() => {
-    if (typeof chainId === 'undefined' || chainId > -1) {
-      PRICE_CACHE = {}
-    }
+    PRICE_CACHE = {}
+    retryTimerRef.current && clearTimeout(retryTimerRef.current)
   }, [chainId])
 
   useEffect(() => {
@@ -167,13 +182,46 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
       })
       .then(setNativeCoinPrice)
       .catch(err => {
-        console.error(err)
+        // console.error(err)
         setNativeCoinPrice(0)
       })
   }, [mounted, nativeStablePair, getLpData, getPriceForPair])
 
   useEffect(updateNativeCoinPrice, [updateNativeCoinPrice])
-  useInterval(updateNativeCoinPrice, 30000)
+
+  useEffect(() => {
+    if (!chainId || !connector) {
+      setProvider(undefined)
+      return
+    }
+
+    mounted<any>(connector.getProvider())
+      .then(_provider => new Web3Provider(_provider))
+      .then(setProvider)
+      .catch((err: Error) => {
+        console.error(err)
+      })
+  }, [mounted, chainId, connector])
+
+  useEffect(() => {
+    if (!provider) return
+
+    const onBlock = () => {
+      if (Date.now() - lastNativeCoinPriceUpdate.current < 1000) return
+
+      lastNativeCoinPriceUpdate.current = Date.now()
+
+      updateNativeCoinPrice()
+    }
+
+    const _provider = provider
+
+    _provider.on('block', onBlock)
+
+    return () => {
+      _provider?.off('block', onBlock)
+    }
+  }, [provider, updateNativeCoinPrice])
 
   return (
     <PriceTrackerContext.Provider

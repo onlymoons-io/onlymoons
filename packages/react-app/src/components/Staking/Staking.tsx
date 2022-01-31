@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useContext, useRef, CSSProperties } from 'react'
-import { useMount, useUnmount } from 'react-use'
+import { useMount, usePromise, useUnmount } from 'react-use'
 import { Link } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
 import { BigNumber, Contract, providers, utils } from 'ethers'
@@ -37,6 +37,7 @@ const Staking: React.FC<StakingProps> = ({
   style = {},
   onClaimed,
 }) => {
+  const mounted = usePromise()
   const { account, chainId, connector } = useWeb3React()
   const { getContract } = useContext(ContractCacheContext)
   const { push: pushNotification } = useContext(NotificationCatcherContext)
@@ -45,6 +46,7 @@ const Staking: React.FC<StakingProps> = ({
   const { setSoloStakingAddress, setLpStakingAddress } = useContext(SplitStakingV1ContractContext)
   const [_stakingData, setStakingData] = useState<StakingData | undefined>(stakingData)
   const [stakingTokenData, setStakingTokenData] = useState<TokenData>()
+  const [rewardsTokenData, setRewardsTokenData] = useState<TokenData>()
   const [stakingContract, setStakingContract] = useState<Contract>()
   const [tokenContract, setTokenContract] = useState<Contract>()
   const [detailsExpanded, setDetailsExpanded] = useState<boolean>(startExpanded)
@@ -73,8 +75,7 @@ const Staking: React.FC<StakingProps> = ({
       return
     }
 
-    connector
-      .getProvider()
+    mounted(connector.getProvider())
       .then(provider =>
         setTokenContract(new Contract(_stakingData.stakedToken, ERC20ABI, new Web3Provider(provider).getSigner())),
       )
@@ -86,7 +87,7 @@ const Staking: React.FC<StakingProps> = ({
     getTokenData(_stakingData.stakedToken)
       .then(setStakingTokenData)
       .catch(console.error)
-  }, [contract, connector, _stakingData, getTokenData])
+  }, [mounted, contract, connector, _stakingData, getTokenData])
 
   useEffect(() => {
     if (!account || !tokenContract || !_stakingData || !stakingTokenData) {
@@ -95,8 +96,7 @@ const Staking: React.FC<StakingProps> = ({
     }
 
     //
-    tokenContract
-      .allowance(account, _stakingData.contractAddress)
+    mounted<BigNumber>(tokenContract.allowance(account, _stakingData.contractAddress))
       .then((allowance: BigNumber) => {
         setDepositApproved(allowance.gte(stakingTokenData.balance))
       })
@@ -104,7 +104,7 @@ const Staking: React.FC<StakingProps> = ({
         console.error(err)
         setDepositApproved(false)
       })
-  }, [account, tokenContract, _stakingData, stakingTokenData])
+  }, [mounted, account, tokenContract, _stakingData, stakingTokenData])
 
   useEffect(() => {
     if (!_stakingData) {
@@ -112,13 +112,17 @@ const Staking: React.FC<StakingProps> = ({
       return
     }
 
-    getContract('StakingV1', { address: _stakingData.contractAddress })
+    mounted(
+      getContract(_stakingData.stakingType === 1 ? 'StakingTokenV1' : 'StakingV1', {
+        address: _stakingData.contractAddress,
+      }),
+    )
       .then(setStakingContract)
       .catch((err: Error) => {
         console.error(err)
         setStakingContract(undefined)
       })
-  }, [getContract, _stakingData])
+  }, [mounted, getContract, _stakingData])
 
   const updateStakingDataForAccount = useCallback(() => {
     if (!account || !stakingContract) {
@@ -126,8 +130,7 @@ const Staking: React.FC<StakingProps> = ({
       return
     }
 
-    stakingContract
-      .getStakingDataForAccount(account)
+    mounted<StakingDataForAccount>(stakingContract.getStakingDataForAccount(account))
       .then((result: StakingDataForAccount) => {
         setStakingDataForAccount(result)
       })
@@ -135,7 +138,7 @@ const Staking: React.FC<StakingProps> = ({
         console.error(err)
         setStakingDataForAccount(undefined)
       })
-  }, [account, stakingContract])
+  }, [mounted, account, stakingContract])
 
   useEffect(updateStakingDataForAccount, [updateStakingDataForAccount])
 
@@ -253,14 +256,31 @@ const Staking: React.FC<StakingProps> = ({
       return
     }
 
-    stakingContract
-      .paused()
+    mounted<boolean>(stakingContract.paused())
       .then((result: boolean) => setPaused(result))
       .catch((err: Error) => {
         console.error(err)
         setPaused(false)
       })
-  }, [stakingContract])
+  }, [mounted, stakingContract])
+
+  useEffect(() => {
+    setRewardsTokenData(undefined)
+
+    if (!stakingContract || !_stakingData || !chainId || !getTokenData) return
+
+    if (_stakingData.stakingType === 0) {
+      setRewardsTokenData(getNativeCoin(chainId))
+      return
+    }
+
+    mounted<string>(stakingContract.rewardsToken())
+      .then((address: string) => mounted(getTokenData(address)))
+      .then(setRewardsTokenData)
+      .catch((err: Error) => {
+        console.error(err)
+      })
+  }, [mounted, chainId, _stakingData, stakingContract, getTokenData])
 
   return (
     <DetailsCard
@@ -273,7 +293,7 @@ const Staking: React.FC<StakingProps> = ({
             <div className="flex justify-between items-center">
               <div className="flex flex-col">
                 <Title>
-                  <Link to={`/staking/${chainId}/${_stakingData.id}`}>{_stakingData.name || '...'}</Link>
+                  <Link to={`/staking/${chainId}/${_stakingData.id}`}>{stakingTokenData?.symbol || '...'}</Link>
                 </Title>
               </div>
 
@@ -291,7 +311,7 @@ const Staking: React.FC<StakingProps> = ({
       }
       mainContent={
         //
-        _stakingData && stakingTokenData ? (
+        _stakingData && stakingTokenData && rewardsTokenData ? (
           <>
             <div className="flex-grow flex flex-col gap-3">
               {/* <span>
@@ -304,7 +324,7 @@ const Staking: React.FC<StakingProps> = ({
                   className="w-2/3 flex-shrink-0"
                   tokenData={stakingTokenData}
                   maxValue={stakingTokenData.balance}
-                  disabled={paused}
+                  disabled={paused || !account}
                   inputRef={depositInputRef}
                   onChange={setDepositInputValue}
                 />
@@ -320,13 +340,15 @@ const Staking: React.FC<StakingProps> = ({
                     if (!depositApproved) {
                       //
                       try {
-                        const tx = await tokenContract.approve(
-                          _stakingData.contractAddress,
-                          BigNumber.from(
-                            '115792089237316195423570985008687907853269984665640564039457584007913129639935',
+                        const tx: any = await mounted(
+                          tokenContract.approve(
+                            _stakingData.contractAddress,
+                            BigNumber.from(
+                              '115792089237316195423570985008687907853269984665640564039457584007913129639935',
+                            ),
                           ),
                         )
-                        await tx.wait()
+                        await mounted(tx.wait())
 
                         setDepositApproved(true)
                       } catch (err) {
@@ -334,10 +356,12 @@ const Staking: React.FC<StakingProps> = ({
                       }
                     } else {
                       try {
-                        const tx = await stakingContract.deposit(
-                          utils.parseUnits(depositInputRef.current.value, stakingTokenData.decimals),
+                        const tx: any = await mounted(
+                          stakingContract.deposit(
+                            utils.parseUnits(depositInputRef.current.value, stakingTokenData.decimals),
+                          ),
                         )
-                        await tx.wait()
+                        await mounted(tx.wait())
                       } catch (err) {
                         console.error(err)
                       }
@@ -359,6 +383,7 @@ const Staking: React.FC<StakingProps> = ({
                   placeholder="Tokens to withdraw"
                   className="w-2/3 flex-shrink-0"
                   tokenData={stakingTokenData}
+                  disabled={!account}
                   maxValue={stakingDataForAccount?.amount}
                   inputRef={withdrawInputRef}
                   onChange={setWithdrawInputValue}
@@ -378,10 +403,12 @@ const Staking: React.FC<StakingProps> = ({
                     setWithdrawLoading(true)
 
                     try {
-                      const tx = await stakingContract.withdraw(
-                        utils.parseUnits(withdrawInputRef.current.value, stakingTokenData.decimals),
+                      const tx: any = await mounted(
+                        stakingContract.withdraw(
+                          utils.parseUnits(withdrawInputRef.current.value, stakingTokenData.decimals),
+                        ),
                       )
-                      await tx.wait()
+                      await mounted(tx.wait())
                     } catch (err) {
                       console.error(err)
                     }
@@ -398,18 +425,18 @@ const Staking: React.FC<StakingProps> = ({
                 onClick={() => {
                   if (!stakingContract) return
 
-                  stakingContract
-                    .claim()
-                    .then((tx: any) => tx.wait())
+                  mounted(stakingContract.claim())
+                    .then((tx: any) => mounted(tx.wait()))
                     .catch((err: Error) => {
                       console.error(err)
                     })
                 }}
-              >{`Claim ${utils.formatEther(stakingDataForAccount?.pendingRewards || 0)} ${
-                getNativeCoin(chainId || 0).symbol
-              }`}</PrimaryButton>
+              >{`Claim ${utils.formatUnits(
+                stakingDataForAccount?.pendingRewards || 0,
+                rewardsTokenData.decimals || 18,
+              )} ${rewardsTokenData.symbol}`}</PrimaryButton>
 
-              {stakingContract && stakingTokenData && (
+              {stakingContract && (
                 <motion.div
                   className="flex-grow flex flex-col gap-2"
                   initial={{ height: 0, opacity: 0 }}
@@ -453,14 +480,15 @@ const Staking: React.FC<StakingProps> = ({
                   />
                   <Detail
                     label="Total rewards"
-                    value={`${utils.commify(utils.formatUnits(_stakingData.totalRewards, _stakingData.decimals))} ${
-                      chainId ? getNativeCoin(chainId).symbol : ''
+                    value={`${utils.commify(utils.formatUnits(_stakingData.totalRewards, rewardsTokenData.decimals))} ${
+                      rewardsTokenData.symbol
                     }`}
                   />
 
                   <hr className="my-1 opacity-10" />
 
                   <PrimaryButton
+                    disabled={!account}
                     onClick={() => {
                       stakingContract && stakingContract.setAutoClaimOptOut(true)
                     }}
@@ -488,7 +516,7 @@ const Staking: React.FC<StakingProps> = ({
                             setSettingStakingToken(true)
 
                             setSoloStakingAddress &&
-                              setSoloStakingAddress(_stakingData.contractAddress)
+                              mounted(setSoloStakingAddress(_stakingData.contractAddress))
                                 .then(() => {
                                   setSettingStakingToken(false)
 
@@ -518,7 +546,7 @@ const Staking: React.FC<StakingProps> = ({
                             setSettingStakingToken(true)
 
                             setLpStakingAddress &&
-                              setLpStakingAddress(_stakingData.contractAddress)
+                              mounted(setLpStakingAddress(_stakingData.contractAddress))
                                 .then(() => {
                                   setSettingStakingToken(false)
 

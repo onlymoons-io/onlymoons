@@ -1802,7 +1802,7 @@
           ]
         },
         "Fees": {
-          "address": "0x5ee42A1090b0bB3bAba35eF49F10A664ABc9f3fa",
+          "address": "0xEdCaE0052c676136523E3869F49d5d53ee3Ec921",
           "abi": [
             {
               "inputs": [
@@ -1882,6 +1882,25 @@
               "type": "function"
             },
             {
+              "inputs": [
+                {
+                  "internalType": "string",
+                  "name": "feeType",
+                  "type": "string"
+                }
+              ],
+              "name": "getFeeAmountForType",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
               "inputs": [],
               "name": "getFees",
               "outputs": [
@@ -1913,6 +1932,25 @@
               "type": "function"
             },
             {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                }
+              ],
+              "name": "isAddressExemptFromFees",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
               "inputs": [],
               "name": "owner",
               "outputs": [
@@ -1936,6 +1974,42 @@
                 }
               ],
               "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bool",
+                  "name": "value",
+                  "type": "bool"
+                }
+              ],
+              "name": "setAddressExemptFromFees",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "string",
+                  "name": "feeType",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "setFeeAmountForType",
+              "outputs": [],
+              "stateMutability": "nonpayable",
               "type": "function"
             },
             {
@@ -2342,7 +2416,7 @@
           "abi": []
         },
         "SplitStakingV1": {
-          "address": "0xFDCAD7140bEFdfB861Db9De1704fB7d50Ed02f37",
+          "address": "0x461dEfc394AF6432925986d22BbbB053c8CD11ea",
           "abi": [
             {
               "inputs": [],
@@ -2548,6 +2622,32 @@
             },
             {
               "inputs": [],
+              "name": "getMainTokenMarketCap",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "getMainTokenPrice",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
               "name": "getRewardsForDistribution",
               "outputs": [
                 {
@@ -2633,11 +2733,6 @@
                 {
                   "internalType": "uint256",
                   "name": "waitingRewards",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "lastDistributionAt",
                   "type": "uint256"
                 }
               ],
@@ -2856,31 +2951,12 @@
           ]
         },
         "StakingFactoryV1": {
-          "address": "0x719347d95cf210190631FD3AfF4E882E65954ACd",
+          "address": "0x0E2D2f603c521bA515875e7D44F8762322564c0F",
           "abi": [
             {
               "inputs": [],
               "stateMutability": "nonpayable",
               "type": "constructor"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "oldGovernor",
-                  "type": "address"
-                },
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "newGovernor",
-                  "type": "address"
-                }
-              ],
-              "name": "GovernorshipTransferred",
-              "type": "event"
             },
             {
               "anonymous": false,
@@ -2904,24 +2980,24 @@
             {
               "inputs": [
                 {
+                  "internalType": "uint8",
+                  "name": "stakingType_",
+                  "type": "uint8"
+                },
+                {
                   "internalType": "address",
                   "name": "tokenAddress_",
                   "type": "address"
                 },
                 {
-                  "internalType": "address",
-                  "name": "rewardsTokenAddress_",
-                  "type": "address"
-                },
-                {
-                  "internalType": "string",
-                  "name": "name_",
-                  "type": "string"
-                },
-                {
                   "internalType": "uint16",
                   "name": "lockDurationDays_",
                   "type": "uint16"
+                },
+                {
+                  "internalType": "uint256[]",
+                  "name": "typeData_",
+                  "type": "uint256[]"
                 }
               ],
               "name": "createStaking",
@@ -2933,19 +3009,6 @@
                 }
               ],
               "stateMutability": "nonpayable",
-              "type": "function"
-            },
-            {
-              "inputs": [],
-              "name": "governor",
-              "outputs": [
-                {
-                  "internalType": "address",
-                  "name": "",
-                  "type": "address"
-                }
-              ],
-              "stateMutability": "view",
               "type": "function"
             },
             {
@@ -2991,19 +3054,6 @@
               "inputs": [
                 {
                   "internalType": "address",
-                  "name": "newGovernor",
-                  "type": "address"
-                }
-              ],
-              "name": "transferGovernorship",
-              "outputs": [],
-              "stateMutability": "nonpayable",
-              "type": "function"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "address",
                   "name": "newOwner_",
                   "type": "address"
                 }
@@ -3016,7 +3066,7 @@
           ]
         },
         "StakingManagerV1": {
-          "address": "0x6825E1C73a9690d697E6f5616a16989e69fa2153",
+          "address": "0xB71ec955858eF452540Dfd019844625939f0C9a1",
           "abi": [
             {
               "inputs": [
@@ -3026,7 +3076,7 @@
                   "type": "address"
                 },
                 {
-                  "internalType": "address payable",
+                  "internalType": "address",
                   "name": "feesAddress",
                   "type": "address"
                 }
@@ -3114,24 +3164,24 @@
             {
               "inputs": [
                 {
+                  "internalType": "uint8",
+                  "name": "stakingType_",
+                  "type": "uint8"
+                },
+                {
                   "internalType": "address",
                   "name": "tokenAddress_",
                   "type": "address"
                 },
                 {
-                  "internalType": "address",
-                  "name": "rewardsTokenAddress_",
-                  "type": "address"
-                },
-                {
-                  "internalType": "string",
-                  "name": "name_",
-                  "type": "string"
-                },
-                {
                   "internalType": "uint16",
                   "name": "lockDurationDays_",
                   "type": "uint16"
+                },
+                {
+                  "internalType": "uint256[]",
+                  "name": "typeData_",
+                  "type": "uint256[]"
                 }
               ],
               "name": "createStaking",
@@ -3154,12 +3204,38 @@
             },
             {
               "inputs": [],
+              "name": "feePercentDenominator",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
               "name": "feesContract",
               "outputs": [
                 {
                   "internalType": "address",
                   "name": "",
                   "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "gasLeftLimit",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
                 }
               ],
               "stateMutability": "view",
@@ -3193,11 +3269,26 @@
               "inputs": [
                 {
                   "internalType": "string",
-                  "name": "feeType",
+                  "name": "minFeeType",
                   "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "maxFeeType",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "input",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "percent",
+                  "type": "uint256"
                 }
               ],
-              "name": "getFeeAmountForType",
+              "name": "getFeePercentInRange",
               "outputs": [
                 {
                   "internalType": "uint256",
@@ -3224,14 +3315,14 @@
                   "type": "address"
                 },
                 {
+                  "internalType": "uint8",
+                  "name": "stakingType",
+                  "type": "uint8"
+                },
+                {
                   "internalType": "address",
                   "name": "stakedToken",
                   "type": "address"
-                },
-                {
-                  "internalType": "string",
-                  "name": "name",
-                  "type": "string"
                 },
                 {
                   "internalType": "uint8",
@@ -3273,14 +3364,14 @@
                   "type": "address"
                 },
                 {
+                  "internalType": "uint8",
+                  "name": "stakingType",
+                  "type": "uint8"
+                },
+                {
                   "internalType": "address",
                   "name": "stakedToken",
                   "type": "address"
-                },
-                {
-                  "internalType": "string",
-                  "name": "name",
-                  "type": "string"
                 },
                 {
                   "internalType": "uint8",
@@ -3320,25 +3411,6 @@
               "type": "function"
             },
             {
-              "inputs": [
-                {
-                  "internalType": "address",
-                  "name": "account",
-                  "type": "address"
-                }
-              ],
-              "name": "isAddressExemptFromFees",
-              "outputs": [
-                {
-                  "internalType": "bool",
-                  "name": "",
-                  "type": "bool"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
               "inputs": [],
               "name": "owner",
               "outputs": [
@@ -3368,24 +3440,6 @@
               "inputs": [
                 {
                   "internalType": "address",
-                  "name": "account",
-                  "type": "address"
-                },
-                {
-                  "internalType": "bool",
-                  "name": "value",
-                  "type": "bool"
-                }
-              ],
-              "name": "setAddressExemptFromFees",
-              "outputs": [],
-              "stateMutability": "nonpayable",
-              "type": "function"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "address",
                   "name": "value",
                   "type": "address"
                 }
@@ -3398,17 +3452,12 @@
             {
               "inputs": [
                 {
-                  "internalType": "string",
-                  "name": "feeType",
-                  "type": "string"
-                },
-                {
                   "internalType": "uint256",
-                  "name": "amount",
+                  "name": "value",
                   "type": "uint256"
                 }
               ],
-              "name": "setFeeAmountForType",
+              "name": "setFeePercentDenominator",
               "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"
@@ -3416,12 +3465,25 @@
             {
               "inputs": [
                 {
-                  "internalType": "address payable",
-                  "name": "contractAddress_",
+                  "internalType": "address",
+                  "name": "contractAddress",
                   "type": "address"
                 }
               ],
               "name": "setFeesContract",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "value",
+                  "type": "uint256"
+                }
+              ],
+              "name": "setGasLeftLimit",
               "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"
@@ -3467,8 +3529,8 @@
             }
           ]
         },
-        "StakingV1": {
-          "address": "0xA3446600ecB831123741Eec24FAA2b66aE4cB75C",
+        "StakingTokenV1": {
+          "address": "0x5199bB7932790ec0656c9FF4176F99Ce6CD1D1E8",
           "abi": [
             {
               "inputs": [
@@ -3483,9 +3545,9 @@
                   "type": "address"
                 },
                 {
-                  "internalType": "string",
-                  "name": "name_",
-                  "type": "string"
+                  "internalType": "address",
+                  "name": "rewardsTokenAddress_",
+                  "type": "address"
                 },
                 {
                   "internalType": "uint16",
@@ -3760,14 +3822,629 @@
               "name": "getStakingData",
               "outputs": [
                 {
+                  "internalType": "uint8",
+                  "name": "stakingType",
+                  "type": "uint8"
+                },
+                {
                   "internalType": "address",
                   "name": "stakedToken",
                   "type": "address"
                 },
                 {
-                  "internalType": "string",
-                  "name": "name",
-                  "type": "string"
+                  "internalType": "uint8",
+                  "name": "decimals",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "totalStaked",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "totalRewards",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "totalClaimed",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                }
+              ],
+              "name": "getStakingDataForAccount",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "lastClaimedAt",
+                  "type": "uint64"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "pendingRewards",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "totalClaimed",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                }
+              ],
+              "name": "getUnlockTime",
+              "outputs": [
+                {
+                  "internalType": "uint64",
+                  "name": "",
+                  "type": "uint64"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "isAuthorized",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "owner",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "paused",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                }
+              ],
+              "name": "pending",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "processAutoClaim",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "recoverEth",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "removeLockDuration",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "rewardsAreToken",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "pure",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "rewardsToken",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "value",
+                  "type": "uint256"
+                }
+              ],
+              "name": "setAccuracy",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "bool",
+                  "name": "value",
+                  "type": "bool"
+                }
+              ],
+              "name": "setAutoClaimEnabled",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "value",
+                  "type": "uint256"
+                }
+              ],
+              "name": "setAutoClaimGasLimit",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "bool",
+                  "name": "value",
+                  "type": "bool"
+                }
+              ],
+              "name": "setAutoClaimOnClaim",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "bool",
+                  "name": "value",
+                  "type": "bool"
+                }
+              ],
+              "name": "setAutoClaimOnDeposit",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "bool",
+                  "name": "value",
+                  "type": "bool"
+                }
+              ],
+              "name": "setAutoClaimOptOut",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "bool",
+                  "name": "value",
+                  "type": "bool"
+                }
+              ],
+              "name": "setPaused",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "token",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "newOwner_",
+                  "type": "address"
+                }
+              ],
+              "name": "transferOwnership",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "withdraw",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "stateMutability": "payable",
+              "type": "receive"
+            }
+          ]
+        },
+        "StakingV1": {
+          "address": "0x770F9F7Be2d7E34683268A6ff3C8e0F5688409c7",
+          "abi": [
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "owner_",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "tokenAddress_",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint16",
+                  "name": "lockDurationDays_",
+                  "type": "uint16"
+                }
+              ],
+              "stateMutability": "nonpayable",
+              "type": "constructor"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "bool",
+                  "name": "value",
+                  "type": "bool"
+                }
+              ],
+              "name": "Authorized",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "ClaimedRewards",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "DepositedEth",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "DepositedTokens",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "oldOwner",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "newOwner",
+                  "type": "address"
+                }
+              ],
+              "name": "OwnershipTransferred",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "WithdrewTokens",
+              "type": "event"
+            },
+            {
+              "inputs": [],
+              "name": "accuracy",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bool",
+                  "name": "value",
+                  "type": "bool"
+                }
+              ],
+              "name": "authorize",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "autoClaimEnabled",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "autoClaimGasLimit",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "claim",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bool",
+                  "name": "revertOnFailure",
+                  "type": "bool"
+                },
+                {
+                  "internalType": "bool",
+                  "name": "doAutoClaim",
+                  "type": "bool"
+                }
+              ],
+              "name": "claimFor",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "deposit",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "emergencyWithdraw",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                }
+              ],
+              "name": "getAutoClaimOptOut",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                }
+              ],
+              "name": "getPlaceInQueue",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "getStakingData",
+              "outputs": [
+                {
+                  "internalType": "uint8",
+                  "name": "stakingType",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "address",
+                  "name": "stakedToken",
+                  "type": "address"
                 },
                 {
                   "internalType": "uint8",

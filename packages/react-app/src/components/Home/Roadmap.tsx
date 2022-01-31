@@ -87,25 +87,26 @@ const Roadmap: React.FC = () => {
             <RoadmapSectionContent>
               <ul className="list-disc">
                 <li>
-                  Launch token on Pancakeswap <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                  <FontAwesomeIcon icon={faCheck} className="text-green-500" /> Launch token on Pancakeswap
                 </li>
                 <li>
-                  Launch website <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                  <FontAwesomeIcon icon={faCheck} className="text-green-500" /> Launch website
                 </li>
                 <li>
-                  Begin development of launchpad platform <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                  <FontAwesomeIcon icon={faCheck} className="text-green-500" /> Begin development of launchpad platform
                 </li>
                 <li>
+                  <FontAwesomeIcon icon={faCheck} className="text-green-500" />{' '}
                   <Link className="text-gray-900 dark:text-indigo-300" to="/locker">
                     Token locker V1
                   </Link>{' '}
-                  release <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                  release
                 </li>
                 <li>
-                  OnlyMoons token relaunch <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                  <FontAwesomeIcon icon={faCheck} className="text-green-500" /> OnlyMoons token relaunch
                 </li>
                 <li>
-                  Solidity Finance Audits <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                  <FontAwesomeIcon icon={faCheck} className="text-green-500" /> Solidity Finance Audits
                   <ul className="list-inside list-disc">
                     <li>
                       <a
@@ -130,9 +131,15 @@ const Roadmap: React.FC = () => {
                   </ul>
                 </li>
                 <li>
-                  Early tool adopters <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                  <FontAwesomeIcon icon={faCheck} className="text-green-500" /> Early tool adopters
                 </li>
-                <li>Beta staking platform on BSC Testnet</li>
+                <li>
+                  <FontAwesomeIcon icon={faCheck} className="text-green-500" />{' '}
+                  <Link className="text-gray-900 dark:text-indigo-300" to="/staking">
+                    Beta staking platform
+                  </Link>{' '}
+                  on BSC Testnet
+                </li>
                 <li>Multilingual support</li>
               </ul>
             </RoadmapSectionContent>
