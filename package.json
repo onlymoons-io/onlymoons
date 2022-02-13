@@ -1,5 +1,5 @@
 {
-  "name": "@scaffold-eth/monorepo",
+  "name": "@onlymoons-io/onlymoons",
   "version": "1.0.0",
   "keywords": [
     "ethereum",
@@ -10,17 +10,18 @@
   ],
   "private": true,
   "scripts": {
-    "react-app:build": "yarn workspace @onlymoons/frontend build --max-old-space-size=12288",
-    "react-app:eject": "yarn workspace @onlymoons/frontend eject",
-    "react-app:start": "yarn workspace @onlymoons/frontend start",
-    "react-app:test": "yarn workspace @onlymoons/frontend test",
-    "build": "yarn workspace @onlymoons/frontend build --max-old-space-size=12288",
-    "prettier": "yarn workspace @onlymoons/frontend prettier",
+    "react-app:build": "yarn workspace @onlymoons-io/react-app build --max-old-space-size=12288",
+    "react-app:eject": "yarn workspace @onlymoons-io/react-app eject",
+    "react-app:start": "yarn workspace @onlymoons-io/react-app start",
+    "react-app:test": "yarn workspace @onlymoons-io/react-app test",
+    "build": "yarn workspace @onlymoons-io/react-app build --max-old-space-size=12288",
+    "prettier": "yarn workspace @onlymoons-io/react-app prettier",
     "chain": "yarn workspace @scaffold-eth/hardhat chain",
     "fork": "yarn workspace @scaffold-eth/hardhat fork",
     "node": "yarn workspace @scaffold-eth/hardhat chain",
     "test": "yarn workspace @scaffold-eth/hardhat test",
-    "start": "yarn workspace @onlymoons/frontend start",
+    "coverage": "yarn workspace @scaffold-eth/hardhat coverage",
+    "start": "yarn workspace @onlymoons-io/react-app start",
     "compile": "yarn workspace @scaffold-eth/hardhat compile",
     "deploy": "yarn workspace @scaffold-eth/hardhat deploy",
     "deploy:bsc": "yarn deploy --network bsc",
@@ -44,26 +45,13 @@
     "fundedwallet": "cd packages/hardhat && npx hardhat fundedwallet",
     "flatten": "cd packages/hardhat && npx hardhat flatten",
     "clean": "cd packages/hardhat && npx hardhat clean",
-    "privatekey": "yarn workspace @scaffold-eth/hardhat privatekey",
-    "run-graph-node": "yarn workspace @scaffold-eth/services run-graph-node",
-    "remove-graph-node": "yarn workspace @scaffold-eth/services remove-graph-node",
-    "clean-graph-node": "yarn workspace @scaffold-eth/services clean-graph-node",
-    "graph-prepare": "mustache packages/subgraph/config/config.json packages/subgraph/src/subgraph.template.yaml > packages/subgraph/subgraph.yaml",
-    "graph-codegen": "yarn workspace @scaffold-eth/subgraph graph codegen",
-    "graph-build": "yarn workspace @scaffold-eth/subgraph graph build",
-    "graph-create-local": "yarn workspace @scaffold-eth/subgraph graph create --node http://localhost:8020/ scaffold-eth/your-contract",
-    "graph-remove-local": "yarn workspace @scaffold-eth/subgraph graph remove --node http://localhost:8020/ scaffold-eth/your-contract",
-    "graph-deploy-local": "yarn workspace @scaffold-eth/subgraph graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 scaffold-eth/your-contract",
-    "graph-ship-local": "yarn graph-prepare && yarn graph-codegen && yarn graph-deploy-local",
-    "deploy-and-graph": "yarn deploy && yarn graph-ship-local"
+    "privatekey": "yarn workspace @scaffold-eth/hardhat privatekey"
   },
   "workspaces": {
     "packages": [
       "packages/*"
     ],
     "nohoist": [
-      "**/@graphprotocol/graph-ts",
-      "**/@graphprotocol/graph-ts/**",
       "**/hardhat",
       "**/hardhat/**",
       "**/hardhat-ts",

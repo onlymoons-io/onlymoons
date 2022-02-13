@@ -67,9 +67,9 @@ const ContractDetails: React.FC<ContractDetailsProps> = ({ children, address, ab
     }
 
     mounted(connector.getProvider())
-      .then(provider => new Web3Provider(provider).getCode(address))
+      .then((provider) => new Web3Provider(provider).getCode(address))
       // remove the first 2 characters if they are 0x (they should be)
-      .then(result => (result.startsWith('0x') ? result.substring(2) : result))
+      .then((result) => (result.startsWith('0x') ? result.substring(2) : result))
       .then(setBytecode)
       .catch((err: Error) => {
         console.error(err)
@@ -82,7 +82,7 @@ const ContractDetails: React.FC<ContractDetailsProps> = ({ children, address, ab
       <Header>
         <div className="text-2xl font-bold whitespace-nowrap overflow-hidden flex gap-2 items-center">
           <FontAwesomeIcon icon={faFileCode} className="mr-1" />
-          <span className="flex-shrink overflow-hidden overflow-ellipsis">{address}</span>
+          <span className="shrink overflow-hidden text-ellipsis">{address}</span>
           <CopyButton className="text-base" text={address} />
         </div>
 

@@ -34,4 +34,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   });
 };
 
-module.exports.tags = ["OnlyMoons", "TokenLockerV1"];
+module.exports.tags = ["OnlyMoons", "Token Locker"];

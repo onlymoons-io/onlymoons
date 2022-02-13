@@ -22,13 +22,32 @@ export interface LockerProps {
 const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
   const { watchlist } = useContext(LockWatchlist)
   const mounted = usePromise()
-  const { account: accountToCheck, chainId: chainIdToUse, id: idToUse } = useParams()
+  const { account: accountToCheck, chainId: _chainIdToUse, id: idToUse } = useParams()
   const { chainId, connector } = useWeb3React()
   const { contract, getTokenLockersForAddress, tokenLockerCount } = useContext(TokenLockerManagerV1ContractContext)
   const [filterInputValue, setFilterInputValue] = useState<string>()
   const [lockIds, setLockIds] = useState<number[]>([])
   const wasUsingWatchlist = useRef<boolean>(false)
   const setupLockTimer = useRef<NodeJS.Timeout>()
+
+  const chainIdToUse = (() => {
+    switch (_chainIdToUse) {
+      case 'bsc':
+        return '56'
+
+      case 'bsctest':
+        return '97'
+
+      case 'fuse':
+        return '122'
+
+      case 'metis':
+        return '1088'
+
+      default:
+        return _chainIdToUse
+    }
+  })()
 
   const setupLocks = useCallback(() => {
     if (!chainId || !contract || !connector || !tokenLockerCount || !getTokenLockersForAddress) {
@@ -41,11 +60,11 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
       wasUsingWatchlist.current = false
     } else if (useWatchlist) {
       if (wasUsingWatchlist.current) {
-        setLockIds(watchlist?.map(v => parseInt(v)) || [])
+        setLockIds(watchlist?.map((v) => parseInt(v)) || [])
       } else {
         setLockIds([])
-        mounted(new Promise(done => setTimeout(done, 250))).then(() =>
-          setLockIds(watchlist?.map(v => parseInt(v)) || []),
+        mounted(new Promise((done) => setTimeout(done, 250))).then(() =>
+          setLockIds(watchlist?.map((v) => parseInt(v)) || []),
         )
       }
 
@@ -72,7 +91,7 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
       wasUsingWatchlist.current = false
     } else {
       if (wasUsingWatchlist.current) {
-        mounted(new Promise(done => setTimeout(done, 250))).then(() =>
+        mounted(new Promise((done) => setTimeout(done, 250))).then(() =>
           setLockIds(new Array(tokenLockerCount).fill(null).map((val, index) => index)),
         )
       } else {
@@ -103,7 +122,7 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
     if (!chainId || !contract || !connector) return
     setupLockTimer.current && clearTimeout(setupLockTimer.current)
     mounted(
-      new Promise(done => {
+      new Promise((done) => {
         setupLockTimer.current = setTimeout(done, 250)
       }),
     ).then(setupLocks)
@@ -135,9 +154,9 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
                 <Locks>
                   {/* copy and reverse ids to get descending order */}
                   {lockIds
-                    .map(id => id)
+                    .map((id) => id)
                     .reverse()
-                    .map(lockId => {
+                    .map((lockId) => {
                       return <Lock key={lockId} lockId={lockId} />
                     })}
                 </Locks>

@@ -32,7 +32,7 @@ export const Title = tw.h3`
   font-light
   text-overflow
   overflow-hidden
-  overflow-ellipsis
+  text-ellipsis
   flex
   justify-between
   items-center

@@ -12,7 +12,7 @@ import { TokenData, LPLockData } from '../../typings'
 import { TokenLockerManagerV1ContractContext } from '../contracts/TokenLockerManagerV1'
 import { UtilContractContext } from '../contracts/Util'
 import { ERC20ABI } from '../../contracts/external_contracts'
-import { timestampToDateTimeLocal } from '../../util'
+import { timestampToDateTimeLocal, getNetworkDataByChainId } from '../../util'
 import Header from './Header'
 import TokenInput from '../TokenInput'
 import { Outer, MidSection, SectionInner } from '../Layout'
@@ -93,11 +93,11 @@ const Create: React.FC = () => {
         const address = e.currentTarget.value
 
         mounted(isLpToken(address))
-          .then(result => setLpToken(result))
+          .then((result) => setLpToken(result))
           .catch(() => setLpToken(false))
 
         mounted(getTokenData(address))
-          .then(result => {
+          .then((result) => {
             setLoadingTokenData(false)
             setTokenData(result)
           })
@@ -114,8 +114,8 @@ const Create: React.FC = () => {
     }
 
     mounted(getLpData<LPLockData>(tokenData.address))
-      .then(lpData => setLpLockData(lpData))
-      .catch(err => {
+      .then((lpData) => setLpLockData(lpData))
+      .catch((err) => {
         console.error(err)
         setLpLockData(undefined)
       })
@@ -134,7 +134,7 @@ const Create: React.FC = () => {
         setLpToken0Data(token0Data)
         setLpToken1Data(token1Data)
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err)
         setLpToken0Data(undefined)
         setLpToken1Data(undefined)
@@ -149,13 +149,13 @@ const Create: React.FC = () => {
 
     //
     mounted(connector.getProvider())
-      .then(_provider => {
+      .then((_provider) => {
         //
         if (!_provider) return Promise.reject(new Error('Invalid provider'))
 
         setContract(new Contract(tokenData.address, ERC20ABI, new Web3Provider(_provider).getSigner()))
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err)
         setContract(undefined)
       })
@@ -194,9 +194,9 @@ const Create: React.FC = () => {
         .then((id: number) => {
           setCanSubmit(true)
           setIsSubmitting(false)
-          navigate(`/locker/${chainId}/${id}`)
+          navigate(`/locker/${getNetworkDataByChainId(chainId ?? 0)?.urlName || chainId}/${id}`)
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err)
           setCanSubmit(true)
           setIsSubmitting(false)
@@ -281,7 +281,7 @@ const Create: React.FC = () => {
                       <b>{utils.commify(utils.formatUnits(tokenData.balance, tokenData.decimals))}</b>
                     </div>
 
-                    <TokenInput tokenData={tokenData} onChange={value => setAmount(value)} />
+                    <TokenInput tokenData={tokenData} onChange={(value) => setAmount(value)} />
 
                     {/* <div className="flex gap-2 bg-white rounded">
                       <input
@@ -306,12 +306,12 @@ const Create: React.FC = () => {
                     </div> */}
 
                     <div className="flex bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded items-center">
-                      <div className="p-3 flex-shrink-0">Unlock time</div>
+                      <div className="p-3 shrink-0">Unlock time</div>
                       <input
                         type="datetime-local"
                         className="flex-grow p-3 outline-none bg-white dark:bg-gray-700 rounded-r"
                         defaultValue={timestampToDateTimeLocal(unlockTime)}
-                        onInput={e => setUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))}
+                        onInput={(e) => setUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))}
                       />
                     </div>
 

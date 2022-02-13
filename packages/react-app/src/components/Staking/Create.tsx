@@ -81,7 +81,7 @@ const Create: React.FC = () => {
         Promise.all([
           getTokenData(address),
           // wrap the call in a promise because we want it to fail silently.
-          new Promise<LPData | undefined>(resolve =>
+          new Promise<LPData | undefined>((resolve) =>
             getLpData(address)
               .then(resolve)
               .catch(() => resolve(undefined)),
@@ -92,7 +92,7 @@ const Create: React.FC = () => {
           setTokenData(_tokenData)
           setLpData(_lpData)
         })
-        .catch(err => {
+        .catch((err) => {
           err && pushNotification && pushNotification(err)
           setTokenData(undefined)
           setLpData(undefined)
@@ -118,7 +118,7 @@ const Create: React.FC = () => {
 
       mounted(getTokenData(address))
         .then(setRewardsTokenData)
-        .catch(err => {
+        .catch((err) => {
           err && pushNotification && pushNotification(err)
           setRewardsTokenData(undefined)
         })
@@ -179,7 +179,7 @@ const Create: React.FC = () => {
         setIsSubmitting(false)
         navigate(`/staking/${chainId}/${id}`)
       })
-      .catch(err => {
+      .catch((err) => {
         setIsSubmitting(false)
         pushNotification && pushNotification(err)
       })
@@ -229,7 +229,7 @@ const Create: React.FC = () => {
         setLpToken0Data(_lpToken0Data)
         setLpToken1Data(_lpToken1Data)
       })
-      .catch(err => {
+      .catch((err) => {
         err && pushNotification && pushNotification(err)
       })
   }, [mounted, lpData, getTokenData, pushNotification])
@@ -257,28 +257,28 @@ const Create: React.FC = () => {
           <div className="sticky top-0 dark:bg-gray-800">
             <div className="p-2 bg-gray-200 bg-opacity-80 dark:bg-gray-900 dark:bg-opacity-80 rounded grid grid-cols-4 gap-1 divide-x divide-gray-200 dark:divide-gray-800">
               <div
-                className={`p-2 text-center overflow-hidden overflow-ellipsis ${
+                className={`p-2 text-center overflow-hidden text-ellipsis ${
                   formPage === 0 ? 'text-indigo-700 dark:text-indigo-300' : ''
                 }`}
               >
                 {tokenData?.symbol ?? 'Token'}
               </div>
               <div
-                className={`p-2 text-center overflow-hidden overflow-ellipsis ${
+                className={`p-2 text-center overflow-hidden text-ellipsis ${
                   formPage === 1 ? 'text-indigo-700 dark:text-indigo-300' : ''
                 } ${formPage < 1 ? 'opacity-30' : ''}`}
               >
                 Contract
               </div>
               <div
-                className={`p-2 text-center overflow-hidden overflow-ellipsis ${
+                className={`p-2 text-center overflow-hidden text-ellipsis ${
                   formPage === 2 ? 'text-indigo-700 dark:text-indigo-300' : ''
                 } ${formPage < 2 ? 'opacity-30' : ''}`}
               >
                 Options
               </div>
               <div
-                className={`p-2 text-center overflow-hidden overflow-ellipsis ${
+                className={`p-2 text-center overflow-hidden text-ellipsis ${
                   formPage === 3 ? 'text-indigo-700 dark:text-indigo-300' : ''
                 } ${formPage < 3 ? 'opacity-30' : ''}`}
               >
@@ -384,7 +384,7 @@ const Create: React.FC = () => {
                             },
                           ]}
                           autoFocus={true}
-                          onChange={e => setStakingType(parseInt(e.currentTarget.value))}
+                          onChange={(e) => setStakingType(parseInt(e.currentTarget.value))}
                         />
 
                         <div className="dark:bg-indigo-500 dark:bg-opacity-20 p-4 rounded flex justify-between items-center gap-4">
@@ -414,7 +414,7 @@ const Create: React.FC = () => {
                             <div className="flex justify-between items-center gap-4">
                               <span>Rewards token:</span>
                               <Input
-                                className="flex-shrink-0 w-2/3"
+                                className="shrink-0 w-2/3"
                                 placeholder="Enter rewards token address"
                                 defaultValue={rewardsTokenData?.address}
                                 onInput={onInputRewardsTokenAddress}
@@ -442,12 +442,12 @@ const Create: React.FC = () => {
                             <div className="flex justify-between items-start gap-4">
                               <span>Rewards rate:</span>
 
-                              <div className="flex-shrink-0 w-2/3 flex flex-col gap-2">
-                                <label className="flex-shrink-0 w-2/3 flex gap-2 items-center">
+                              <div className="shrink-0 w-2/3 flex flex-col gap-2">
+                                <label className="shrink-0 w-2/3 flex gap-2 items-center">
                                   <input
                                     type="checkbox"
                                     defaultChecked={instantRewards}
-                                    onChange={e => setInstantRewards(e.currentTarget.checked)}
+                                    onChange={(e) => setInstantRewards(e.currentTarget.checked)}
                                   />
                                   <span>Instant</span>
                                 </label>

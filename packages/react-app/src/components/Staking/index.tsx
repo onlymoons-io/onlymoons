@@ -47,7 +47,7 @@ const StakingComponent: React.FC<StakingProps> = ({ viewMode }) => {
 
     if (idToUse) {
       mounted(getStakingDataById(parseInt(idToUse)))
-        .then(result => setStakingInstances([result]))
+        .then((result) => setStakingInstances([result]))
         .catch(console.error)
     } else if (accountToCheck) {
       // getTokenLockersForAddress(accountToCheck).then((ids: Array<number>) =>
@@ -164,7 +164,7 @@ const StakingComponent: React.FC<StakingProps> = ({ viewMode }) => {
                 </div>
               ) : (
                 // <div className="w-full flex justify-between items-start">
-                //   <div className="flex-shrink-0 w-full max-w-md">
+                //   <div className="shrink-0 w-full max-w-md">
                 //     <CreateStaking />
                 //   </div>
 
@@ -183,7 +183,7 @@ const StakingComponent: React.FC<StakingProps> = ({ viewMode }) => {
   )
 }
 
-const StakingComponentWrapper: React.FC<StakingProps> = props => {
+const StakingComponentWrapper: React.FC<StakingProps> = (props) => {
   return (
     <StakingManagerV1ContractContextProvider>
       <SplitStakingV1ContractContextProvider>

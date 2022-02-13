@@ -1,14 +1,23 @@
+const colors = require('tailwindcss/colors')
+
 module.exports = {
-  purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
+  content: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   darkMode: 'class', // or 'media' or 'class'
   theme: {
-    extend: {},
-  },
-  variants: {
     extend: {
-      opacity: ['disabled'],
-      backgroundOpacity: ['hover'],
+      colors: {
+        green: colors.emerald,
+        yellow: colors.amber,
+        purple: colors.violet,
+        gray: colors.neutral,
+      },
     },
   },
+  // variants: {
+  //   extend: {
+  //     opacity: ['disabled'],
+  //     backgroundOpacity: ['hover'],
+  //   },
+  // },
   plugins: [],
 }

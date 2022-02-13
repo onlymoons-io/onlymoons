@@ -6,6 +6,7 @@ export const networks: Record<number, NetworkData> = {
     chainId: 56,
     name: 'Binance Smart Chain',
     shortName: 'BSC',
+    urlName: 'bsc',
     nativeCurrency: {
       address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
       name: 'Binance Coin',
@@ -29,6 +30,7 @@ export const networks: Record<number, NetworkData> = {
     chainId: 97,
     name: 'Binance Smart Chain (testnet)',
     shortName: 'BSC (testnet)',
+    urlName: 'bsctest',
     nativeCurrency: {
       address: '0xae13d989dac2f0debff460ac112a837c89baa7cd',
       name: 'Binance Coin',
@@ -52,6 +54,7 @@ export const networks: Record<number, NetworkData> = {
     chainId: 122,
     name: 'Fuse',
     shortName: 'Fuse',
+    urlName: 'fuse',
     nativeCurrency: {
       address: '0x0BE9e53fd7EDaC9F859882AfdDa116645287C629',
       name: 'Fuse',
@@ -76,6 +79,7 @@ export const networks: Record<number, NetworkData> = {
     chainId: 123,
     name: 'Fuse Spark (testnet)',
     shortName: 'Fuse (testnet)',
+    urlName: 'fusetest',
     nativeCurrency: {
       address: '-',
       name: 'Spark',
@@ -93,6 +97,7 @@ export const networks: Record<number, NetworkData> = {
     chainId: 588,
     name: 'Metis Stardust (TESTNET)',
     shortName: 'Metis',
+    urlName: 'metistest',
     nativeCurrency: {
       address: '-',
       name: 'Metis',
@@ -110,6 +115,7 @@ export const networks: Record<number, NetworkData> = {
     chainId: 1088,
     name: 'Metis Andromeda',
     shortName: 'Metis',
+    urlName: 'metis',
     nativeCurrency: {
       address: '0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000',
       name: 'Metis',
