@@ -31,6 +31,8 @@
     "deploy:metistest": "yarn deploy --network metistest",
     "deploy:fuse": "yarn deploy --network fuse",
     "deploy:fusetest": "yarn deploy --network fusetest",
+    "deploy:polygon": "yarn deploy --network polygon",
+    "deploy:polygontest": "yarn deploy --network polytest",
     "deploy:rinkeby": "yarn deploy --network rinkeby",
     "deploy:ropsten": "yarn deploy --network ropsten",
     "deploy:kovan": "yarn deploy --network kovan",

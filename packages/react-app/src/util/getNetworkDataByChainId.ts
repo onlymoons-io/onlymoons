@@ -93,6 +93,31 @@ export const networks: Record<number, NetworkData> = {
     isTestNet: true,
     supportedLiquidityPairTokens: [],
   },
+  137: {
+    chainId: 137,
+    name: 'Polygon',
+    shortName: 'Polygon',
+    urlName: 'polygon',
+    nativeCurrency: {
+      address: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+      name: 'Matic',
+      symbol: 'MATIC',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://polygonscan.com/',
+    rpcURL: 'https://polygon-rpc.com/',
+    icon: '/polygon.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // WMATIC
+      {
+        address: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+        // pair w/ USDC on quickswap
+        stablePair: '0x6e7a5FAFcec6BB1e78bAE2A1F0B612012BF14827',
+      },
+    ],
+  },
   588: {
     chainId: 588,
     name: 'Metis Stardust (TESTNET)',
