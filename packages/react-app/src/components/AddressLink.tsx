@@ -66,7 +66,7 @@ const AddressLink: React.FC<AddressLinkProps> = ({
     }
 
     mounted(connector.getProvider())
-      .then(_provider => new Web3ProviderClass(_provider))
+      .then((_provider) => new Web3ProviderClass(_provider))
       .then(setProvider)
       .catch((err: Error) => {
         console.error(err)
@@ -86,9 +86,9 @@ const AddressLink: React.FC<AddressLinkProps> = ({
   return (
     <span className={`inline-flex gap-1 items-center max-w-full ${className}`}>
       {internalUrl ? (
-        <Link to={internalUrl} className="flex-shrink overflow-hidden flex gap-2 items-center" style={style}>
+        <Link to={internalUrl} className="shrink overflow-hidden flex gap-2 items-center" style={style}>
           {isContract && <FontAwesomeIcon icon={faFileCode} opacity={0.8} />}
-          <span className="text-indigo-600 dark:text-indigo-400 overflow-hidden overflow-ellipsis">
+          <span className="text-indigo-600 dark:text-indigo-400 overflow-hidden text-ellipsis">
             {linkText || getShortAddress(address)}
           </span>
         </Link>
@@ -101,7 +101,7 @@ const AddressLink: React.FC<AddressLinkProps> = ({
 
       {chainId ? (
         <Anchor
-          className="flex-shrink-0"
+          className="shrink-0"
           target="_blank"
           rel="noopener noreferrer"
           href={getExplorerAddressLink(chainId, address)}

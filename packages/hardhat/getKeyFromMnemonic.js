@@ -1,3 +1,8 @@
+/**
+ * this is a helper function for converting the mnemonic.txt file to a private key.
+ * since this is dealing with private keys, use with caution.
+ */
+
 const { Wallet } = require("ethers");
 const fs = require("fs");
 

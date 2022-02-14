@@ -12,8 +12,13 @@ import Header from './Header'
 import { Outer, MidSection, SectionInner, Grid as Locks, Loading as LocksLoading } from '../Layout'
 import { usePromise } from 'react-use'
 import { LockWatchlist } from './LockWatchlist'
+import contracts from '../../contracts/production_contracts.json'
+import { getNetworkDataByChainId } from '../../util'
+import { NetworkData } from '../../typings'
 
 const { isAddress, getAddress } = utils
+
+const allNetworkData = Object.keys(contracts).map((key) => getNetworkDataByChainId(parseInt(key)) as NetworkData)
 
 export interface LockerProps {
   useWatchlist?: boolean
@@ -22,13 +27,16 @@ export interface LockerProps {
 const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
   const { watchlist } = useContext(LockWatchlist)
   const mounted = usePromise()
-  const { account: accountToCheck, chainId: chainIdToUse, id: idToUse } = useParams()
+  const { account: accountToCheck, chainId: _chainIdToUse, id: idToUse } = useParams()
   const { chainId, connector } = useWeb3React()
   const { contract, getTokenLockersForAddress, tokenLockerCount } = useContext(TokenLockerManagerV1ContractContext)
   const [filterInputValue, setFilterInputValue] = useState<string>()
   const [lockIds, setLockIds] = useState<number[]>([])
   const wasUsingWatchlist = useRef<boolean>(false)
   const setupLockTimer = useRef<NodeJS.Timeout>()
+
+  const networkToUse = allNetworkData.find((v) => v.urlName === _chainIdToUse)
+  const chainIdToUse = networkToUse ? networkToUse.chainId.toString() : _chainIdToUse
 
   const setupLocks = useCallback(() => {
     if (!chainId || !contract || !connector || !tokenLockerCount || !getTokenLockersForAddress) {
@@ -41,11 +49,11 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
       wasUsingWatchlist.current = false
     } else if (useWatchlist) {
       if (wasUsingWatchlist.current) {
-        setLockIds(watchlist?.map(v => parseInt(v)) || [])
+        setLockIds(watchlist?.map((v) => parseInt(v)) || [])
       } else {
         setLockIds([])
-        mounted(new Promise(done => setTimeout(done, 250))).then(() =>
-          setLockIds(watchlist?.map(v => parseInt(v)) || []),
+        mounted(new Promise((done) => setTimeout(done, 250))).then(() =>
+          setLockIds(watchlist?.map((v) => parseInt(v)) || []),
         )
       }
 
@@ -72,7 +80,7 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
       wasUsingWatchlist.current = false
     } else {
       if (wasUsingWatchlist.current) {
-        mounted(new Promise(done => setTimeout(done, 250))).then(() =>
+        mounted(new Promise((done) => setTimeout(done, 250))).then(() =>
           setLockIds(new Array(tokenLockerCount).fill(null).map((val, index) => index)),
         )
       } else {
@@ -103,7 +111,7 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
     if (!chainId || !contract || !connector) return
     setupLockTimer.current && clearTimeout(setupLockTimer.current)
     mounted(
-      new Promise(done => {
+      new Promise((done) => {
         setupLockTimer.current = setTimeout(done, 250)
       }),
     ).then(setupLocks)
@@ -117,7 +125,9 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
         <SectionInner>
           {connector ? (
             <div className="flex flex-col justify-center w-full items-center gap-4">
-              {typeof idToUse !== 'undefined' && lockIds[0] && parseInt(idToUse) === lockIds[0] ? (
+              {typeof idToUse !== 'undefined' &&
+              typeof lockIds[0] !== 'undefined' &&
+              parseInt(idToUse) === lockIds[0] ? (
                 <div className="w-full md:max-w-md">
                   {chainId && chainIdToUse && chainId !== parseInt(chainIdToUse) ? (
                     <div className="text-center">Connected to the wrong network to view this lock.</div>
@@ -135,9 +145,9 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
                 <Locks>
                   {/* copy and reverse ids to get descending order */}
                   {lockIds
-                    .map(id => id)
+                    .map((id) => id)
                     .reverse()
-                    .map(lockId => {
+                    .map((lockId) => {
                       return <Lock key={lockId} lockId={lockId} />
                     })}
                 </Locks>

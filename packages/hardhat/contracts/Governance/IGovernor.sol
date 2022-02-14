@@ -18,26 +18,8 @@
 
 pragma solidity ^0.8.0;
 
-import { IPausable } from "./IPausable.sol";
-import { Ownable } from "./Ownable.sol";
-
-abstract contract Pausable is IPausable, Ownable {
-  bool internal _paused;
-
-  modifier onlyNotPaused() {
-    require(!_paused, "Contract is paused");
-    _;
-  }
-
-  function paused() external view override returns (bool) {
-    return _paused;
-  }
-
-  function _setPaused(bool value) internal virtual {
-    _paused = value;
-  }
-
-  function setPaused(bool value) external override onlyOwner {
-    _setPaused(value);
-  }
+interface IGovernor {
+  function addWeightedToken(address tokenAddress, uint256 weight) external;
+  function setWeightedTokens(address[] memory votingTokens, uint256[] memory votingTokenWeights) external;
+  function getTokenWeight(address tokenAddress) external view returns (uint256);
 }

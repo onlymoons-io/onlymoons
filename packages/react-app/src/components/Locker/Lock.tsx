@@ -22,13 +22,19 @@ import humanizeDuration from 'humanize-duration'
 import { UtilContractContext } from '../contracts/Util'
 import { TokenLockerManagerV1ContractContext } from '../contracts/TokenLockerManagerV1'
 import { ModalControllerContext } from '../ModalController'
-import { TokenData, TokenLockData, LPLockData } from '../../typings'
+import { TokenData, TokenLockData, LPLockData, NetworkData } from '../../typings'
 import { motion } from 'framer-motion'
 import { Primary as PrimaryButton, Ghost as Button } from '../Button'
 import Tooltip from '../Tooltip'
 import TokenInput from '../TokenInput'
 import TokenWithValue from '../TokenWithValue'
-import { getShortAddress, timestampToDateTimeLocal, getNativeCoin, getFormattedAmount } from '../../util'
+import {
+  getShortAddress,
+  timestampToDateTimeLocal,
+  getNativeCoin,
+  getFormattedAmount,
+  getNetworkDataByChainId,
+} from '../../util'
 import { ERC20ABI } from '../../contracts/external_contracts'
 import DetailsCard, { Detail, Title } from '../DetailsCard'
 import { ContractCacheContext } from '../contracts/ContractCache'
@@ -119,6 +125,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
   const currentlyVisible = useRef<boolean>(false)
   const [isVisible, setIsVisible] = useState<boolean>(false)
   const [manageExpanded, setManageExpanded] = useState<boolean>(false)
+  const [networkData, setNetworkData] = useState<NetworkData>()
 
   const updateLockData = useCallback(() => {
     if (typeof lockId !== 'number' || !contract || !getTokenLockData || !currentlyVisible.current || !chainId) {
@@ -127,7 +134,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
     }
 
     mounted(getTokenLockData(lockId))
-      .then(lockData => setLockData(lockData))
+      .then((lockData) => setLockData(lockData))
       .catch(console.error)
   }, [mounted, contract, getTokenLockData, lockId, chainId])
 
@@ -179,7 +186,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
     }
 
     mounted(connector.getProvider())
-      .then(provider =>
+      .then((provider) =>
         setTokenContract(new Contract(lockData.token, ERC20ABI, new Web3Provider(provider).getSigner())),
       )
       .catch((err: Error) => {
@@ -188,7 +195,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
       })
 
     mounted(getTokenData(lockData.token))
-      .then(result => setLockTokenData(result))
+      .then((result) => setLockTokenData(result))
       .catch(console.error)
   }, [mounted, contract, connector, lockData, getTokenData])
 
@@ -267,7 +274,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
         setLpToken0Data(token0Data)
         setLpToken1Data(token1Data)
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err)
         setLpToken0Data(undefined)
         setLpToken1Data(undefined)
@@ -281,7 +288,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
     }
 
     mounted(connector.getProvider())
-      .then(_provider => mounted(new Web3Provider(_provider).getBalance(lockContract.address)))
+      .then((_provider) => mounted(new Web3Provider(_provider).getBalance(lockContract.address)))
       .then(setClaimableEth)
       .catch((err: Error) => {
         console.error(err)
@@ -304,8 +311,8 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
     setCheckingTokenBalance(true)
 
     mounted(connector.getProvider())
-      .then(provider => new Contract(claimTokenAddress, ERC20ABI, new Web3Provider(provider)))
-      .then(claimTokenContract => mounted<BigNumber>(claimTokenContract.balanceOf(lockData.contractAddress)))
+      .then((provider) => new Contract(claimTokenAddress, ERC20ABI, new Web3Provider(provider)))
+      .then((claimTokenContract) => mounted<BigNumber>(claimTokenContract.balanceOf(lockData.contractAddress)))
       .then(setClaimableTokens)
       .catch((err: Error) => {
         console.error(err)
@@ -326,6 +333,15 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
       })
   }, [mounted, getTokenData, claimTokenAddress])
 
+  useEffect(() => {
+    if (!chainId) {
+      setNetworkData(undefined)
+      return
+    }
+
+    setNetworkData(getNetworkDataByChainId(chainId))
+  }, [chainId])
+
   return (
     <div ref={intersectionRef} style={{ minHeight: '360px' }}>
       {!intersection ||
@@ -340,10 +356,10 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                       <Title className="flex-col">
                         <div className="self-start flex max-w-full">
                           <Link
-                            to={`/locker/${chainId}/${lockId}`}
-                            className="flex-shrink whitespace-nowrap overflow-hidden flex gap-2 items-baseline"
+                            to={`/locker/${networkData?.urlName || chainId}/${lockId}`}
+                            className="shrink whitespace-nowrap overflow-hidden flex gap-2 items-baseline"
                           >
-                            <span className="overflow-hidden overflow-ellipsis">{lockTokenData?.name || '...'} </span>
+                            <span className="overflow-hidden text-ellipsis">{lockTokenData?.name || '...'} </span>
                             {lockTokenData && <span className="text-sm">({lockTokenData.symbol || '...'})</span>}
                           </Link>
                         </div>
@@ -371,7 +387,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                     </div>
 
                     <div
-                      className="flex-shrink-0 cursor-default"
+                      className="shrink-0 cursor-default"
                       style={{ maxWidth: '64px' }}
                       data-tip={true}
                       data-for={`lock-status-${lockData.id}`}
@@ -703,16 +719,16 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                         <TokenInput
                           tokenData={lockTokenData}
                           placeholder="Tokens to add (optional)"
-                          onChange={value => setDepositTokens(value)}
+                          onChange={(value) => setDepositTokens(value)}
                         />
 
                         <div className="flex bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded items-center">
-                          <div className="p-3 flex-shrink-0">Unlock time</div>
+                          <div className="p-3 shrink-0">Unlock time</div>
                           <input
                             type="datetime-local"
                             className="flex-grow p-3 outline-none bg-white dark:bg-gray-700 rounded-r"
                             defaultValue={timestampToDateTimeLocal(lockData.unlockTime)}
-                            onInput={e =>
+                            onInput={(e) =>
                               setExtendedUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))
                             }
                           />
@@ -798,7 +814,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                         <Input
                           className="flex-grow"
                           placeholder="Claim token by address"
-                          onChange={e => {
+                          onChange={(e) => {
                             setClaimTokenAddress(
                               e.currentTarget.value &&
                                 e.currentTarget.value !== '' &&
@@ -853,7 +869,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                       <Input
                         className="flex-grow rounded-r-none"
                         placeholder="New owner address"
-                        onChange={e => {
+                        onChange={(e) => {
                           setNewOwnerAddress(e.currentTarget.value)
                         }}
                       />
@@ -882,13 +898,9 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                       </PrimaryButton>
                     </section>
                   </>
-                ) : (
-                  undefined
-                )
-              ) : (
-                // lockData is not ready
-                undefined
-              )
+                ) : undefined
+              ) : // lockData is not ready
+              undefined
             }
           />
         ))}

@@ -113,6 +113,7 @@ export interface NetworkData {
   readonly chainId: number
   readonly name: string
   readonly shortName: string
+  readonly urlName: string
   readonly nativeCurrency: TokenData
   readonly icon?: string
   readonly rpcURL: string

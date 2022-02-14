@@ -18,26 +18,30 @@
 
 pragma solidity ^0.8.0;
 
-import { IPausable } from "./IPausable.sol";
-import { Ownable } from "./Ownable.sol";
+import { IIDCounter } from "../IIDCounter.sol";
+import { IFeeCollector } from "../Fees/IFeeCollector.sol";
+import { IGovernable } from "../Governance/IGovernable.sol";
 
-abstract contract Pausable is IPausable, Ownable {
-  bool internal _paused;
+interface ILaunchManagerV1 is IIDCounter, IFeeCollector, IGovernable {
+  function createLaunch(
+    address tokenAddress_,
+    uint80 times_,
+    uint256 minContribution_,
+    uint256 maxContribution_,
+    uint256 softCap_,
+    uint256 hardCap_,
+    uint256 amount_
+  ) external;
 
-  modifier onlyNotPaused() {
-    require(!_paused, "Contract is paused");
-    _;
-  }
-
-  function paused() external view override returns (bool) {
-    return _paused;
-  }
-
-  function _setPaused(bool value) internal virtual {
-    _paused = value;
-  }
-
-  function setPaused(bool value) external override onlyOwner {
-    _setPaused(value);
-  }
+  function getLaunchBaseData(uint40 id) external view returns (
+    address token,
+    string memory name,
+    string memory symbol,
+    uint8 decimals,
+    string memory icon,
+    uint120 times,
+    uint256 balance,
+    uint256 softCap,
+    uint256 hardCap
+  );
 }

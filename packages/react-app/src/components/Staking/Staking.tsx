@@ -76,7 +76,7 @@ const Staking: React.FC<StakingProps> = ({
     }
 
     mounted(connector.getProvider())
-      .then(provider =>
+      .then((provider) =>
         setTokenContract(new Contract(_stakingData.stakedToken, ERC20ABI, new Web3Provider(provider).getSigner())),
       )
       .catch((err: Error) => {
@@ -84,9 +84,7 @@ const Staking: React.FC<StakingProps> = ({
         setTokenContract(undefined)
       })
 
-    getTokenData(_stakingData.stakedToken)
-      .then(setStakingTokenData)
-      .catch(console.error)
+    getTokenData(_stakingData.stakedToken).then(setStakingTokenData).catch(console.error)
   }, [mounted, contract, connector, _stakingData, getTokenData])
 
   useEffect(() => {
@@ -321,7 +319,7 @@ const Staking: React.FC<StakingProps> = ({
               <div className="flex justify-between gap-2 w-full">
                 <TokenInput
                   placeholder="Tokens to deposit"
-                  className="w-2/3 flex-shrink-0"
+                  className="w-2/3 shrink-0"
                   tokenData={stakingTokenData}
                   maxValue={stakingTokenData.balance}
                   disabled={paused || !account}
@@ -381,7 +379,7 @@ const Staking: React.FC<StakingProps> = ({
               <div className="flex justify-between gap-2 w-full">
                 <TokenInput
                   placeholder="Tokens to withdraw"
-                  className="w-2/3 flex-shrink-0"
+                  className="w-2/3 shrink-0"
                   tokenData={stakingTokenData}
                   disabled={!account}
                   maxValue={stakingDataForAccount?.amount}
@@ -526,7 +524,7 @@ const Staking: React.FC<StakingProps> = ({
                                       level: 'success',
                                     })
                                 })
-                                .catch(err => {
+                                .catch((err) => {
                                   setSettingStakingToken(false)
 
                                   pushNotification &&
@@ -556,7 +554,7 @@ const Staking: React.FC<StakingProps> = ({
                                       level: 'success',
                                     })
                                 })
-                                .catch(err => {
+                                .catch((err) => {
                                   setSettingStakingToken(false)
 
                                   pushNotification &&
@@ -593,10 +591,8 @@ const Staking: React.FC<StakingProps> = ({
               <FontAwesomeIcon icon={faChevronDown} fixedWidth />
             </motion.div>
           </div>
-        ) : (
-          // _stakingData is not ready
-          undefined
-        )
+        ) : // _stakingData is not ready
+        undefined
       }
     />
   )

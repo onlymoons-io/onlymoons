@@ -18,26 +18,9 @@
 
 pragma solidity ^0.8.0;
 
-import { IPausable } from "./IPausable.sol";
-import { Ownable } from "./Ownable.sol";
+interface IGovernable {
+  event GovernorshipTransferred(address indexed oldGovernor, address indexed newGovernor);
 
-abstract contract Pausable is IPausable, Ownable {
-  bool internal _paused;
-
-  modifier onlyNotPaused() {
-    require(!_paused, "Contract is paused");
-    _;
-  }
-
-  function paused() external view override returns (bool) {
-    return _paused;
-  }
-
-  function _setPaused(bool value) internal virtual {
-    _paused = value;
-  }
-
-  function setPaused(bool value) external override onlyOwner {
-    _setPaused(value);
-  }
+  function governor() external view returns (address);
+  function transferGovernorship(address newGovernor) external;
 }

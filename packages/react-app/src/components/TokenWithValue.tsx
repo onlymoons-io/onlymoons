@@ -69,7 +69,7 @@ const TokenWithValue: React.FC<TokenWithValueProps> = ({
       return
     }
 
-    const supportedPair = networkData.supportedLiquidityPairTokens.find(pair => pair.address === tokenData.address)
+    const supportedPair = networkData.supportedLiquidityPairTokens.find((pair) => pair.address === tokenData.address)
 
     if (!supportedPair) {
       setLpData(undefined)
@@ -139,7 +139,7 @@ const TokenWithValue: React.FC<TokenWithValueProps> = ({
             (
             <ValueInner>
               $
-              {humanNumber(parseFloat(formatUnits(amount, tokenData.decimals)) * price, n =>
+              {humanNumber(parseFloat(formatUnits(amount, tokenData.decimals)) * price, (n) =>
                 n.toLocaleString(undefined, { maximumFractionDigits: 2 }),
               )}
             </ValueInner>

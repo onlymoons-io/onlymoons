@@ -18,14 +18,11 @@
 
 pragma solidity ^0.8.0;
 
+import { IAuthorizable } from "./IAuthorizable.sol";
 import { Ownable } from "./Ownable.sol";
 
-abstract contract Authorizable is Ownable {
-  event Authorized(address indexed account, bool value);
-
-  constructor(address owner_) Ownable(owner_) {
-    //
-  }
+abstract contract Authorizable is IAuthorizable, Ownable {
+  constructor(address owner_) Ownable(owner_) {}
 
   mapping(address => bool) internal _authorized;
 
@@ -39,8 +36,8 @@ abstract contract Authorizable is Ownable {
     return account == _owner() ? true : _authorized[account];
   }
 
-  function isAuthorized() external view returns (bool) {
-    return _isAuthorized(_msgSender());
+  function isAuthorized(address account) external view override returns (bool) {
+    return _isAuthorized(account);
   }
 
   function _authorize(address account, bool value) internal virtual {
@@ -50,7 +47,7 @@ abstract contract Authorizable is Ownable {
   }
 
   /** @dev only allow the owner to authorize more accounts */
-  function authorize(address account, bool value) external onlyOwner {
+  function authorize(address account, bool value) external override onlyOwner {
     _authorize(account, value);
   }
 }
