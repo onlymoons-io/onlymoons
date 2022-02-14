@@ -12,8 +12,13 @@ import Header from './Header'
 import { Outer, MidSection, SectionInner, Grid as Locks, Loading as LocksLoading } from '../Layout'
 import { usePromise } from 'react-use'
 import { LockWatchlist } from './LockWatchlist'
+import contracts from '../../contracts/production_contracts.json'
+import { getNetworkDataByChainId } from '../../util'
+import { NetworkData } from '../../typings'
 
 const { isAddress, getAddress } = utils
+
+const allNetworkData = Object.keys(contracts).map((key) => getNetworkDataByChainId(parseInt(key)) as NetworkData)
 
 export interface LockerProps {
   useWatchlist?: boolean
@@ -30,24 +35,8 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
   const wasUsingWatchlist = useRef<boolean>(false)
   const setupLockTimer = useRef<NodeJS.Timeout>()
 
-  const chainIdToUse = (() => {
-    switch (_chainIdToUse) {
-      case 'bsc':
-        return '56'
-
-      case 'bsctest':
-        return '97'
-
-      case 'fuse':
-        return '122'
-
-      case 'metis':
-        return '1088'
-
-      default:
-        return _chainIdToUse
-    }
-  })()
+  const networkToUse = allNetworkData.find((v) => v.urlName === _chainIdToUse)
+  const chainIdToUse = networkToUse ? networkToUse.chainId.toString() : _chainIdToUse
 
   const setupLocks = useCallback(() => {
     if (!chainId || !contract || !connector || !tokenLockerCount || !getTokenLockersForAddress) {
@@ -136,7 +125,9 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
         <SectionInner>
           {connector ? (
             <div className="flex flex-col justify-center w-full items-center gap-4">
-              {typeof idToUse !== 'undefined' && lockIds[0] && parseInt(idToUse) === lockIds[0] ? (
+              {typeof idToUse !== 'undefined' &&
+              typeof lockIds[0] !== 'undefined' &&
+              parseInt(idToUse) === lockIds[0] ? (
                 <div className="w-full md:max-w-md">
                   {chainId && chainIdToUse && chainId !== parseInt(chainIdToUse) ? (
                     <div className="text-center">Connected to the wrong network to view this lock.</div>

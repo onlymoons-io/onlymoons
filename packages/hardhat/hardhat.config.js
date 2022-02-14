@@ -199,23 +199,26 @@ module.exports = {
       },
     },
     polygon: {
-      url: "https://speedy-nodes-nyc.moralis.io/abe6dedb3ddb2a52245b68af/polygon/mainnet", // <---- YOUR MORALIS ID! (not limited to infura)
-      gasPrice: 1000000000,
+      // url: "https://speedy-nodes-nyc.moralis.io/abe6dedb3ddb2a52245b68af/polygon/mainnet", // <---- YOUR MORALIS ID! (not limited to infura)
+      url: "https://polygon-rpc.com/",
+      // gasPrice: 1000000000,
       accounts: {
         mnemonic: mnemonic(),
       },
     },
     polytest: {
-      url: "https://speedy-nodes-nyc.moralis.io/abe6dedb3ddb2a52245b68af/polygon/mumbai", // <---- YOUR MORALIS ID! (not limited to infura)
-      gasPrice: 1000000000,
+      // url: "https://speedy-nodes-nyc.moralis.io/abe6dedb3ddb2a52245b68af/polygon/mumbai", // <---- YOUR MORALIS ID! (not limited to infura)
+      url: "https://rpc-mumbai.maticvigil.com/",
+      // gasPrice: 1000000000,
       accounts: {
         mnemonic: mnemonic(),
       },
     },
 
     matic: {
-      url: "https://rpc-mainnet.maticvigil.com/",
-      gasPrice: 1000000000,
+      // url: "https://rpc-mainnet.maticvigil.com/",
+      url: "https://polygon-rpc.com/",
+      // gasPrice: 1000000000,
       accounts: {
         mnemonic: mnemonic(),
       },
@@ -354,7 +357,7 @@ module.exports = {
     },
   },
   etherscan: {
-    apiKey: "YJ4MF4JRWQWY5NGYENR27XASJMVN4J43A3",
+    apiKey: process.env.ETHERSCAN_API_KEY,
   },
   // blockscoutVerify: {
   //   blockscoutURL: "https://andromeda-explorer.metis.io/",

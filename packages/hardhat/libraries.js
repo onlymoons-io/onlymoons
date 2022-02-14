@@ -5,7 +5,9 @@
 module.exports = {
   // testnet
   // Util: "0x82CD31c0a0de621b52ee80f8f14d55Ffd5cb734A",
-  Math: "0x822Bc660cC8E1916d0370d53101Db92cA78683e4",
+  // Math: "0x822Bc660cC8E1916d0370d53101Db92cA78683e4",
   // mainnet - NEVER CHANGE!
   // Util: "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE",
+  // polygon
+  Util: "0x77110f67C0EF3c98c43570BADe06046eF6549876",
 };

@@ -11,6 +11,11 @@ import { PriceTrackerContext } from './contracts/PriceTracker'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faWrench } from '@fortawesome/free-solid-svg-icons'
 
+const allNetworkData: Array<NetworkData> = Object.keys(contracts)
+  .map((key) => getNetworkDataByChainId(parseInt(key)) as NetworkData)
+  // sort network data array by name
+  .sort((a, b) => (a.name > b.name ? 1 : a.name < b.name ? -1 : 0))
+
 interface ErrorInterface {
   code: number
   message: string
@@ -34,10 +39,7 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
       return
     }
 
-    connector
-      .getProvider()
-      .then(setProvider)
-      .catch(console.error)
+    connector.getProvider().then(setProvider).catch(console.error)
   }, [connector])
 
   useEffect(() => {
@@ -108,20 +110,19 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
           //
           setCurrentModal(
             <DetailsCard
-              className="h-96"
-              innerClassName="h-96"
+              // className="max-h-128"
+              // innerClassName="max-h-128"
+              style={{ maxHeight: '80vh' }}
               headerContent={<div className="text-xl">Select network</div>}
               mainContent={
                 <div>
                   {/** @todo sort this alphabetically by network name */}
-                  {Object.keys(contracts).map((key, value, index) => {
-                    const _networkData = getNetworkDataByChainId(parseInt(key))
-
+                  {allNetworkData.map((_networkData) => {
                     return !_networkData ? (
                       <></>
                     ) : (
                       <div
-                        key={key}
+                        key={_networkData.chainId}
                         className="flex gap-3 items-center p-4 cursor-pointer hover:bg-gray-500 hover:bg-opacity-10"
                         onClick={() => switchNetwork(_networkData.chainId)}
                       >

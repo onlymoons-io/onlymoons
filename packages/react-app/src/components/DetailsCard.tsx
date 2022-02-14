@@ -41,9 +41,9 @@ export const Title = tw.h3`
 
 export const Header = tw(Section)`
   bg-gray-200
-  bg-opacity-80
+  bg-opacity-50
   dark:bg-gray-900
-  dark:bg-opacity-80
+  dark:bg-opacity-70
   border-l border-t border-r
   rounded-t
   border-gray-100
