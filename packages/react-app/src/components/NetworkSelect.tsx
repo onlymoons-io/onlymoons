@@ -11,6 +11,11 @@ import { PriceTrackerContext } from './contracts/PriceTracker'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faWrench } from '@fortawesome/free-solid-svg-icons'
 
+const allNetworkData: Array<NetworkData> = Object.keys(contracts)
+  .map((key) => getNetworkDataByChainId(parseInt(key)) as NetworkData)
+  // sort network data array by name
+  .sort((a, b) => (a.name > b.name ? 1 : a.name < b.name ? -1 : 0))
+
 interface ErrorInterface {
   code: number
   message: string
@@ -25,7 +30,6 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
   const { nativeCoinPrice } = useContext(PriceTrackerContext) || {}
   const { setCurrentModal, closeModal } = useContext(ModalControllerContext)
   const { chainId, connector } = useWeb3React()
-  const [allNetworkData, setAllNetworkData] = useState<Array<NetworkData>>([])
   const [networkData, setNetworkData] = useState<NetworkData>()
   const [provider, setProvider] = useState<any>()
 
@@ -37,15 +41,6 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
 
     connector.getProvider().then(setProvider).catch(console.error)
   }, [connector])
-
-  useEffect(() => {
-    setAllNetworkData(
-      Object.keys(contracts)
-        .map((key) => getNetworkDataByChainId(parseInt(key)) as NetworkData)
-        // sort network data array by name
-        .sort((a, b) => (a.name > b.name ? 1 : a.name < b.name ? -1 : 0)),
-    )
-  }, [])
 
   useEffect(() => {
     if (!chainId) {
