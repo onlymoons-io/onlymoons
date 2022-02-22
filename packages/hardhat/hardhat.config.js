@@ -16,12 +16,6 @@ require("@nomiclabs/hardhat-ethers");
 
 require("@nomiclabs/hardhat-etherscan");
 
-// require("@ericxstone/hardhat-blockscout-verify");
-// const {
-//   SOLIDITY_VERSION,
-//   EVM_VERSION,
-// } = require("@ericxstone/hardhat-blockscout-verify");
-
 const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 
 /*
@@ -337,15 +331,6 @@ module.exports = {
           },
         },
       },
-      {
-        version: "0.6.7",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 200,
-          },
-        },
-      },
     ],
   },
   ovm: {
@@ -359,35 +344,6 @@ module.exports = {
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
   },
-  // blockscoutVerify: {
-  //   blockscoutURL: "https://andromeda-explorer.metis.io/",
-  //   contracts: {
-  //     Util: {
-  //       compilerVersion: SOLIDITY_VERSION.SOLIDITY_V_8_10,
-  //       optimizations: true,
-  //       evmVersion: EVM_VERSION.EVM_LONDON,
-  //       optimizationRuns: 200,
-  //     },
-  //     ERC20: {
-  //       compilerVersion: SOLIDITY_VERSION.SOLIDITY_V_8_10,
-  //       optimizations: true,
-  //       evmVersion: EVM_VERSION.EVM_LONDON,
-  //       optimizationRuns: 200,
-  //     },
-  //     TokenLockerManagerV1: {
-  //       compilerVersion: SOLIDITY_VERSION.SOLIDITY_V_8_10,
-  //       optimizations: true,
-  //       evmVersion: EVM_VERSION.EVM_LONDON,
-  //       optimizationRuns: 200,
-  //     },
-  //     TokenLockerV1: {
-  //       compilerVersion: SOLIDITY_VERSION.SOLIDITY_V_8_10,
-  //       optimizations: true,
-  //       evmVersion: EVM_VERSION.EVM_LONDON,
-  //       optimizationRuns: 200,
-  //     },
-  //   },
-  // },
 };
 
 const DEBUG = false;
