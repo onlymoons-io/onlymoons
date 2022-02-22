@@ -44,7 +44,6 @@
     "send": "hardhat send",
     "generate": "hardhat generate",
     "account": "hardhat account",
-    "etherscan-verify": "hardhat etherscan-verify --api-key YJ4MF4JRWQWY5NGYENR27XASJMVN4J43A3 --solc-input",
     "privatekey": "node getKeyFromMnemonic.js"
   }
 }
