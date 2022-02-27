@@ -2,6 +2,16 @@
 
 Originally based on [scaffold-eth](https://github.com/scaffold-eth/scaffold-eth) - original README is included below.
 
+## Development
+
+Anyone is free to contribute. If you wish to contribute, fork the `develop` branch and submit a pull request.
+
+## License
+
+All [OnlyMoons](https://github.com/onlymoons-io/onlymoons) source code is licensed with GNU GPL 3.0 license. The original [scaffold-eth](https://github.com/scaffold-eth/scaffold-eth) source code is licensed with MIT license.
+
+----------
+
 # 🏗 Scaffold-ETH
 
 > everything you need to build on Ethereum! 🚀
