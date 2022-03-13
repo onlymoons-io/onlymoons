@@ -8,6 +8,7 @@ import {
   faChartLine,
   faFaucet,
   faFileCode,
+  faHandsHolding,
   faLock,
   faPiggyBank,
   faRocket,
@@ -103,6 +104,7 @@ const LeftNav: React.FC = () => {
         <NavItem to="/locker" icon={<FontAwesomeIcon icon={faLock} fixedWidth />} label="Locker" />
         <NavItem to="/staking" icon={<FontAwesomeIcon icon={faPiggyBank} fixedWidth />} label="Staking" />
         <NavItem to="/governance" icon={<FontAwesomeIcon icon={faUniversity} fixedWidth />} label="Governance" />
+        <NavItem to="/fundraising" icon={<FontAwesomeIcon icon={faHandsHolding} fixedWidth />} label="Fundraising" />
         {chainId === 97 && (
           <NavItem to="/faucet" icon={<FontAwesomeIcon icon={faFaucet} fixedWidth />} label="Faucet" />
         )}
