@@ -22,10 +22,13 @@ describe("Fundraising.sol", () => {
       "title",
       // string memory description,
       "description",
-      // uint40 endsAt,
-      endsAtTime,
-      // uint256 successThreshold
-      10
+      // uint256[] memory data
+      [
+        // ends at time
+        endsAtTime,
+        // success threshold
+        10,
+      ]
     );
   });
 });

@@ -18,12 +18,12 @@
 
 pragma solidity ^0.8.0;
 
-import { Ownable } from "./Ownable.sol";
+import { OwnableV2 } from "./Control/OwnableV2.sol";
 import { ReentrancyGuard } from "./library/ReentrancyGuard.sol";
 import { IERC20 } from "./library/IERC20.sol";
 import { SafeERC20 } from "./library/SafeERC20.sol";
 
-contract Faucet is Ownable, ReentrancyGuard {
+contract Faucet is OwnableV2, ReentrancyGuard {
   using SafeERC20 for IERC20;
 
   /**
@@ -31,7 +31,7 @@ contract Faucet is Ownable, ReentrancyGuard {
    * @param claimAmount - amount of tokens to claim at a time
    * @param claimCooldown - amount of seconds that must pass before allowing the same account to claim again
    */
-  constructor(address tokenAddress, uint256 claimAmount, uint256 claimCooldown) Ownable(_msgSender()) {
+  constructor(address tokenAddress, uint256 claimAmount, uint256 claimCooldown) OwnableV2(_msgSender()) {
     //
     _token = IERC20(tokenAddress);
     _claimAmount = claimAmount;

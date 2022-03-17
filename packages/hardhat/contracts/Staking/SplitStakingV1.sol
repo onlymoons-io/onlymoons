@@ -22,7 +22,7 @@ import { IStakingManagerV1 } from "./IStakingManagerV1.sol";
 import { Address } from "../library/Address.sol";
 import { IUniswapV2Pair } from "../library/Dex.sol";
 import { Governable } from "../Governance/Governable.sol";
-import { Pausable } from "../Pausable.sol";
+import { Pausable } from "../Control/Pausable.sol";
 import { IStakingV1 } from "./IStakingV1.sol";
 import { Math } from "../Math.sol";
 import { IERC20 } from "../library/IERC20.sol";

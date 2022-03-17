@@ -21,9 +21,9 @@ pragma solidity ^0.8.0;
 import { IFeeCollector } from "./IFeeCollector.sol";
 import { Address } from "../library/Address.sol";
 import { IFees } from "./IFees.sol";
-import { Ownable } from "../Ownable.sol";
+import { OwnableV2 } from "../Control/OwnableV2.sol";
 
-abstract contract FeeCollector is IFeeCollector, Ownable {
+abstract contract FeeCollector is IFeeCollector, OwnableV2 {
   using Address for address payable;
 
   IFees internal _fees;

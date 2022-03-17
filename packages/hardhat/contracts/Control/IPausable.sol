@@ -18,9 +18,9 @@
 
 pragma solidity ^0.8.0;
 
-interface IAuthorizable {
-  event Authorized(address indexed account, bool value);
+import { IOwnableV2 } from "./IOwnableV2.sol";
 
-  function isAuthorized(address account) external view returns (bool);
-  function authorize(address account, bool value) external;
+interface IPausable is IOwnableV2 {
+  function paused() external view returns (bool);
+  function setPaused(bool value) external;
 }

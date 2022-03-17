@@ -28,7 +28,7 @@ import { SafeERC20 } from "../library/SafeERC20.sol";
 /**
  * token reflection
  */
-contract StakingTokenV1 is IStakingV1, IStakingTokenV1, StakingV1 {
+contract StakingTokenV1 is IStakingTokenV1, StakingV1 {
   using Address for address payable;
   using SafeERC20 for IERC20;
 

@@ -19,15 +19,15 @@
 pragma solidity ^0.8.0;
 
 import { IGovernable } from "./IGovernable.sol";
-import { Ownable } from "../Ownable.sol";
+import { OwnableV2 } from "../Control/OwnableV2.sol";
 
 /**
  * @title Governable
  * 
  * parent for governable contracts
  */
-abstract contract Governable is IGovernable, Ownable {
-  constructor(address owner_, address governor_) Ownable(owner_) {
+abstract contract Governable is IGovernable, OwnableV2 {
+  constructor(address owner_, address governor_) OwnableV2(owner_) {
     _governor_ = governor_;
     emit GovernorshipTransferred(address(0), _governor());
   }

@@ -19,112 +19,45 @@
 pragma solidity ^0.8.0;
 
 import { IFundraising } from "./IFundraising.sol";
-import { Address } from "../library/Address.sol";
-import { Ownable } from "../Ownable.sol";
-import { Pausable } from "../Pausable.sol";
+import { IFundraisingBase } from "./IFundraisingBase.sol";
+import { FundraisingBase } from "./FundraisingBase.sol";
 
-struct AccountDepositData {
-  uint256 amount;
-  uint256 numDeposits;
-}
-
-contract Fundraising is IFundraising, Ownable, Pausable {
-  using Address for address payable;
-
+contract Fundraising is IFundraising, FundraisingBase {
   constructor(
     string memory title_,
     string memory description_,
-    uint40 endsAt_,
-    uint256 successThreshold_
-  ) Ownable(_msgSender()) {
-    require(endsAt_ > block.timestamp, "Must end in the future");
-    
-    _title = title_;
-    _description = description_;
-    _endsAt = endsAt_;
-    _successThreshold = successThreshold_;
+    uint256[] memory data_
+  ) FundraisingBase(title_, description_, data_) {
+    _endsAt = data_[0];
+    _successThreshold = data_[1];
   }
 
-  string internal _title;
-  string internal _description;
-  uint40 internal immutable _endsAt;
-  uint256 internal _successThreshold;
-  uint256 internal _totalAmountRaised;
-  uint40 internal _numContributors;
+  uint256 internal immutable _endsAt;
+  uint256 internal immutable _successThreshold;
 
-  mapping(address => AccountDepositData) internal _deposits;
-
-  function getTitle() external view override returns(string memory) {
-    return _title;
+  /**
+   * NOTE the base class also returns 0, but every override should return a unique number
+   */
+  function _fundraisingType() internal virtual override view returns (uint8) {
+    return 0;
   }
 
-  function setTitle(string memory value) external virtual override onlyOwner {
-    _title = value;
+  function _getAdditionalData() internal virtual override view returns (uint256[] memory data) {
+    data = new uint256[](2);
+    data[0] = _endsAt;
+    data[1] = _successThreshold;
   }
 
-  function getDescription() external view override returns (string memory) {
-    return _description;
-  }
-
-  function setDescription(string memory value) external virtual override onlyOwner {
-    _description = value;
-  }
-
-  function setTitleAndDescription(
-    string memory title_,
-    string memory description_
-  ) external virtual override onlyOwner {
-    _title = title_;
-    _description = description_;
-  }
-
-  function getEndsAt() external view override returns (uint40) {
+  function getEndsAt() external virtual view override returns (uint256) {
     return _endsAt;
   }
 
-  function getTotalAmountRaised() external virtual view override returns (uint256) {
-    return _totalAmountRaised;
+  function getSuccessThreshold() external virtual view override returns (uint256) {
+    return _successThreshold;
   }
 
-  function getNumContributors() external virtual view override returns (uint40) {
-    return _numContributors;
-  }
-
-  function getData() external virtual view override returns (
-    string memory title,
-    string memory description,
-    uint40 endsAt,
-    uint256 totalAmountRaised,
-    uint40 numContributors
-  ) {
-    title = _title;
-    description = _description;
-    endsAt = _endsAt;
-    totalAmountRaised = _totalAmountRaised;
-    numContributors = _numContributors;
-  }
-
-  function claim() external virtual override onlyOwner {
+  function _claim() internal virtual override {
     require(_totalAmountRaised >= _successThreshold, "Not enough raised to claim");
-
-    payable(_owner()).sendValue(address(this).balance);
-  }
-
-  function _deposit(address sender, uint256 amount) internal virtual {
-    if (_deposits[sender].numDeposits == 0) {
-      _numContributors++;
-    }
-
-    _deposits[sender].numDeposits++;
-    _deposits[sender].amount += amount;
-    _totalAmountRaised += amount;
-  }
-
-  // function deposit() external virtual payable override onlyNotPaused {
-  //   _deposit(_msgSender(), msg.value);
-  // }
-
-  receive() external virtual payable onlyNotPaused {
-    _deposit(_msgSender(), msg.value);
+    super._claim();
   }
 }

@@ -19,30 +19,38 @@
 pragma solidity ^0.8.0;
 
 import { IFundraisingManager } from "./IFundraisingManager.sol";
-import { Fundraising } from "./Fundraising.sol";
-import { Ownable } from "../Ownable.sol";
+import { IFundraising } from "./IFundraising.sol";
+import { OwnableV2 } from "../Control/OwnableV2.sol";
 import { FeeCollector } from "../Fees/FeeCollector.sol";
 import { IDCounter } from "../IDCounter.sol";
-import { Pausable } from "../Pausable.sol";
+import { Pausable } from "../Control/Pausable.sol";
+import { IFundraisingFactory } from "./IFundraisingFactory.sol";
 
-contract FundraisingManager is IFundraisingManager, Ownable, FeeCollector, IDCounter, Pausable {
-  constructor() Ownable(_msgSender()) {}
+contract FundraisingManager is IFundraisingManager, OwnableV2, FeeCollector, IDCounter, Pausable {
+  constructor() OwnableV2(_msgSender()) {}
 
-  mapping(uint256 => Fundraising) internal _fundraisers;
+  IFundraisingFactory internal _factory;
+
+  mapping(uint256 => IFundraising) internal _fundraisers;
+
+  function factory() external virtual override view returns (address) {
+    return address(_factory);
+  }
+
+  function setFactoryAddress(address value) external virtual override onlyOwner {
+    _factory = IFundraisingFactory(value);
+  }
 
   function createFundraising(
+    uint8 fundraisingType,
     string memory title,
     string memory description,
-    uint40 endsAt,
-    uint256 successThreshold
+    uint256[] memory data
   ) external virtual override onlyNotPaused {
     uint256 id = _next();
 
-    _fundraisers[id] = new Fundraising(
-      title,
-      description,
-      endsAt,
-      successThreshold
+    _fundraisers[id] = IFundraising(
+      _factory.createFundraising(fundraisingType, title, description, data)
     );
   }
 
@@ -51,11 +59,12 @@ contract FundraisingManager is IFundraisingManager, Ownable, FeeCollector, IDCou
   }
 
   function getFundraisingDataById(uint256 id) external virtual view override returns (
+    uint8 fundraisingType,
     string memory title,
     string memory description,
-    uint40 endsAt,
+    uint256[] memory data,
     uint256 totalAmountRaised,
-    uint40 numContributors
+    uint256 numContributors
   ) {
     return _fundraisers[id].getData();
   }

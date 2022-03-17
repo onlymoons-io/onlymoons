@@ -18,36 +18,14 @@
 
 pragma solidity ^0.8.0;
 
-import { IAuthorizable } from "./IAuthorizable.sol";
-import { Ownable } from "./Ownable.sol";
+import { IPausable } from "../Control/IPausable.sol";
+import { IAuthorizable } from "../Control/IAuthorizable.sol";
 
-abstract contract Authorizable is IAuthorizable, Ownable {
-  constructor(address owner_) Ownable(owner_) {}
-
-  mapping(address => bool) internal _authorized;
-
-  modifier onlyAuthorized() {
-    require(_isAuthorized(_msgSender()), "Unauthorized");
-    _;
-  }
-
-  function _isAuthorized(address account) internal virtual view returns (bool) {
-    // always return true for the owner
-    return account == _owner() ? true : _authorized[account];
-  }
-
-  function isAuthorized(address account) external view override returns (bool) {
-    return _isAuthorized(account);
-  }
-
-  function _authorize(address account, bool value) internal virtual {
-    _authorized[account] = value;
-
-    emit Authorized(account, value);
-  }
-
-  /** @dev only allow the owner to authorize more accounts */
-  function authorize(address account, bool value) external override onlyOwner {
-    _authorize(account, value);
-  }
+interface IFundraisingFactory is IAuthorizable, IPausable {
+  function createFundraising(
+    uint8 fundraisingType,
+    string memory title,
+    string memory description,
+    uint256[] memory data
+  ) external returns (address);
 }

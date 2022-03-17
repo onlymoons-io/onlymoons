@@ -20,8 +20,8 @@ pragma solidity ^0.8.0;
 
 import { IStakingV1 } from "./IStakingV1.sol";
 import { Address } from "../library/Address.sol";
-import { Authorizable } from "../Authorizable.sol";
-import { Pausable } from "../Pausable.sol";
+import { Authorizable } from "../Control/Authorizable.sol";
+import { Pausable } from "../Control/Pausable.sol";
 import { IDCounter } from "../IDCounter.sol";
 import { IERC20 } from "../library/IERC20.sol";
 import { ReentrancyGuard } from "../library/ReentrancyGuard.sol";
