@@ -28,12 +28,20 @@ contract Fundraising is IFundraising, FundraisingBase {
     string memory description_,
     uint256[] memory data_
   ) FundraisingBase(title_, description_, data_) {
+    // index 0 is endsAt
     _endsAt = data_[0];
+    // index 1 is successThreshold
     _successThreshold = data_[1];
+    // everything after is acceptedTokens
+    for (uint256 i = 2; i < data_.length; i++) {
+      // convert uint256 into address by casting to uint160 first
+      _acceptedTokens.push(address(uint160(data_[i])));
+    }
   }
 
   uint256 internal immutable _endsAt;
   uint256 internal immutable _successThreshold;
+  address[] internal _acceptedTokens;
 
   /**
    * NOTE the base class also returns 0, but every override should return a unique number
@@ -46,6 +54,10 @@ contract Fundraising is IFundraising, FundraisingBase {
     data = new uint256[](2);
     data[0] = _endsAt;
     data[1] = _successThreshold;
+  }
+
+  function _setAcceptedTokens(address[] memory value) internal virtual {
+    _acceptedTokens = value;
   }
 
   function getEndsAt() external virtual view override returns (uint256) {
