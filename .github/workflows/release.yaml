@@ -95,12 +95,12 @@ jobs:
             - CIDv0: `${{ steps.upload.outputs.hash }}`
             - CIDv1: `${{ steps.convert_cidv0.outputs.cidv1 }}`
 
-            The latest release is always accessible via our alias to the Cloudflare IPFS gateway at [app.uniswap.org](https://app.uniswap.org).
+            The latest release is always accessible via our alias to the Cloudflare IPFS gateway at [onlymoons.io](https://onlymoons.io).
 
-            You can also access the Uniswap Interface directly from an IPFS gateway.
-            **BEWARE**: The Uniswap interface uses [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) to remember your settings, such as which tokens you have imported.
-            **You should always use an IPFS gateway that enforces origin separation**, or our alias to the latest release at [app.uniswap.org](https://app.uniswap.org).
-            Your Uniswap settings are never remembered across different URLs.
+            You can also access the OnlyMoons Interface directly from an IPFS gateway.
+            **BEWARE**: The OnlyMoons interface uses [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) to remember your settings, such as lock watchlist.
+            **You should always use an IPFS gateway that enforces origin separation**, or our alias to the latest release at [onlymoons.io](https://onlymoons.io).
+            Your OnlyMoons settings are never remembered across different URLs.
 
             IPFS gateways:
             - https://${{ steps.convert_cidv0.outputs.cidv1 }}.ipfs.dweb.link/
