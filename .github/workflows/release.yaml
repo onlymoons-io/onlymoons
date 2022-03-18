@@ -19,17 +19,18 @@ jobs:
 
       - name: Bump version and push tag
         id: github_tag_action
-        uses: mathieudutour/github-tag-action@331898d5052eedac9b15fec867b5ba66ebf9b692
+        uses: mathieudutour/github-tag-action@v6.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release_branches: .*
-          default_bump: false
+          # release_branches: main,develop
+          # default_bump: false
 
   create_release:
     name: Create Release
     runs-on: ubuntu-latest
     needs: bump_version
-    # if: ${{ needs.bump_version.outputs.new_tag != null }}
+    if: ${{ needs.bump_version.outputs.new_tag != null }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -37,7 +38,7 @@ jobs:
       - name: Set up node
         uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 16
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
@@ -48,12 +49,14 @@ jobs:
 
       - name: Pin to IPFS
         id: upload
-        uses: anantaramdas/ipfs-pinata-deploy-action@39bbda1ce1fe24c69c6f57861b8038278d53688d
+        uses: onlymoons-io/ipfs-pinata-deploy-action@63e8ec9a60b838cb3316a5258589a4a329e62d40
         with:
           pin-name: OnlyMoons ${{ needs.bump_version.outputs.new_tag }}
           path: './packages/react-app/build'
           pinata-api-key: ${{ secrets.PINATA_API_KEY }}
           pinata-secret-api-key: ${{ secrets.PINATA_API_SECRET_KEY }}
+          verbose: true
+          regions: '[{"id": "FRA1", "desiredReplicationCount": 2},{"id": "NYC1","desiredReplicationCount": 2}]'
 
       # - name: Pin to Crust
       #   uses: crustio/ipfs-crust-action@v2.0.3
@@ -92,12 +95,12 @@ jobs:
             - CIDv0: `${{ steps.upload.outputs.hash }}`
             - CIDv1: `${{ steps.convert_cidv0.outputs.cidv1 }}`
 
-            The latest release is always accessible via our alias to the Cloudflare IPFS gateway at [app.uniswap.org](https://app.uniswap.org).
+            The latest release is always accessible via our alias to the Cloudflare IPFS gateway at [onlymoons.io](https://onlymoons.io).
 
-            You can also access the Uniswap Interface directly from an IPFS gateway.
-            **BEWARE**: The Uniswap interface uses [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) to remember your settings, such as which tokens you have imported.
-            **You should always use an IPFS gateway that enforces origin separation**, or our alias to the latest release at [app.uniswap.org](https://app.uniswap.org).
-            Your Uniswap settings are never remembered across different URLs.
+            You can also access the OnlyMoons Interface directly from an IPFS gateway.
+            **BEWARE**: The OnlyMoons interface uses [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) to remember your settings, such as lock watchlist.
+            **You should always use an IPFS gateway that enforces origin separation**, or our alias to the latest release at [onlymoons.io](https://onlymoons.io).
+            Your OnlyMoons settings are never remembered across different URLs.
 
             IPFS gateways:
             - https://${{ steps.convert_cidv0.outputs.cidv1 }}.ipfs.dweb.link/
