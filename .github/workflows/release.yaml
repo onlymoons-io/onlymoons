@@ -24,7 +24,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release_branches: .*
           # release_branches: main,develop
-          default_bump: false
+          # default_bump: false
 
   create_release:
     name: Create Release
