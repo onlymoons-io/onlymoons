@@ -49,7 +49,7 @@ jobs:
 
       - name: Pin to IPFS
         id: upload
-        uses: onlymoons-io/ipfs-pinata-deploy-action@cc6ef3e693d33ee8e3e39c33ddb17874403cd216
+        uses: onlymoons-io/ipfs-pinata-deploy-action@63e8ec9a60b838cb3316a5258589a4a329e62d40
         with:
           pin-name: OnlyMoons ${{ needs.bump_version.outputs.new_tag }}
           path: './packages/react-app/build'
