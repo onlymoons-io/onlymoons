@@ -21,7 +21,7 @@ pragma solidity ^0.8.0;
 import { IStakingManagerV1 } from "./IStakingManagerV1.sol";
 import { Address } from "../library/Address.sol";
 import { Governable } from "../Governance/Governable.sol";
-import { Pausable } from "../Pausable.sol";
+import { Pausable } from "../Control/Pausable.sol";
 import { IDCounter } from "../IDCounter.sol";
 import { FeeCollector } from "../Fees/FeeCollector.sol";
 import { IStakingV1 } from "./IStakingV1.sol";

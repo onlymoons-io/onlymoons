@@ -27,6 +27,7 @@ import DarkModeToggle from './components/DarkModeToggle'
 import ModalControllerProvider from './components/ModalController'
 import ComingSoon from './components/ComingSoon'
 import Faucets from './components/Faucets'
+import Fundraising from './components/Fundraising'
 
 import './App.css'
 
@@ -198,6 +199,7 @@ const AppContent: React.FC = () => {
               <Route path="/staking/deploy" element={<Staking viewMode="deploy" />} />
               <Route path="/staking/all" element={<Staking viewMode="all" />} />
               <Route path="/staking" element={<Staking viewMode="split" />} />
+              <Route path="/fundraising" element={<Fundraising />} />
               <Route path="/governance" element={<ComingSoon />} />
               <Route path="/faucet" element={<Faucets />} />
               <Route path="/stats" element={<ComingSoon />} />
@@ -235,8 +237,8 @@ const AppWeb3: React.FC = () => {
       const urls: Record<number, string> = {}
 
       Object.keys(networks)
-        .map(chainId => parseInt(chainId))
-        .forEach(chainId => {
+        .map((chainId) => parseInt(chainId))
+        .forEach((chainId) => {
           urls[chainId] = networks[chainId].rpcURL
         })
 

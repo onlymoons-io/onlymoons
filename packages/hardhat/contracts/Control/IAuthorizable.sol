@@ -18,11 +18,11 @@
 
 pragma solidity ^0.8.0;
 
-import { IOwnableV2 } from "../Control/IOwnableV2.sol";
+import { IOwnableV2 } from "./IOwnableV2.sol";
 
-interface IGovernable is IOwnableV2 {
-  event GovernorshipTransferred(address indexed oldGovernor, address indexed newGovernor);
+interface IAuthorizable {
+  event Authorized(address indexed account, bool value);
 
-  function governor() external view returns (address);
-  function transferGovernorship(address newGovernor) external;
+  function isAuthorized(address account) external view returns (bool);
+  function authorize(address account, bool value) external;
 }

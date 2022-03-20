@@ -18,7 +18,7 @@
 
 pragma solidity ^0.8.0;
 
-import { Authorizable } from "../Authorizable.sol";
+import { Authorizable } from "../Control/Authorizable.sol";
 import { IERC20 } from "../library/IERC20.sol";
 import { ILaunchManagerV1 } from "./ILaunchManagerV1.sol";
 import { SafeERC20 } from "../library/SafeERC20.sol";

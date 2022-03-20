@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0+
+// SPDX-License-Identifier: UNLICENSED
 
 /**
   /$$$$$$            /$$           /$$      /$$                                        
@@ -18,11 +18,15 @@
 
 pragma solidity ^0.8.0;
 
-import { IOwnableV2 } from "../Control/IOwnableV2.sol";
 
-interface IGovernable is IOwnableV2 {
-  event GovernorshipTransferred(address indexed oldGovernor, address indexed newGovernor);
+/**
+ * @title Ownable
+ * 
+ * parent for ownable contracts
+ */
+interface IOwnableV2 {
+  event OwnershipTransferred(address indexed oldOwner, address indexed newOwner);
 
-  function governor() external view returns (address);
-  function transferGovernorship(address newGovernor) external;
+  function owner() external view returns (address);
+  function transferOwnership(address newOwner_) external;
 }

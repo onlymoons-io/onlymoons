@@ -19,7 +19,7 @@
 pragma solidity ^0.8.0;
 
 import { IGovernable } from "../Governance/IGovernable.sol";
-import { IPausable } from "../IPausable.sol";
+import { IPausable } from "../Control/IPausable.sol";
 import { IIDCounter } from "../IIDCounter.sol";
 import { IFeeCollector } from "../Fees/IFeeCollector.sol";
 

@@ -18,9 +18,26 @@
 
 pragma solidity ^0.8.0;
 
-interface IAuthorizable {
-  event Authorized(address indexed account, bool value);
+import { IPausable } from "./IPausable.sol";
+import { OwnableV2 } from "./OwnableV2.sol";
 
-  function isAuthorized(address account) external view returns (bool);
-  function authorize(address account, bool value) external;
+abstract contract Pausable is IPausable, OwnableV2 {
+  bool internal _paused;
+
+  modifier onlyNotPaused() {
+    require(!_paused, "Contract is paused");
+    _;
+  }
+
+  function paused() external view override returns (bool) {
+    return _paused;
+  }
+
+  function _setPaused(bool value) internal virtual {
+    _paused = value;
+  }
+
+  function setPaused(bool value) external override onlyOwner {
+    _setPaused(value);
+  }
 }

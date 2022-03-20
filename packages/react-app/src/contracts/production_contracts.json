@@ -2127,6 +2127,272 @@
             }
           ]
         },
+        "FundraisingManager": {
+          "address": "0x9D000f613e22b12758E05e9f806B60d995D859AD",
+          "abi": [
+            {
+              "inputs": [],
+              "stateMutability": "nonpayable",
+              "type": "constructor"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "oldOwner",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "newOwner",
+                  "type": "address"
+                }
+              ],
+              "name": "OwnershipTransferred",
+              "type": "event"
+            },
+            {
+              "inputs": [],
+              "name": "count",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "string",
+                  "name": "title",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "description",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint40",
+                  "name": "endsAt",
+                  "type": "uint40"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "successThreshold",
+                  "type": "uint256"
+                }
+              ],
+              "name": "createFundraising",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "feePercentDenominator",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "feesContract",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "id",
+                  "type": "uint256"
+                }
+              ],
+              "name": "getAddressById",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "string",
+                  "name": "minFeeType",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "maxFeeType",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "input",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "percent",
+                  "type": "uint256"
+                }
+              ],
+              "name": "getFeePercentInRange",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "id",
+                  "type": "uint256"
+                }
+              ],
+              "name": "getFundraisingDataById",
+              "outputs": [
+                {
+                  "internalType": "string",
+                  "name": "title",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "description",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint40",
+                  "name": "endsAt",
+                  "type": "uint40"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "totalAmountRaised",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint40",
+                  "name": "numContributors",
+                  "type": "uint40"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "owner",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "paused",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "value",
+                  "type": "uint256"
+                }
+              ],
+              "name": "setFeePercentDenominator",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "contractAddress",
+                  "type": "address"
+                }
+              ],
+              "name": "setFeesContract",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "bool",
+                  "name": "value",
+                  "type": "bool"
+                }
+              ],
+              "name": "setPaused",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "newOwner_",
+                  "type": "address"
+                }
+              ],
+              "name": "transferOwnership",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            }
+          ]
+        },
         "Math": {
           "address": "0x340D6a68d9115a7c6D599acE1C4220213E6BF41e",
           "abi": []
@@ -5549,6 +5815,261 @@
               "type": "function"
             }
           ]
+        },
+        "Fundraising": {
+          "address": "0xc565c2fD948B0800184146687882f76454c983a0",
+          "abi": [
+            {
+              "inputs": [
+                {
+                  "internalType": "string",
+                  "name": "title_",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "description_",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint40",
+                  "name": "endsAt_",
+                  "type": "uint40"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "successThreshold_",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "nonpayable",
+              "type": "constructor"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "oldOwner",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "newOwner",
+                  "type": "address"
+                }
+              ],
+              "name": "OwnershipTransferred",
+              "type": "event"
+            },
+            {
+              "inputs": [],
+              "name": "claim",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "getData",
+              "outputs": [
+                {
+                  "internalType": "string",
+                  "name": "title",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "description",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint40",
+                  "name": "endsAt",
+                  "type": "uint40"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "totalAmountRaised",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint40",
+                  "name": "numContributors",
+                  "type": "uint40"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "getDescription",
+              "outputs": [
+                {
+                  "internalType": "string",
+                  "name": "",
+                  "type": "string"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "getEndsAt",
+              "outputs": [
+                {
+                  "internalType": "uint40",
+                  "name": "",
+                  "type": "uint40"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "getNumContributors",
+              "outputs": [
+                {
+                  "internalType": "uint40",
+                  "name": "",
+                  "type": "uint40"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "getTitle",
+              "outputs": [
+                {
+                  "internalType": "string",
+                  "name": "",
+                  "type": "string"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "getTotalAmountRaised",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "owner",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "paused",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "string",
+                  "name": "value",
+                  "type": "string"
+                }
+              ],
+              "name": "setDescription",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "bool",
+                  "name": "value",
+                  "type": "bool"
+                }
+              ],
+              "name": "setPaused",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "string",
+                  "name": "value",
+                  "type": "string"
+                }
+              ],
+              "name": "setTitle",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "string",
+                  "name": "title_",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "description_",
+                  "type": "string"
+                }
+              ],
+              "name": "setTitleAndDescription",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "newOwner_",
+                  "type": "address"
+                }
+              ],
+              "name": "transferOwnership",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "stateMutability": "payable",
+              "type": "receive"
+            }
+          ]
         }
       }
     }
@@ -6600,121 +7121,6 @@
       "name": "polygon",
       "chainId": "137",
       "contracts": {
-        "Math": {
-          "address": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11",
-          "abi": []
-        },
-        "SafeERC20": {
-          "address": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE",
-          "abi": []
-        },
-        "Util": {
-          "address": "0x77110f67C0EF3c98c43570BADe06046eF6549876",
-          "abi": [
-            {
-              "inputs": [
-                {
-                  "internalType": "address",
-                  "name": "address_",
-                  "type": "address"
-                }
-              ],
-              "name": "getLpData",
-              "outputs": [
-                {
-                  "internalType": "address",
-                  "name": "token0",
-                  "type": "address"
-                },
-                {
-                  "internalType": "address",
-                  "name": "token1",
-                  "type": "address"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "balance0",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "balance1",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "price0",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "price1",
-                  "type": "uint256"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "address",
-                  "name": "address_",
-                  "type": "address"
-                }
-              ],
-              "name": "getTokenData",
-              "outputs": [
-                {
-                  "internalType": "string",
-                  "name": "name",
-                  "type": "string"
-                },
-                {
-                  "internalType": "string",
-                  "name": "symbol",
-                  "type": "string"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "decimals",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "totalSupply",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "balance",
-                  "type": "uint256"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "address",
-                  "name": "address_",
-                  "type": "address"
-                }
-              ],
-              "name": "isLpToken",
-              "outputs": [
-                {
-                  "internalType": "bool",
-                  "name": "",
-                  "type": "bool"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            }
-          ]
-        },
         "ERC20": {
           "address": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613",
           "abi": [
@@ -7010,6 +7416,14 @@
               "type": "function"
             }
           ]
+        },
+        "Math": {
+          "address": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11",
+          "abi": []
+        },
+        "SafeERC20": {
+          "address": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE",
+          "abi": []
         },
         "TokenLockerManagerV1": {
           "address": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868",
@@ -7639,6 +8053,113 @@
             {
               "stateMutability": "payable",
               "type": "receive"
+            }
+          ]
+        },
+        "Util": {
+          "address": "0x77110f67C0EF3c98c43570BADe06046eF6549876",
+          "abi": [
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "address_",
+                  "type": "address"
+                }
+              ],
+              "name": "getLpData",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "token0",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "token1",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "balance0",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "balance1",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "price0",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "price1",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "address_",
+                  "type": "address"
+                }
+              ],
+              "name": "getTokenData",
+              "outputs": [
+                {
+                  "internalType": "string",
+                  "name": "name",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "symbol",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint8",
+                  "name": "decimals",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "totalSupply",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "balance",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "address_",
+                  "type": "address"
+                }
+              ],
+              "name": "isLpToken",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
             }
           ]
         }
