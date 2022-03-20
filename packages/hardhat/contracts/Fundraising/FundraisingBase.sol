@@ -22,6 +22,7 @@ import { IFundraisingBase } from "./IFundraisingBase.sol";
 import { Address } from "../library/Address.sol";
 import { OwnableV2 } from "../Control/OwnableV2.sol";
 import { Pausable } from "../Control/Pausable.sol";
+import { IERC20 } from "../library/IERC20.sol";
 
 struct AccountDepositData {
   uint256 amount;
@@ -44,9 +45,11 @@ abstract contract FundraisingBase is IFundraisingBase, OwnableV2, Pausable {
 
   string internal _title;
   string internal _description;
-  uint256 internal _totalAmountRaised;
+  // uint256 internal _totalAmountRaised;
   uint256 internal _numContributors;
+  address[] internal _acceptedTokens;
 
+  mapping(address => uint256) internal _claims;
   mapping(address => AccountDepositData) internal _deposits;
 
   function _fundraisingType() internal virtual view returns (uint8) {
@@ -77,8 +80,12 @@ abstract contract FundraisingBase is IFundraisingBase, OwnableV2, Pausable {
     _description = description_;
   }
 
-  function getTotalAmountRaised() external virtual view override returns (uint256) {
-    return _totalAmountRaised;
+  function getTotalAmountRaised(address tokenAddress) external virtual view override returns (uint256) {
+    if (tokenAddress == address(0)) {
+      return _claims[address(0)] + address(this).balance;
+    } else {
+      return _claims[tokenAddress] + IERC20(tokenAddress).balanceOf(address(this));
+    }
   }
 
   function getNumContributors() external virtual view override returns (uint256) {
@@ -87,8 +94,6 @@ abstract contract FundraisingBase is IFundraisingBase, OwnableV2, Pausable {
 
   function _getAdditionalData() internal virtual view returns (uint256[] memory data) {
     data = new uint256[](0);
-    // data[0] = _endsAt;
-    // data[1] = _successThreshold;
   }
 
   function getData() external virtual view override returns (
@@ -96,40 +101,61 @@ abstract contract FundraisingBase is IFundraisingBase, OwnableV2, Pausable {
     string memory title,
     string memory description,
     uint256[] memory data,
-    uint256 totalAmountRaised,
     uint256 numContributors
   ) {
     fundraisingType = _fundraisingType();
     title = _title;
     description = _description;
     data = _getAdditionalData();
-    totalAmountRaised = _totalAmountRaised;
     numContributors = _numContributors;
   }
 
-  function _claim() internal virtual {
-    payable(_owner()).sendValue(address(this).balance);
+  function _claimEth() internal virtual {
+    uint256 amount = address(this).balance;
+    payable(_owner()).sendValue(amount);
+    _claims[address(0)] += amount;
   }
 
-  function claim() external virtual override onlyOwner {
-    _claim();
+  function _claimToken(address tokenAddress) internal virtual {
+    IERC20 token = IERC20(tokenAddress);
+    uint256 amount = token.balanceOf(address(this));
+    token.transfer(_owner(), amount);
+    _claims[tokenAddress] += amount;
   }
 
-  function _deposit(address sender, uint256 amount) internal virtual {
-    if (_deposits[sender].numDeposits == 0) {
-      _numContributors++;
+  function claimEth() external virtual override onlyOwner {
+    _claimEth();
+  }
+
+  function claimToken(address tokenAddress) external virtual override onlyOwner {
+    _claimToken(tokenAddress);
+  }
+
+  function claimAll() external virtual override onlyOwner {
+    for (uint256 i = 0; i < _acceptedTokens.length; i++) {
+      if (_acceptedTokens[i] == address(0)) {
+        _claimEth();
+      } else {
+        _claimToken(_acceptedTokens[i]);
+      }
+    }
+  }
+
+  function _isTokenAccepted(address tokenAddress) internal virtual view returns (bool) {
+    for (uint256 i = 0; i < _acceptedTokens.length; i++) {
+      if (_acceptedTokens[i] == tokenAddress) {
+        return true;
+      }
     }
 
-    _deposits[sender].numDeposits++;
-    _deposits[sender].amount += amount;
-    _totalAmountRaised += amount;
+    return false;
   }
 
-  // function deposit() external virtual payable override onlyNotPaused {
-  //   _deposit(_msgSender(), msg.value);
-  // }
+  function isTokenAccepted(address tokenAddress) external virtual override view returns (bool) {
+    return _isTokenAccepted(tokenAddress);
+  }
 
   receive() external virtual payable onlyNotPaused {
-    _deposit(_msgSender(), msg.value);
+    require(_isTokenAccepted(address(0)), "Eth not accepted");
   }
 }

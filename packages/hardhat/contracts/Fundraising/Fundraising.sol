@@ -28,6 +28,8 @@ contract Fundraising is IFundraising, FundraisingBase {
     string memory description_,
     uint256[] memory data_
   ) FundraisingBase(title_, description_, data_) {
+    require(data_[0] > block.timestamp, "Must end in the future");
+
     // index 0 is endsAt
     _endsAt = data_[0];
     // index 1 is successThreshold
@@ -41,7 +43,6 @@ contract Fundraising is IFundraising, FundraisingBase {
 
   uint256 internal immutable _endsAt;
   uint256 internal immutable _successThreshold;
-  address[] internal _acceptedTokens;
 
   /**
    * NOTE the base class also returns 0, but every override should return a unique number
@@ -68,8 +69,8 @@ contract Fundraising is IFundraising, FundraisingBase {
     return _successThreshold;
   }
 
-  function _claim() internal virtual override {
-    require(_totalAmountRaised >= _successThreshold, "Not enough raised to claim");
-    super._claim();
-  }
+  // function _claim() internal virtual override {
+  //   // require(_totalAmountRaised >= _successThreshold, "Not enough raised to claim");
+  //   super._claim();
+  // }
 }

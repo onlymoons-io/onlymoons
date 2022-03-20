@@ -31,16 +31,17 @@ interface IFundraisingBase is IOwnableV2, IPausable {
     string memory description
   ) external;
   // function getEndsAt() external view returns (uint256);
-  function getTotalAmountRaised() external view returns (uint256);
+  function getTotalAmountRaised(address tokenAddress) external view returns (uint256);
   function getNumContributors() external view returns (uint256);
-  function claim() external;
+  function claimEth() external;
+  function claimToken(address tokenAddress) external;
+  function claimAll() external;
   function getData() external view returns (
     uint8 fundraisingType,
     string memory title,
     string memory description,
     uint256[] memory data,
-    uint256 totalAmountRaised,
     uint256 numContributors
   );
-  // function deposit() external payable;
+  function isTokenAccepted(address tokenAddress) external view returns (bool);
 }
