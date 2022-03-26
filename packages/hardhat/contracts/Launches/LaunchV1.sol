@@ -22,13 +22,14 @@ import { Authorizable } from "../Control/Authorizable.sol";
 import { IERC20 } from "../library/IERC20.sol";
 import { ILaunchManagerV1 } from "./ILaunchManagerV1.sol";
 import { SafeERC20 } from "../library/SafeERC20.sol";
+import { ILaunchV1 } from "./ILaunchV1.sol";
 
 struct Contribution {
   uint40 count;
   uint256 amount;
 }
 
-contract LaunchV1 is Authorizable {
+contract LaunchV1 is ILaunchV1, Authorizable {
   using SafeERC20 for IERC20;
 
   constructor(
@@ -40,9 +41,6 @@ contract LaunchV1 is Authorizable {
     uint256 softCap_,
     uint256 hardCap_
   ) Authorizable(owner_) {
-    //
-    _creator = ILaunchManagerV1(_msgSender());
-
     _token = IERC20(tokenAddress_);
     _name = _token.name();
     _symbol = _token.symbol();
@@ -58,8 +56,6 @@ contract LaunchV1 is Authorizable {
     _softCap = softCap_;
     _hardCap = hardCap_;
   }
-
-  ILaunchManagerV1 private immutable _creator;
 
   IERC20 private immutable _token;
   string private _name;
@@ -81,11 +77,7 @@ contract LaunchV1 is Authorizable {
 
   mapping(address => Contribution) private _contributions;
 
-  function creator() external view returns (address) {
-    return address(_creator);
-  }
-
-  function getLaunchBaseData() external view returns (
+  function getLaunchBaseData() external virtual override view returns (
     address token,
     string memory name,
     string memory symbol,
@@ -109,7 +101,7 @@ contract LaunchV1 is Authorizable {
     hardCap = _hardCap;
   }
 
-  function getLaunchAdditionalData() external view returns (
+  function getLaunchAdditionalData() external virtual override view returns (
     uint256 minContribution,
     uint256 maxContribution
   ) {

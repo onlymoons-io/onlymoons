@@ -22,11 +22,11 @@ import { ILaunchManagerV1 } from "./ILaunchManagerV1.sol";
 import { Governable } from "../Governance/Governable.sol";
 import { Pausable } from "../Control/Pausable.sol";
 import { IDCounter } from "../IDCounter.sol";
-import { LaunchV1 } from "./LaunchV1.sol";
+import { ILaunchFactory } from "./ILaunchFactory.sol";
+import { ILaunchV1 } from "./ILaunchV1.sol";
 import { IERC20 } from "../library/IERC20.sol";
-import { FeeCollector } from "../Fees/FeeCollector.sol";
 
-contract LaunchManagerV1 is ILaunchManagerV1, Governable, Pausable, IDCounter, FeeCollector {
+contract LaunchManagerV1 is ILaunchManagerV1, Governable, Pausable, IDCounter {
   event LaunchCreated(
     uint40 indexed id,
     address indexed launchAddress,
@@ -36,13 +36,20 @@ contract LaunchManagerV1 is ILaunchManagerV1, Governable, Pausable, IDCounter, F
     uint40 endsAt
   );
 
-  constructor() Governable(_msgSender(), _msgSender()) {
-    //
+  constructor(address factoryAddress) Governable(_msgSender(), _msgSender()) {
+    _factory = ILaunchFactory(factoryAddress);
   }
 
-  mapping(uint40 => LaunchV1) private _launches;
+  ILaunchFactory internal _factory;
+
+  mapping(uint40 => ILaunchV1) internal _launches;
+
+  function factory() external virtual view returns (address) {
+    return address(_factory);
+  }
 
   function createLaunch(
+    uint8 launchType_,
     address tokenAddress_,
     uint80 times_,
     uint256 minContribution_,
@@ -50,10 +57,11 @@ contract LaunchManagerV1 is ILaunchManagerV1, Governable, Pausable, IDCounter, F
     uint256 softCap_,
     uint256 hardCap_,
     uint256 amount_
-  ) external override onlyNotPaused {
+  ) external virtual override onlyNotPaused {
     uint40 id = uint40(_next());
 
-    _launches[id] = new LaunchV1(
+    _launches[id] = ILaunchV1(_factory.createLaunch(
+      launchType_,
       _msgSender(),
       tokenAddress_,
       times_,
@@ -61,7 +69,7 @@ contract LaunchManagerV1 is ILaunchManagerV1, Governable, Pausable, IDCounter, F
       maxContribution_,
       softCap_,
       hardCap_
-    );
+    ));
 
     address launchAddress = address(_launches[id]);
 
@@ -84,7 +92,7 @@ contract LaunchManagerV1 is ILaunchManagerV1, Governable, Pausable, IDCounter, F
     );
   }
 
-  function getLaunchBaseData(uint40 id) external view override returns (
+  function getLaunchBaseData(uint40 id) external virtual override view returns (
     address token,
     string memory name,
     string memory symbol,
