@@ -1,5 +1,5 @@
-import React, { createContext, useCallback, useEffect, useRef } from 'react'
-import { useWeb3React } from '@web3-react/core'
+import React, { createContext, useCallback, useEffect, useState, useContext } from 'react'
+import { useWeb3React, getWeb3ReactContext } from '@web3-react/core'
 import { Contract } from 'ethers'
 import { Web3Provider } from '@ethersproject/providers'
 import { NetworkConnector } from '@web3-react/network-connector'
@@ -27,48 +27,53 @@ export const ContractCacheContext = createContext<IContractCacheContext>({
 
 const ContractCacheContextProvider: React.FC = ({ children }) => {
   const { chainId, connector } = useWeb3React()
-  const contracts = useRef<Record<number, Record<string, Contract>>>({})
+  const { chainId: chainIdConstant, connector: connectorConstant } = useContext(getWeb3ReactContext('constant'))
+  const [contracts, setContracts] = useState<Record<number, Record<string, Contract>>>({})
   // const previousChainId = useRef<number>()
+
+  const eitherChainId = typeof chainId !== 'undefined' ? chainId : chainIdConstant
+  const eitherConnector = typeof connector !== 'undefined' ? connector : connectorConstant
 
   // clear the cached contracts on network change
   useEffect(() => {
     // if () {
-    contracts.current = {}
+    // contracts.current = {}
+    setContracts({})
     // }
-  }, [connector, chainId])
+  }, [eitherConnector, eitherChainId])
 
   const getContract = useCallback(
     async (name: string, { address, useSigner = true }: GetContractOptions = {}) => {
-      if (!chainId || !connector) return undefined
+      if (!eitherChainId || !eitherConnector) return undefined
 
-      const contractData = getContractData(chainId, name)
+      const contractData = getContractData(eitherChainId, name)
       if (!contractData) return undefined
       const { address: defaultAddress, abi } = contractData
       const addressToUse: string = address || defaultAddress
 
-      if (!contracts.current[chainId]) {
-        contracts.current[chainId] = {}
+      if (!contracts[eitherChainId]) {
+        contracts[eitherChainId] = {}
       }
 
       // create the contract, only if it isn't already cached
-      if (!contracts.current[chainId].hasOwnProperty(addressToUse)) {
-        const provider = new Web3Provider(await connector.getProvider())
+      if (!contracts[eitherChainId].hasOwnProperty(addressToUse)) {
+        const provider = new Web3Provider(await eitherConnector.getProvider())
 
         // why does this need to be here, if it's also above?
-        if (!contracts.current[chainId]) {
-          contracts.current[chainId] = {}
+        if (!contracts[eitherChainId]) {
+          contracts[eitherChainId] = {}
         }
 
-        contracts.current[chainId][addressToUse] = new Contract(
+        contracts[eitherChainId][addressToUse] = new Contract(
           addressToUse,
           abi,
-          useSigner && !(connector instanceof NetworkConnector) ? provider.getSigner() : provider,
+          useSigner && !(eitherConnector instanceof NetworkConnector) ? provider.getSigner() : provider,
         )
       }
 
-      return contracts.current[chainId][addressToUse]
+      return contracts[eitherChainId][addressToUse]
     },
-    [chainId, connector],
+    [contracts, eitherChainId, eitherConnector],
   )
 
   return (

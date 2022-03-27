@@ -63,7 +63,6 @@ contract FundraisingManager is IFundraisingManager, OwnableV2, FeeCollector, IDC
     string memory title,
     string memory description,
     uint256[] memory data,
-    uint256 totalAmountRaised,
     uint256 numContributors
   ) {
     return _fundraisers[id].getData();

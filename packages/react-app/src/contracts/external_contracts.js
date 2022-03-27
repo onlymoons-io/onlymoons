@@ -221,7 +221,7 @@ export const ERC20ABI = [
   },
 ]
 
-export const Bridge = [
+export const BridgeABI = [
   {
     inputs: [
       {

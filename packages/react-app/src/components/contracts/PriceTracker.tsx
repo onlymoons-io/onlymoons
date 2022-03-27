@@ -3,7 +3,7 @@ import { UtilContractContext } from './Util'
 import { BigNumber, utils, providers } from 'ethers'
 import { LPData, NetworkData } from '../../typings'
 import { getNetworkDataByChainId } from '../../util'
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React, getWeb3ReactContext } from '@web3-react/core'
 import { usePromise } from 'react-use'
 import { Web3Provider as Web3ProviderClass } from '@ethersproject/providers'
 
@@ -33,6 +33,7 @@ let PRICE_CACHE: Record<string, PriceCache> = {}
 
 const PriceTrackerContextProvider: React.FC = ({ children }) => {
   const mounted = usePromise()
+  const { chainId: chainIdConstant, connector: connectorConstant } = useContext(getWeb3ReactContext('constant'))
   const { chainId, connector } = useWeb3React()
   const [provider, setProvider] = useState<Web3ProviderClass>()
   const { contract, getLpData, getTokenData } = useContext(UtilContractContext)
@@ -41,6 +42,9 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
   const [nativeCoinPrice, setNativeCoinPrice] = useState<number>()
   const lastNativeCoinPriceUpdate = useRef<number>(0)
   const retryTimerRef = useRef<NodeJS.Timeout>()
+
+  const eitherChainId = typeof chainId !== 'undefined' ? chainId : chainIdConstant
+  const eitherConnector = typeof connector !== 'undefined' ? connector : connectorConstant
 
   const isSupportedToken = useCallback(
     (token: string) => {
@@ -95,7 +99,7 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
 
       if (PRICE_CACHE[pairedToken] && Date.now() - PRICE_CACHE[pairedToken].timestamp < 10000) {
         if (!PRICE_CACHE[pairedToken].price) {
-          await new Promise(done => {
+          await new Promise((done) => {
             retryTimerRef.current && clearTimeout(retryTimerRef.current)
             retryTimerRef.current = setTimeout(done, 1000)
           })
@@ -140,21 +144,21 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
   useEffect(() => {
     PRICE_CACHE = {}
     retryTimerRef.current && clearTimeout(retryTimerRef.current)
-  }, [chainId])
+  }, [eitherChainId])
 
   useEffect(() => {
     //
-    if (!chainId) {
+    if (!eitherChainId) {
       setNetworkData(undefined)
       return
     }
 
-    setNetworkData(getNetworkDataByChainId(chainId))
+    setNetworkData(getNetworkDataByChainId(eitherChainId))
 
     return () => {
       setNetworkData(undefined)
     }
-  }, [chainId])
+  }, [eitherChainId])
 
   useEffect(() => {
     if (!getLpData || !networkData) {
@@ -163,7 +167,8 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
     }
 
     const { stablePair } =
-      networkData.supportedLiquidityPairTokens.find(_pair => _pair.address === networkData.nativeCurrency.address) || {}
+      networkData.supportedLiquidityPairTokens.find((_pair) => _pair.address === networkData.nativeCurrency.address) ||
+      {}
 
     setNativeStablePair(stablePair)
   }, [getLpData, networkData])
@@ -175,13 +180,13 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
     }
 
     mounted(getLpData(nativeStablePair))
-      .then(result => {
+      .then((result) => {
         if (!result) return Promise.reject(new Error('Failed to get stable pair LP data'))
 
         return mounted(getPriceForPair(result))
       })
       .then(setNativeCoinPrice)
-      .catch(err => {
+      .catch((err) => {
         // console.error(err)
         setNativeCoinPrice(0)
       })
@@ -190,18 +195,18 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
   useEffect(updateNativeCoinPrice, [updateNativeCoinPrice])
 
   useEffect(() => {
-    if (!chainId || !connector) {
+    if (!eitherChainId || !eitherConnector) {
       setProvider(undefined)
       return
     }
 
-    mounted<any>(connector.getProvider())
-      .then(_provider => new Web3Provider(_provider))
+    mounted<any>(eitherConnector.getProvider())
+      .then((_provider) => new Web3Provider(_provider))
       .then(setProvider)
       .catch((err: Error) => {
         console.error(err)
       })
-  }, [mounted, chainId, connector])
+  }, [mounted, eitherChainId, eitherConnector])
 
   useEffect(() => {
     if (!provider) return

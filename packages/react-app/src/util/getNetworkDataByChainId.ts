@@ -2,6 +2,24 @@ import { BigNumber } from 'ethers'
 import { NetworkData } from '../typings'
 
 export const networks: Record<number, NetworkData> = {
+  4: {
+    chainId: 4,
+    name: 'Ethereum Rinkeby (testnet)',
+    shortName: 'Rinkeby',
+    urlName: 'rinkeby',
+    nativeCurrency: {
+      address: '',
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://rinkeby.etherscan.io/',
+    rpcURL: 'https://rinkeby.infura.io/v3/cfeb072b8469447e889da944481d5874',
+    icon: '/eth.png',
+    isTestNet: true,
+    supportedLiquidityPairTokens: [],
+  },
   56: {
     chainId: 56,
     name: 'Binance Smart Chain',
@@ -118,24 +136,24 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
-  588: {
-    chainId: 588,
-    name: 'Metis Stardust (TESTNET)',
-    shortName: 'Metis',
-    urlName: 'metistest',
-    nativeCurrency: {
-      address: '-',
-      name: 'Metis',
-      symbol: 'METIS',
-      decimals: 18,
-      balance: BigNumber.from(0),
-    },
-    explorerURL: 'https://stardust-explorer.metis.io/',
-    rpcURL: 'https://stardust.metis.io/?owner=588',
-    icon: '/metis.png',
-    isTestNet: true,
-    supportedLiquidityPairTokens: [],
-  },
+  // 588: {
+  //   chainId: 588,
+  //   name: 'Metis Stardust (TESTNET)',
+  //   shortName: 'Metis',
+  //   urlName: 'metistest',
+  //   nativeCurrency: {
+  //     address: '-',
+  //     name: 'Metis',
+  //     symbol: 'METIS',
+  //     decimals: 18,
+  //     balance: BigNumber.from(0),
+  //   },
+  //   explorerURL: 'https://stardust-explorer.metis.io/',
+  //   rpcURL: 'https://stardust.metis.io/?owner=588',
+  //   icon: '/metis.png',
+  //   isTestNet: true,
+  //   supportedLiquidityPairTokens: [],
+  // },
   1088: {
     chainId: 1088,
     name: 'Metis Andromeda',

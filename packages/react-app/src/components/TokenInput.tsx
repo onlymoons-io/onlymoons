@@ -1,9 +1,13 @@
-import React, { useEffect, useState, createRef, CSSProperties } from 'react'
+import React, { useEffect, useState, createRef, CSSProperties, useContext } from 'react'
 // import tw from 'tailwind-styled-components'
+import { usePromise } from 'react-use'
+import { UtilContractContext } from './contracts/Util'
 import { utils, BigNumber } from 'ethers'
 // import { Primary as PrimaryButton } from './Button'
 import { TokenData } from '../typings'
 import humanNumber from 'human-number'
+
+const { formatUnits } = utils
 
 interface Props {
   //
@@ -27,13 +31,25 @@ const TokenInput: React.FC<Props> = ({
   style = {},
   onChange,
 }) => {
+  const mounted = usePromise()
   const [amount, setAmount] = useState<string>('')
+  const { getTokenData } = useContext(UtilContractContext)
+  const [currentTokenData, setCurrentTokenData] = useState<TokenData>(tokenData)
 
   if (!inputRef) {
     inputRef = createRef<HTMLInputElement>()
   }
 
   useEffect(() => onChange && onChange(amount), [amount, onChange])
+
+  useEffect(() => {
+    if (!getTokenData) {
+      setCurrentTokenData(tokenData)
+      return
+    }
+
+    mounted(getTokenData(tokenData.address)).then((_tokenData) => _tokenData && setCurrentTokenData(_tokenData))
+  }, [mounted, tokenData, getTokenData])
 
   return (
     <div className={`flex flex-col ${className}`} style={style}>
@@ -45,12 +61,12 @@ const TokenInput: React.FC<Props> = ({
           style={{ maxWidth: '50%' }}
           onClick={() => {
             if (inputRef?.current && !disabled) {
-              inputRef.current.value = utils.formatUnits(maxValue || tokenData.balance, tokenData.decimals)
+              inputRef.current.value = formatUnits(maxValue || currentTokenData.balance, currentTokenData.decimals)
               setAmount(inputRef.current.value)
             }
           }}
         >
-          {humanNumber(parseFloat(utils.formatUnits(maxValue || tokenData.balance, tokenData.decimals)), n =>
+          {humanNumber(parseFloat(formatUnits(maxValue || currentTokenData.balance, currentTokenData.decimals)), (n) =>
             n.toLocaleString('en', { maximumFractionDigits: 2 }),
           )}
         </div>
@@ -65,7 +81,7 @@ const TokenInput: React.FC<Props> = ({
           placeholder={placeholder}
           disabled={disabled}
           ref={inputRef}
-          onInput={e => setAmount(e.currentTarget.value)}
+          onInput={(e) => setAmount(e.currentTarget.value)}
         />
 
         {/* <PrimaryButton

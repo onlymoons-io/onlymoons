@@ -3,6 +3,7 @@ import { Contract } from 'ethers'
 import { ContractCacheContext } from './ContractCache'
 import { TokenData, LPData } from '../../typings'
 import { usePromise } from 'react-use'
+import { useCallback } from 'react'
 
 export class UtilContract extends Contract {
   //
@@ -33,6 +34,18 @@ const UtilContractContextProvider: React.FC = ({ children }) => {
       })
   }, [mounted, getContract])
 
+  const getTokenData = useCallback(
+    async (address: string) => {
+      if (!contract) throw new Error('Contract is not ready')
+
+      return {
+        address,
+        ...(await mounted<Omit<TokenData, 'address'>>(contract.getTokenData(address))),
+      }
+    },
+    [mounted, contract],
+  )
+
   return (
     <UtilContractContext.Provider
       value={
@@ -40,14 +53,7 @@ const UtilContractContextProvider: React.FC = ({ children }) => {
           ? {}
           : {
               contract,
-              getTokenData: async (address: string) => {
-                if (!contract) throw new Error('Contract is not ready')
-
-                return {
-                  address,
-                  ...(await mounted<Omit<TokenData, 'address'>>(contract.getTokenData(address))),
-                }
-              },
+              getTokenData,
               isLpToken: async (address: string) => {
                 if (!contract) throw new Error('Contract is not ready')
 

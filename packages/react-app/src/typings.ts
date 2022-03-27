@@ -121,3 +121,14 @@ export interface NetworkData {
   readonly isTestNet: boolean
   readonly supportedLiquidityPairTokens: LiquidityPair[]
 }
+
+export interface BridgeDestination {
+  readonly chainId: number
+  readonly resources: Record<string, string>
+}
+
+export interface BridgeData {
+  readonly bridge: string
+  readonly erc20Handler: string
+  readonly destinations: Array<BridgeDestination>
+}
