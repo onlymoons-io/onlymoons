@@ -197,7 +197,7 @@ const Bridge: React.FC = () => {
           (!getNetworkDataByChainId(chainId)?.isTestNet && (
             <div className="bg-red-500 w-full max-w-sm rounded p-4 flex justify-center items-center gap-2">
               <FontAwesomeIcon icon={faExclamationTriangle} />
-              Currently only available on testnets.
+              Currently only available on testnets, and will have intermittent outages.
             </div>
           ))}
 

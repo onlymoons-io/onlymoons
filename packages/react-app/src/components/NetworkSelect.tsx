@@ -121,7 +121,7 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
 
       closeModal()
     },
-    [provider, closeModal],
+    [closeModal],
   )
 
   useEffect(() => {
