@@ -2,6 +2,24 @@ import { BigNumber } from 'ethers'
 import { NetworkData } from '../typings'
 
 export const networks: Record<number, NetworkData> = {
+  4: {
+    chainId: 4,
+    name: 'Ethereum Rinkeby (testnet)',
+    shortName: 'Rinkeby',
+    urlName: 'rinkeby',
+    nativeCurrency: {
+      address: '',
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://rinkeby.etherscan.io/',
+    rpcURL: 'https://rinkeby.infura.io/v3/cfeb072b8469447e889da944481d5874',
+    icon: '/eth.png',
+    isTestNet: true,
+    supportedLiquidityPairTokens: [],
+  },
   56: {
     chainId: 56,
     name: 'Binance Smart Chain',
@@ -118,24 +136,24 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
-  588: {
-    chainId: 588,
-    name: 'Metis Stardust (TESTNET)',
-    shortName: 'Metis',
-    urlName: 'metistest',
-    nativeCurrency: {
-      address: '-',
-      name: 'Metis',
-      symbol: 'METIS',
-      decimals: 18,
-      balance: BigNumber.from(0),
-    },
-    explorerURL: 'https://stardust-explorer.metis.io/',
-    rpcURL: 'https://stardust.metis.io/?owner=588',
-    icon: '/metis.png',
-    isTestNet: true,
-    supportedLiquidityPairTokens: [],
-  },
+  // 588: {
+  //   chainId: 588,
+  //   name: 'Metis Stardust (TESTNET)',
+  //   shortName: 'Metis',
+  //   urlName: 'metistest',
+  //   nativeCurrency: {
+  //     address: '-',
+  //     name: 'Metis',
+  //     symbol: 'METIS',
+  //     decimals: 18,
+  //     balance: BigNumber.from(0),
+  //   },
+  //   explorerURL: 'https://stardust-explorer.metis.io/',
+  //   rpcURL: 'https://stardust.metis.io/?owner=588',
+  //   icon: '/metis.png',
+  //   isTestNet: true,
+  //   supportedLiquidityPairTokens: [],
+  // },
   1088: {
     chainId: 1088,
     name: 'Metis Andromeda',
@@ -177,6 +195,30 @@ export const networks: Record<number, NetworkData> = {
       //   // pair w/ Metis on tethys
       //   stablePair: '0xDd7dF3522a49e6e1127bf1A1d3bAEa3bc100583B',
       // },
+    ],
+  },
+  2001: {
+    chainId: 2001,
+    name: 'Milkomeda',
+    shortName: 'Milkomeda',
+    urlName: 'milkomeda',
+    nativeCurrency: {
+      address: '0xAE83571000aF4499798d1e3b0fA0070EB3A3E3F9',
+      name: 'Wrapped ADA',
+      symbol: 'WADA',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://explorer-mainnet-cardano-evm.c1.milkomeda.com/',
+    rpcURL: 'https://rpc-mainnet-cardano-evm.c1.milkomeda.com',
+    icon: '/milkomeda.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      //
+      {
+        address: '0xAE83571000aF4499798d1e3b0fA0070EB3A3E3F9',
+        stablePair: '0x0B46AD9e9B749c9D500C81a4975B1599a872Ebe8',
+      },
     ],
   },
 }

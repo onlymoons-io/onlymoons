@@ -3,7 +3,7 @@ import { BigNumber, Contract } from 'ethers'
 import { ContractCacheContext } from './ContractCache'
 import { LPLockData, TokenLockData } from '../../typings'
 import { usePromise } from 'react-use'
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React, getWeb3ReactContext } from '@web3-react/core'
 
 export interface ITokenLockerManagerV1ContractContext {
   //
@@ -29,6 +29,9 @@ const TokenLockerManagerV1ContractContextProvider: React.FC = ({ children }) => 
   const [contract, setContract] = useState<Contract>()
   const [tokenLockerCount, setTokenLockerCount] = useState<number>(0)
   const { chainId } = useWeb3React()
+  const { chainId: chainIdConstant } = useContext(getWeb3ReactContext('constant'))
+
+  const eitherChainId = typeof chainId !== 'undefined' ? chainId : chainIdConstant
 
   const createTokenLocker = useCallback(
     async (tokenAddress: string, amount: BigNumber, unlockTime: number) => {
@@ -103,14 +106,14 @@ const TokenLockerManagerV1ContractContextProvider: React.FC = ({ children }) => 
 
   useEffect(() => {
     setContract(undefined)
-    if (!chainId) return
+    if (!eitherChainId) return
     mounted(getContract('TokenLockerManagerV1'))
       .then(setContract)
       .catch((err: Error) => {
         console.error(err)
         setContract(undefined)
       })
-  }, [mounted, getContract, chainId])
+  }, [mounted, getContract, eitherChainId])
 
   useEffect(() => {
     if (!contract || !updateTokenLockerCount) {

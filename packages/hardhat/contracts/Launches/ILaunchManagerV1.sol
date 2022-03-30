@@ -21,8 +21,9 @@ pragma solidity ^0.8.0;
 import { IIDCounter } from "../IIDCounter.sol";
 import { IFeeCollector } from "../Fees/IFeeCollector.sol";
 import { IGovernable } from "../Governance/IGovernable.sol";
+import { IPausable } from "../Control/IPausable.sol";
 
-interface ILaunchManagerV1 is IIDCounter, IFeeCollector, IGovernable {
+interface ILaunchManagerV1 is IIDCounter, IFeeCollector, IGovernable, IPausable {
   function createLaunch(
     address tokenAddress_,
     uint80 times_,

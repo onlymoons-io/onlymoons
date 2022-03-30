@@ -27,17 +27,20 @@ import DarkModeToggle from './components/DarkModeToggle'
 import ModalControllerProvider from './components/ModalController'
 import ComingSoon from './components/ComingSoon'
 import Faucets from './components/Faucets'
+import Fundraising from './components/Fundraising'
+import Bridge from './components/Bridge'
 
 import './App.css'
 
 import { networks } from './util/getNetworkDataByChainId'
 
-import { useWeb3React, Web3ReactProvider } from '@web3-react/core'
+import { Web3ReactProvider, createWeb3ReactRoot, getWeb3ReactContext } from '@web3-react/core'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { NetworkConnector } from '@web3-react/network-connector'
 
 import { providers } from 'ethers'
 import { usePromise } from 'react-use'
+import { useContext } from 'react'
 
 const { Web3Provider } = providers
 
@@ -194,10 +197,12 @@ const AppContent: React.FC = () => {
                   </TokenLockerManagerV1ContractContextProvider>
                 }
               />
+              <Route path="/bridge" element={<Bridge />} />
               {/* <Route path="/staking/create" element={<CreateStaking />} /> */}
               <Route path="/staking/deploy" element={<Staking viewMode="deploy" />} />
               <Route path="/staking/all" element={<Staking viewMode="all" />} />
               <Route path="/staking" element={<Staking viewMode="split" />} />
+              <Route path="/fundraising" element={<Fundraising />} />
               <Route path="/governance" element={<ComingSoon />} />
               <Route path="/faucet" element={<Faucets />} />
               <Route path="/stats" element={<ComingSoon />} />
@@ -214,7 +219,7 @@ const AppContent: React.FC = () => {
 
 const AppWeb3: React.FC = () => {
   const mounted = usePromise()
-  const { account, activate, connector, chainId } = useWeb3React()
+  const { activate, connector, chainId } = useContext(getWeb3ReactContext('constant'))
   const [connecting, setConnecting] = useState<boolean>(false)
 
   useEffect(() => {
@@ -224,7 +229,7 @@ const AppWeb3: React.FC = () => {
   }, [chainId])
 
   useEffect(() => {
-    if (!connecting && !account && !connector && window.localStorage.getItem('ONLYMOONS_AUTO_CONNECT') !== '1') {
+    if (!connecting && !connector /* && window.localStorage.getItem('ONLYMOONS_AUTO_CONNECT') !== '1' */) {
       setConnecting(true)
       // if (connector && !(connector instanceof NetworkConnector)) {
       //   return
@@ -235,8 +240,8 @@ const AppWeb3: React.FC = () => {
       const urls: Record<number, string> = {}
 
       Object.keys(networks)
-        .map(chainId => parseInt(chainId))
-        .forEach(chainId => {
+        .map((chainId) => parseInt(chainId))
+        .forEach((chainId) => {
           urls[chainId] = networks[chainId].rpcURL
         })
 
@@ -249,7 +254,7 @@ const AppWeb3: React.FC = () => {
         ),
       ).then(() => setConnecting(false))
     }
-  }, [mounted, account, activate, connector, connecting])
+  }, [mounted, activate, connector, connecting])
 
   return (
     <Router>
@@ -268,10 +273,14 @@ const AppWeb3: React.FC = () => {
   )
 }
 
+export const Web3ReactProviderConstant = createWeb3ReactRoot('constant')
+
 const App: React.FC = () => {
   return IS_HTTPS ? (
     <Web3ReactProvider getLibrary={getLibrary}>
-      <AppWeb3 />
+      <Web3ReactProviderConstant getLibrary={getLibrary}>
+        <AppWeb3 />
+      </Web3ReactProviderConstant>
     </Web3ReactProvider>
   ) : (
     <FullscreenLoading children="Redirecting to HTTPS..." />

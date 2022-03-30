@@ -43,7 +43,7 @@ describe("TokenLockerV1.sol", () => {
     );
 
     // 10 seconds from now
-    const unlockTime = Math.floor(Date.now() / 1000 + 10);
+    const unlockTime = Math.floor(Date.now() / 1000 + 15);
 
     // constructor(address manager_, uint40 id_, address owner_, address tokenAddress_, uint40 unlockTime_)
     tokenLockerV1Contract = await TokenLockerV1Contract.deploy(
@@ -78,7 +78,7 @@ describe("TokenLockerV1.sol", () => {
 
   it("Should allow withdrawal after unlockTime", async () => {
     // wait for unlockTime
-    await new Promise((resolve) => setTimeout(resolve, 10000));
+    await new Promise((resolve) => setTimeout(resolve, 15000));
 
     await tokenLockerV1Contract.withdraw();
 

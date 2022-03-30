@@ -18,8 +18,8 @@
 
 pragma solidity ^0.8.0;
 
-import { IAuthorizable } from "../IAuthorizable.sol";
-import { IPausable } from "../IPausable.sol";
+import { IAuthorizable } from "../Control/IAuthorizable.sol";
+import { IPausable } from "../Control/IPausable.sol";
 
 interface IStakingFactoryV1 is IAuthorizable, IPausable {
   function createStaking(

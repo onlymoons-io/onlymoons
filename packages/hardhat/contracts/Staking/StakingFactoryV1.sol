@@ -21,9 +21,8 @@ pragma solidity ^0.8.0;
 import { IStakingFactoryV1 } from "./IStakingFactoryV1.sol";
 import { StakingV1 } from "./StakingV1.sol";
 import { StakingTokenV1 } from "./StakingTokenV1.sol";
-import { Ownable } from "../Ownable.sol";
-import { Authorizable } from "../Authorizable.sol";
-import { Pausable } from "../Pausable.sol";
+import { Authorizable } from "../Control/Authorizable.sol";
+import { Pausable } from "../Control/Pausable.sol";
 
 // staking types:
 // 0 - eth reflection

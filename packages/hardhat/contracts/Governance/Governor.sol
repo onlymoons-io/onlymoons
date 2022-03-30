@@ -19,15 +19,15 @@
 pragma solidity ^0.8.0;
 
 import { IGovernor } from "./IGovernor.sol";
-import { Ownable } from "../Ownable.sol";
+import { OwnableV2 } from "../Control/OwnableV2.sol";
 
-contract Governor is IGovernor, Ownable {
+contract Governor is IGovernor, OwnableV2 {
   /**
    * @param owner_ address that owns this instance of Governor
    * @param votingTokens length must match votingTokenWeights
    * @param votingTokenWeights length must match votingTokens
    */
-  constructor(address owner_, address[] memory votingTokens, uint256[] memory votingTokenWeights) Ownable(owner_) {
+  constructor(address owner_, address[] memory votingTokens, uint256[] memory votingTokenWeights) OwnableV2(owner_) {
     _setWeightedTokens(votingTokens, votingTokenWeights);
   }
 

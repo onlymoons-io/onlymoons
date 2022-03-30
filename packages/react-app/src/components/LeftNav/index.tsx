@@ -6,8 +6,10 @@ import { Link, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faChartLine,
+  faExchangeAlt,
   faFaucet,
   faFileCode,
+  // faHandsHolding,
   faLock,
   faPiggyBank,
   faRocket,
@@ -99,10 +101,12 @@ const LeftNav: React.FC = () => {
       <Inner>
         <NavItem to="/launches" icon={<FontAwesomeIcon icon={faRocket} fixedWidth />} label="Launches" />
         <hr className="mx-auto my-2 border-gray-300 dark:border-gray-800 w-3/4" />
-        <NavItem to="/deployer" icon={<FontAwesomeIcon icon={faFileCode} fixedWidth />} label="Deployer" />
         <NavItem to="/locker" icon={<FontAwesomeIcon icon={faLock} fixedWidth />} label="Locker" />
+        <NavItem to="/bridge" icon={<FontAwesomeIcon icon={faExchangeAlt} fixedWidth />} label="Bridge" />
         <NavItem to="/staking" icon={<FontAwesomeIcon icon={faPiggyBank} fixedWidth />} label="Staking" />
+        <NavItem to="/deployer" icon={<FontAwesomeIcon icon={faFileCode} fixedWidth />} label="Deployer" />
         <NavItem to="/governance" icon={<FontAwesomeIcon icon={faUniversity} fixedWidth />} label="Governance" />
+        {/* <NavItem to="/fundraising" icon={<FontAwesomeIcon icon={faHandsHolding} fixedWidth />} label="Fundraising" /> */}
         {chainId === 97 && (
           <NavItem to="/faucet" icon={<FontAwesomeIcon icon={faFaucet} fixedWidth />} label="Faucet" />
         )}

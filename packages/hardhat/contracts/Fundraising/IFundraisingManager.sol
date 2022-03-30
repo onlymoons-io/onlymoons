@@ -18,36 +18,28 @@
 
 pragma solidity ^0.8.0;
 
-import { IAuthorizable } from "./IAuthorizable.sol";
-import { Ownable } from "./Ownable.sol";
+import { IIDCounter } from "../IIDCounter.sol";
+import { IPausable } from "../Control/IPausable.sol";
+import { IFeeCollector } from "../Fees/IFeeCollector.sol";
 
-abstract contract Authorizable is IAuthorizable, Ownable {
-  constructor(address owner_) Ownable(owner_) {}
+interface IFundraisingManager is IIDCounter, IFeeCollector, IPausable {
+  function factory() external view returns (address);
+  function setFactoryAddress(address value) external;
 
-  mapping(address => bool) internal _authorized;
+  function createFundraising(
+    uint8 fundraisingType,
+    string memory title,
+    string memory description,
+    uint256[] memory data
+  ) external;
 
-  modifier onlyAuthorized() {
-    require(_isAuthorized(_msgSender()), "Unauthorized");
-    _;
-  }
+  function getAddressById(uint256 id) external view returns (address);
 
-  function _isAuthorized(address account) internal virtual view returns (bool) {
-    // always return true for the owner
-    return account == _owner() ? true : _authorized[account];
-  }
-
-  function isAuthorized(address account) external view override returns (bool) {
-    return _isAuthorized(account);
-  }
-
-  function _authorize(address account, bool value) internal virtual {
-    _authorized[account] = value;
-
-    emit Authorized(account, value);
-  }
-
-  /** @dev only allow the owner to authorize more accounts */
-  function authorize(address account, bool value) external override onlyOwner {
-    _authorize(account, value);
-  }
+  function getFundraisingDataById(uint256 id) external view returns (
+    uint8 fundraisingType,
+    string memory title,
+    string memory description,
+    uint256[] memory data,
+    uint256 numContributors
+  );
 }

@@ -20,7 +20,7 @@ pragma solidity ^0.8.0;
 
 import { ILaunchManagerV1 } from "./ILaunchManagerV1.sol";
 import { Governable } from "../Governance/Governable.sol";
-import { Pausable } from "../Pausable.sol";
+import { Pausable } from "../Control/Pausable.sol";
 import { IDCounter } from "../IDCounter.sol";
 import { LaunchV1 } from "./LaunchV1.sol";
 import { IERC20 } from "../library/IERC20.sol";

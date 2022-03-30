@@ -21,7 +21,7 @@ pragma solidity ^0.8.0;
 import { IFees } from "./IFees.sol";
 import { Address } from "../library/Address.sol";
 import { Governable } from "../Governance/Governable.sol";
-import { Pausable } from "../Pausable.sol";
+import { Pausable } from "../Control/Pausable.sol";
 
 contract Fees is IFees, Governable, Pausable {
   using Address for address payable;
