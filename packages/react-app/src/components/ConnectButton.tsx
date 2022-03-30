@@ -2,11 +2,11 @@ import { CSSProperties, FC, useCallback, useContext } from 'react'
 import { useMount, usePromise } from 'react-use'
 import { useWeb3React } from '@web3-react/core'
 import { InjectedConnector } from '@web3-react/injected-connector'
-import { NetworkConnector } from '@web3-react/network-connector'
+// import { NetworkConnector } from '@web3-react/network-connector'
 import { getShortAddress } from '../util'
 import { Dark, Light, Primary, Secondary } from './Button'
 import { NotificationCatcherContext } from './NotificationCatcher'
-import contracts from '../contracts/production_contracts.json'
+import { networks } from '../util/getNetworkDataByChainId'
 
 export interface ConnectButtonProps {
   color?: 'dark' | 'light' | 'primary' | 'secondary'
@@ -16,7 +16,7 @@ export interface ConnectButtonProps {
 
 const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light', className = '', style = {} }) => {
   const mounted = usePromise()
-  const { account, activate, connector, deactivate } = useWeb3React()
+  const { account, activate, deactivate } = useWeb3React()
   const { push: pushNotification } = useContext(NotificationCatcherContext)
 
   const getButton = () => {
@@ -33,20 +33,14 @@ const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light', className = ''
   }
 
   const connect = useCallback(async () => {
-    if (connector instanceof NetworkConnector) {
-      deactivate()
-
-      await new Promise(done => setTimeout(done, 250))
-    }
-
     await activate(
       new InjectedConnector({
-        supportedChainIds: Object.keys(contracts).map(chainId => parseInt(chainId)),
+        supportedChainIds: Object.keys(networks).map((chainId) => parseInt(chainId)),
       }),
       undefined,
       true,
     )
-  }, [activate, connector, deactivate])
+  }, [activate])
 
   const onClickConnect = useCallback(() => {
     if (account) {
@@ -59,7 +53,7 @@ const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light', className = ''
       // not connected
       mounted(connect())
         .then(() => window.localStorage.setItem('ONLYMOONS_AUTO_CONNECT', '1'))
-        .catch(err => {
+        .catch((err) => {
           console.error(err)
 
           // open the error modal
@@ -76,7 +70,7 @@ const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light', className = ''
   // it makes more sense to live in App.tsx or something.
   useMount(() => {
     if (window.localStorage.getItem('ONLYMOONS_AUTO_CONNECT') === '1') {
-      mounted(connect()).catch(err => {
+      mounted(connect()).catch((err) => {
         console.error(err)
 
         // open the error modal

@@ -1,17 +1,20 @@
 import React, { useContext, useState, useEffect, useCallback, CSSProperties } from 'react'
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React, getWeb3ReactContext } from '@web3-react/core'
+import { AbstractConnector } from '@web3-react/abstract-connector'
 import { NetworkConnector } from '@web3-react/network-connector'
 import { Light as LightButton } from './Button'
 import { getNetworkDataByChainId } from '../util'
 import { NetworkData } from '../typings'
 import { ModalControllerContext } from './ModalController'
 import DetailsCard from './DetailsCard'
-import contracts from '../contracts/production_contracts.json'
 import { PriceTrackerContext } from './contracts/PriceTracker'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faWrench } from '@fortawesome/free-solid-svg-icons'
+import { networks } from '../util/getNetworkDataByChainId'
+// import { providers } from 'ethers'
+import { usePromise } from 'react-use'
 
-const allNetworkData: Array<NetworkData> = Object.keys(contracts)
+const allNetworkData: Array<NetworkData> = Object.keys(networks)
   .map((key) => getNetworkDataByChainId(parseInt(key)) as NetworkData)
   // sort network data array by name
   .sort((a, b) => (a.name > b.name ? 1 : a.name < b.name ? -1 : 0))
@@ -27,11 +30,14 @@ export interface NetworkSelectProps {
 }
 
 const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {} }) => {
+  const mounted = usePromise()
   const { nativeCoinPrice } = useContext(PriceTrackerContext) || {}
   const { setCurrentModal, closeModal } = useContext(ModalControllerContext)
-  const { chainId, connector } = useWeb3React()
+  const { chainId: connectedChainId, connector: connectedConnector } = useWeb3React()
+  const { chainId, connector } = useContext(getWeb3ReactContext('constant'))
   const [networkData, setNetworkData] = useState<NetworkData>()
   const [provider, setProvider] = useState<any>()
+  const [connectedProvider, setConnectedProvider] = useState<any>()
 
   useEffect(() => {
     if (!connector) {
@@ -39,8 +45,27 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
       return
     }
 
-    connector.getProvider().then(setProvider).catch(console.error)
-  }, [connector])
+    mounted(connector.getProvider())
+      .then(setProvider)
+      .catch((err) => {
+        console.error(err)
+        setProvider(undefined)
+      })
+  }, [mounted, connector])
+
+  useEffect(() => {
+    if (!connectedConnector) {
+      setConnectedProvider(undefined)
+      return
+    }
+
+    mounted(connectedConnector.getProvider())
+      .then(setConnectedProvider)
+      .catch((err) => {
+        console.error(err)
+        setConnectedProvider(undefined)
+      })
+  }, [mounted, connectedConnector])
 
   useEffect(() => {
     if (!chainId) {
@@ -52,12 +77,12 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
   }, [chainId])
 
   const switchNetwork = useCallback(
-    async (targetChainId: number) => {
+    async (_connector: AbstractConnector, _provider: any, targetChainId: number) => {
       try {
-        if (connector instanceof NetworkConnector) {
-          connector.changeChainId(targetChainId)
+        if (_connector instanceof NetworkConnector) {
+          _connector.changeChainId(targetChainId)
         } else {
-          await provider.request({
+          await _provider.request({
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: `0x${targetChainId.toString(16)}` }],
           })
@@ -72,7 +97,7 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
               return
             }
 
-            await provider.request({
+            await _provider.request({
               method: 'wallet_addEthereumChain',
               params: [
                 {
@@ -96,8 +121,16 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
 
       closeModal()
     },
-    [provider, closeModal, connector],
+    [provider, closeModal],
   )
+
+  useEffect(() => {
+    connector &&
+      provider &&
+      typeof connectedChainId !== 'undefined' &&
+      connectedChainId !== chainId &&
+      switchNetwork(connector, provider, connectedChainId)
+  }, [connectedChainId, chainId, switchNetwork, connector, provider])
 
   return !chainId ? (
     <></>
@@ -124,7 +157,15 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
                       <div
                         key={_networkData.chainId}
                         className="flex gap-3 items-center p-4 cursor-pointer hover:bg-gray-500 hover:bg-opacity-10"
-                        onClick={() => switchNetwork(_networkData.chainId)}
+                        onClick={() => {
+                          if (connector && provider) {
+                            switchNetwork(connector, provider, _networkData.chainId)
+                          }
+
+                          if (connectedConnector && connectedProvider) {
+                            switchNetwork(connectedConnector, connectedProvider, _networkData.chainId)
+                          }
+                        }}
                       >
                         {_networkData.icon && (
                           <img

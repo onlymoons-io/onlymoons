@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, useCallback, useRef } from 'react'
 import { useParams } from 'react-router-dom'
-import { useWeb3React } from '@web3-react/core'
+import { getWeb3ReactContext } from '@web3-react/core'
 import { utils } from 'ethers'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons'
@@ -28,7 +28,7 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
   const { watchlist } = useContext(LockWatchlist)
   const mounted = usePromise()
   const { account: accountToCheck, chainId: _chainIdToUse, id: idToUse } = useParams()
-  const { chainId, connector } = useWeb3React()
+  const { chainId, connector } = useContext(getWeb3ReactContext('constant'))
   const { contract, getTokenLockersForAddress, tokenLockerCount } = useContext(TokenLockerManagerV1ContractContext)
   const [filterInputValue, setFilterInputValue] = useState<string>()
   const [lockIds, setLockIds] = useState<number[]>([])

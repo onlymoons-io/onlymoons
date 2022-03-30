@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useContext, useRef } from 'react'
 import { useUnmount, useIntersection, usePromise, useMount, useInterval } from 'react-use'
 import { Link } from 'react-router-dom'
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React, getWeb3ReactContext } from '@web3-react/core'
 import { BigNumber, Contract, providers, utils } from 'ethers'
 import { CircularProgressbarWithChildren as CircularProgressbar, buildStyles } from 'react-circular-progressbar'
 import 'react-circular-progressbar/dist/styles.css'
@@ -88,6 +88,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
   const mounted = usePromise()
   const { isWatching, addToWatchlist, removeFromWatchlist } = useContext(LockWatchlist)
   const { account, chainId, connector } = useWeb3React()
+  const { chainId: chainIdConstant, connector: connectorConstant } = useContext(getWeb3ReactContext('constant'))
   const { getContract } = useContext(ContractCacheContext)
   const { getTokenData } = useContext(UtilContractContext)
   const { contract, getTokenLockData } = useContext(TokenLockerManagerV1ContractContext)
@@ -127,8 +128,11 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
   const [manageExpanded, setManageExpanded] = useState<boolean>(false)
   const [networkData, setNetworkData] = useState<NetworkData>()
 
+  const eitherChainId = typeof chainId !== 'undefined' ? chainId : chainIdConstant
+  const eitherConnector = typeof connector !== 'undefined' ? connector : connectorConstant
+
   const updateLockData = useCallback(() => {
-    if (typeof lockId !== 'number' || !contract || !getTokenLockData || !currentlyVisible.current || !chainId) {
+    if (typeof lockId !== 'number' || !contract || !getTokenLockData || !currentlyVisible.current || !eitherChainId) {
       setLockData(undefined)
       return
     }
@@ -136,7 +140,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
     mounted(getTokenLockData(lockId))
       .then((lockData) => setLockData(lockData))
       .catch(console.error)
-  }, [mounted, contract, getTokenLockData, lockId, chainId])
+  }, [mounted, contract, getTokenLockData, lockId, eitherChainId])
 
   useEffect(updateLockData, [updateLockData])
 
@@ -179,13 +183,13 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
   }, [lockData, intersection])
 
   useEffect(() => {
-    if (!contract || !connector || !getTokenData || !lockData) {
+    if (!contract || !eitherConnector || !getTokenData || !lockData) {
       setTokenContract(undefined)
       setLockTokenData(undefined)
       return
     }
 
-    mounted(connector.getProvider())
+    mounted(eitherConnector.getProvider())
       .then((provider) =>
         setTokenContract(new Contract(lockData.token, ERC20ABI, new Web3Provider(provider).getSigner())),
       )
@@ -197,7 +201,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
     mounted(getTokenData(lockData.token))
       .then((result) => setLockTokenData(result))
       .catch(console.error)
-  }, [mounted, contract, connector, lockData, getTokenData])
+  }, [mounted, contract, eitherConnector, lockData, getTokenData])
 
   useEffect(() => {
     if (!lockData) {
@@ -334,13 +338,13 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
   }, [mounted, getTokenData, claimTokenAddress])
 
   useEffect(() => {
-    if (!chainId) {
+    if (!eitherChainId) {
       setNetworkData(undefined)
       return
     }
 
-    setNetworkData(getNetworkDataByChainId(chainId))
-  }, [chainId])
+    setNetworkData(getNetworkDataByChainId(eitherChainId))
+  }, [eitherChainId])
 
   return (
     <div ref={intersectionRef} style={{ minHeight: '360px' }}>
@@ -356,7 +360,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                       <Title className="flex-col">
                         <div className="self-start flex max-w-full">
                           <Link
-                            to={`/locker/${networkData?.urlName || chainId}/${lockId}`}
+                            to={`/locker/${networkData?.urlName || eitherChainId}/${lockId}`}
                             className="shrink whitespace-nowrap overflow-hidden flex gap-2 items-baseline"
                           >
                             <span className="overflow-hidden text-ellipsis">{lockTokenData?.name || '...'} </span>
@@ -804,7 +808,8 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                             setClaimingEth(false)
                           }}
                         >
-                          Claim {utils.commify(utils.formatEther(claimableEth))} {getNativeCoin(chainId || 0).symbol}
+                          Claim {utils.commify(utils.formatEther(claimableEth))}{' '}
+                          {getNativeCoin(eitherChainId || 0).symbol}
                         </PrimaryButton>
                       </section>
                     )}

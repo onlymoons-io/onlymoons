@@ -40,7 +40,6 @@ interface IFundraisingManager is IIDCounter, IFeeCollector, IPausable {
     string memory title,
     string memory description,
     uint256[] memory data,
-    uint256 totalAmountRaised,
     uint256 numContributors
   );
 }
