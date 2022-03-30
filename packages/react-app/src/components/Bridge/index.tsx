@@ -11,7 +11,12 @@ import { UtilContractContext } from '../contracts/Util'
 import { getExplorerAddressLink, getNativeCoin, getNetworkDataByChainId, getShortAddress, remove0x } from '../../util'
 import { utils, ContractTransaction } from 'ethers'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleNotch, faExternalLinkAlt, faNetworkWired } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCircleNotch,
+  faExternalLinkAlt,
+  faNetworkWired,
+  faExclamationTriangle,
+} from '@fortawesome/free-solid-svg-icons'
 import bridges from '../../data/bridges'
 import { ModalControllerContext } from '../ModalController'
 import DetailsCard from '../DetailsCard'
@@ -188,6 +193,14 @@ const Bridge: React.FC = () => {
   return (
     <MidSection>
       <SectionInner className="flex flex-col gap-8">
+        {!chainId ||
+          (!getNetworkDataByChainId(chainId)?.isTestNet && (
+            <div className="bg-red-500 w-full max-w-sm rounded p-4 flex justify-center items-center gap-2">
+              <FontAwesomeIcon icon={faExclamationTriangle} />
+              Currently only available on testnets.
+            </div>
+          ))}
+
         <Card
           headerContent={
             <span className="flex gap-2 items-center">
