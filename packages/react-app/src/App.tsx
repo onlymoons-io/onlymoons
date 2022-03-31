@@ -39,7 +39,7 @@ import { AbstractConnector } from '@web3-react/abstract-connector'
 import { NetworkConnector } from '@web3-react/network-connector'
 
 import { providers } from 'ethers'
-import { usePromise } from 'react-use'
+import { createBreakpoint, usePromise } from 'react-use'
 import { useContext } from 'react'
 
 const { Web3Provider } = providers
@@ -52,7 +52,11 @@ const Outer = tw.div`
   flex
 `
 
-const LeftArea = tw.div`
+interface AreaProps {
+  $expanded?: boolean
+}
+
+const LeftArea = tw.div<AreaProps>`
   border-gray-300
   dark:border-gray-800
   transition-all
@@ -63,12 +67,12 @@ const LeftArea = tw.div`
   bottom-0
   pt-16
   z-20
-  flex
-  flex-col
   justify-between
+  ${(p) => (p.$expanded ? 'flex w-64 border-r-0' : 'hidden md:flex w-16 border-r')}
+  flex-col
 `
 
-const BottomLeftArea = tw.div`
+const BottomLeftArea = tw.div<AreaProps>`
   bg-gray-200
   dark:bg-gray-900
   border-t
@@ -82,11 +86,12 @@ const BottomLeftArea = tw.div`
   items-start
   text-gray-800
   dark:text-gray-200
+  ${(p) => (p.$expanded ? 'border-r' : 'border-r-0')}
 `
 
 const RightArea = tw.div`
   mt-16
-  ml-16
+  md:ml-16
   w-full
   flex
   flex-col
@@ -101,23 +106,36 @@ const IS_HTTPS =
   window.location.protocol.startsWith('https')
 
 export interface IAppNavState {
+  isSmall: boolean
   leftNavExpanded: boolean
   setLeftNavExpanded: (value: boolean) => void
 }
 
 export const AppNavState = createContext<IAppNavState>({
+  isSmall: false,
   leftNavExpanded: false,
   setLeftNavExpanded: () => {},
 })
 
+const useBreakpoint = createBreakpoint({
+  notsmall: 768,
+})
+
 const AppContent: React.FC = () => {
+  const breakpoint = useBreakpoint()
   const [leftNavExpanded, setLeftNavExpanded] = useState<boolean>(false)
+  const [isSmall, setIsSmall] = useState<boolean>(breakpoint !== 'notsmall')
   const mouseLeaveTimer = useRef<NodeJS.Timeout>()
+
+  useEffect(() => {
+    setIsSmall(breakpoint !== 'notsmall')
+  }, [breakpoint])
 
   return (
     <AppNavState.Provider
       value={{
         //
+        isSmall,
         leftNavExpanded,
         setLeftNavExpanded,
       }}
@@ -125,20 +143,22 @@ const AppContent: React.FC = () => {
       <ModalControllerProvider>
         <Outer>
           <LeftArea
-            className={`${leftNavExpanded ? 'w-64 border-r-0' : 'w-16 border-r'}`}
+            $expanded={leftNavExpanded}
             onMouseEnter={() => {
               mouseLeaveTimer.current && clearTimeout(mouseLeaveTimer.current)
-              setLeftNavExpanded(true)
+              !isSmall && setLeftNavExpanded(true)
             }}
             onMouseLeave={() => {
               mouseLeaveTimer.current && clearTimeout(mouseLeaveTimer.current)
-              mouseLeaveTimer.current = setTimeout(() => {
-                setLeftNavExpanded(false)
-              }, 500)
+              if (!isSmall) {
+                mouseLeaveTimer.current = setTimeout(() => {
+                  setLeftNavExpanded(false)
+                }, 500)
+              }
             }}
           >
             <LeftNav />
-            <BottomLeftArea className={`${leftNavExpanded ? 'border-r' : 'border-r-0'}`}>
+            <BottomLeftArea $expanded={leftNavExpanded}>
               <DarkModeToggle className="-ml-1" />
             </BottomLeftArea>
           </LeftArea>
