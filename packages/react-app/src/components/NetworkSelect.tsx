@@ -8,8 +8,8 @@ import { NetworkData } from '../typings'
 import { ModalControllerContext } from './ModalController'
 import DetailsCard from './DetailsCard'
 import { PriceTrackerContext } from './contracts/PriceTracker'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faWrench } from '@fortawesome/free-solid-svg-icons'
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// import { faWrench } from '@fortawesome/free-solid-svg-icons'
 import { networks } from '../util/getNetworkDataByChainId'
 // import { providers } from 'ethers'
 import { usePromise } from 'react-use'
@@ -188,13 +188,13 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
         {networkData?.icon && (
           <img alt={networkData?.name || ''} width={20} height={20} src={`/network-icons${networkData.icon}`} />
         )}
-        {networkData?.isTestNet && (
+        {/* {networkData?.isTestNet && (
           <FontAwesomeIcon
             className="text-red-300 bg-gray-800 rounded-full p-1 transform-gpu scale-125"
             icon={faWrench}
           />
-        )}
-        <span>{networkData?.nativeCurrency.symbol || '???'}</span>
+        )} */}
+        <span className="hidden md:inline">{networkData?.nativeCurrency.symbol || '???'}</span>
         {nativeCoinPrice ? (
           <span className="ml-1 opacity-60">
             $

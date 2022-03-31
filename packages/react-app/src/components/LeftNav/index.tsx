@@ -67,7 +67,7 @@ interface NavItemProps {
 
 const NavItem: React.FC<NavItemProps> = ({ to, icon = '', label = 'TEST', className = '', style = {} }) => {
   const { pathname } = useLocation()
-  const { leftNavExpanded } = useContext(AppNavState)
+  const { leftNavExpanded, setLeftNavExpanded } = useContext(AppNavState)
   const [active, setActive] = useState<boolean>(false)
 
   useEffect(() => setActive(pathname.startsWith(to)), [pathname, to])
@@ -82,6 +82,7 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon = '', label = 'TEST', classN
           active ? 'bg-gray-100 dark:bg-gray-800 border-indigo-500' : ''
         }`}
         style={style}
+        onClick={() => setLeftNavExpanded(false)}
       >
         <span className={`${active ? 'opacity-100' : 'opacity-40'}`}>{icon}</span>
         {leftNavExpanded && <ItemLabel>{label}</ItemLabel>}

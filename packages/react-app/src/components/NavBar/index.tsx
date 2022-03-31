@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
 import tw from 'tailwind-styled-components'
 import { Link } from 'react-router-dom'
@@ -7,6 +7,10 @@ import ConnectButton from '../ConnectButton'
 // import { PriceTrackerContext } from '../contracts/PriceTracker'
 
 import logoSrc from '../../images/logo-white.svg'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBars } from '@fortawesome/free-solid-svg-icons'
+import Button from '../Button'
+import { AppNavState } from '../../App'
 
 const Outer = tw.nav`
   h-16
@@ -19,7 +23,8 @@ const Outer = tw.nav`
   overflow-hidden
   fixed
   top-0
-  left-16
+  left-0
+  md:left-16
   right-0
   z-30
 `
@@ -41,7 +46,11 @@ const HeaderCSS = styled.h1`
     'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 `
 
-const Header = tw(HeaderCSS)``
+const Header = tw(HeaderCSS)`
+  flex
+  items-center
+  gap-2
+`
 
 const LogoLinkCSS = styled(Link)``
 
@@ -108,6 +117,7 @@ const Right = tw.div`
 // `
 
 const NavBar: React.FC = () => {
+  const { leftNavExpanded, setLeftNavExpanded } = useContext(AppNavState)
   // const { nativeCoinPrice } = useContext(PriceTrackerContext) || {}
 
   return (
@@ -115,6 +125,15 @@ const NavBar: React.FC = () => {
       <Inner>
         <Left>
           <Header>
+            <Button
+              className="md:hidden"
+              onClick={() => {
+                setLeftNavExpanded(!leftNavExpanded)
+              }}
+            >
+              <FontAwesomeIcon icon={faBars} />
+            </Button>
+
             <LogoLink to="/">
               <LogoImgWrapper>
                 <LogoImg src={logoSrc} width={36} height={36} />
