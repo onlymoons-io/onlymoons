@@ -72,7 +72,7 @@ const LeftArea = tw.div<AreaProps>`
   flex-col
 `
 
-const BottomLeftArea = tw.div`
+const BottomLeftArea = tw.div<AreaProps>`
   bg-gray-200
   dark:bg-gray-900
   border-t
@@ -86,6 +86,7 @@ const BottomLeftArea = tw.div`
   items-start
   text-gray-800
   dark:text-gray-200
+  ${(p) => (p.$expanded ? 'border-r' : 'border-r-0')}
 `
 
 const RightArea = tw.div`
@@ -157,7 +158,7 @@ const AppContent: React.FC = () => {
             }}
           >
             <LeftNav />
-            <BottomLeftArea className={`${leftNavExpanded ? 'border-r' : 'border-r-0'}`}>
+            <BottomLeftArea $expanded={leftNavExpanded}>
               <DarkModeToggle className="-ml-1" />
             </BottomLeftArea>
           </LeftArea>
