@@ -1,4 +1,4 @@
-import React, { createContext, useState, useRef, useEffect } from 'react'
+import React, { createContext, useContext, useState, useRef, useEffect } from 'react'
 import { useUnmount } from 'react-use'
 import tw from 'tailwind-styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -64,6 +64,12 @@ export interface INotificationCatcherContext {
 }
 
 export const NotificationCatcherContext = createContext<INotificationCatcherContext>({})
+
+export const useNotifications = () => {
+  const notifications = useContext(NotificationCatcherContext)
+  if (!notifications) throw new Error('useNotifications can only be used within NotificationCatcherContextProvider')
+  return notifications
+}
 
 export interface NotificationCatcherContextProviderProps {
   notificationDurationMS?: number

@@ -1,4 +1,4 @@
-import React, { FormEvent, useState, useContext, useCallback, useEffect } from 'react'
+import React, { FormEvent, useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import tw from 'tailwind-styled-components'
@@ -9,9 +9,9 @@ import { useWeb3React } from '@web3-react/core'
 import { Light as LightButton, Primary as PrimaryButton } from '../Button'
 import Input from '../Input'
 import { LPData, TokenData } from '../../typings'
-import StakingManagerV1ContractContextProvider, { StakingManagerV1ContractContext } from '../contracts/StakingManagerV1'
-import { NotificationCatcherContext } from '../NotificationCatcher'
-import { UtilContractContext } from '../contracts/Util'
+import StakingManagerV1ContractContextProvider, { useStakingManagerV1Contract } from '../contracts/StakingManagerV1'
+import { useNotifications } from '../NotificationCatcher'
+import { useUtilContract } from '../contracts/Util'
 import { usePromise } from 'react-use'
 import DetailsCard from '../DetailsCard'
 import Select from '../Select'
@@ -45,9 +45,9 @@ const Create: React.FC = () => {
   const mounted = usePromise()
   const navigate = useNavigate()
   const { account, chainId } = useWeb3React()
-  const { createStaking, getFeeAmountForType } = useContext(StakingManagerV1ContractContext)
-  const { push: pushNotification } = useContext(NotificationCatcherContext)
-  const { getTokenData, getLpData } = useContext(UtilContractContext)
+  const { createStaking, getFeeAmountForType } = useStakingManagerV1Contract()
+  const { push: pushNotification } = useNotifications()
+  const { getTokenData, getLpData } = useUtilContract()
   const [loadingTokenData, setLoadingTokenData] = useState<boolean>(false)
   const [tokenData, setTokenData] = useState<TokenData>()
   const [lpData, setLpData] = useState<LPData>()

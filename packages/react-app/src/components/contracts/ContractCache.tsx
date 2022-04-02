@@ -25,6 +25,12 @@ export const ContractCacheContext = createContext<IContractCacheContext>({
   getContract: () => Promise.resolve(undefined),
 })
 
+export const useContractCache = () => {
+  const context = useContext(ContractCacheContext)
+  if (!context) throw new Error('useContractCache can only be used within ContractCacheContextProvider')
+  return context
+}
+
 const ContractCacheContextProvider: React.FC = ({ children }) => {
   const { chainId, connector } = useWeb3React()
   const { chainId: chainIdConstant, connector: connectorConstant } = useContext(getWeb3ReactContext('constant'))

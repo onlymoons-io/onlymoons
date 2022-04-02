@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { BigNumber, Contract } from 'ethers'
-import { ContractCacheContext } from './ContractCache'
+import { useContractCache } from './ContractCache'
 import { usePromise } from 'react-use'
 
 export interface IFeesContractContext {
@@ -15,9 +15,15 @@ export const FeesContractContext = createContext<IFeesContractContext>({
   //
 })
 
+export const useFeesContract = () => {
+  const context = useContext(FeesContractContext)
+  if (!context) throw new Error('useFeesContract can only be used within FeesContractContextProvider')
+  return context
+}
+
 const FeesContractContextProvider: React.FC = ({ children }) => {
   const mounted = usePromise()
-  const { getContract } = useContext(ContractCacheContext)
+  const { getContract } = useContractCache()
   const [contract, setContract] = useState<Contract>()
   const [owner, setOwner] = useState<string>()
 

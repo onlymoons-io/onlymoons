@@ -1,16 +1,14 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import tw from 'tailwind-styled-components'
 import { Link } from 'react-router-dom'
 import NetworkSelect from '../NetworkSelect'
 import ConnectButton from '../ConnectButton'
-// import { PriceTrackerContext } from '../contracts/PriceTracker'
-
 import logoSrc from '../../images/logo-white.svg'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
 import Button from '../Button'
-import { AppNavState } from '../../App'
+import { useAppNavState } from '../../App'
 
 const Outer = tw.nav`
   h-16
@@ -102,23 +100,8 @@ const Right = tw.div`
   items-center
 `
 
-// const RightLinks = tw.div`
-//   flex
-//   gap-4
-//   items-center
-// `
-
-// const RightLink = tw(Link)`
-//   text-lg
-//   text-indigo-500
-//   hover:text-indigo-400
-//   dark:text-indigo-300
-//   dark:hover:text-indigo-100
-// `
-
 const NavBar: React.FC = () => {
-  const { leftNavExpanded, setLeftNavExpanded } = useContext(AppNavState)
-  // const { nativeCoinPrice } = useContext(PriceTrackerContext) || {}
+  const { leftNavExpanded, setLeftNavExpanded } = useAppNavState()
 
   return (
     <Outer>
@@ -148,17 +131,6 @@ const NavBar: React.FC = () => {
         </Left>
 
         <Right>
-          {/* <RightLinks>
-            <RightLink to="/staking">Staking</RightLink>
-            <RightLink to="/locker">Locker</RightLink>
-          </RightLinks> */}
-
-          {/* <DarkModeToggle /> */}
-
-          {/* <span className="mx-4">
-            ${(nativeCoinPrice || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </span> */}
-
           <NetworkSelect className="rounded-tr-none rounded-br-none" />
           <ConnectButton className="rounded-tl-none rounded-bl-none" />
         </Right>

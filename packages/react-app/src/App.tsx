@@ -1,4 +1,4 @@
-import React, { createContext, useState, useRef, useEffect } from 'react'
+import React, { createContext, useContext, useState, useRef, useEffect } from 'react'
 import { HashRouter as Router, Routes, Route } from 'react-router-dom'
 
 import tw from 'tailwind-styled-components'
@@ -40,7 +40,6 @@ import { NetworkConnector } from '@web3-react/network-connector'
 
 import { providers } from 'ethers'
 import { createBreakpoint, usePromise } from 'react-use'
-import { useContext } from 'react'
 
 const { Web3Provider } = providers
 
@@ -116,6 +115,12 @@ export const AppNavState = createContext<IAppNavState>({
   leftNavExpanded: false,
   setLeftNavExpanded: () => {},
 })
+
+export const useAppNavState = () => {
+  const appNavState = useContext(AppNavState)
+  if (!appNavState) throw new Error('useAppNavState can only be used within AppNavState provider')
+  return appNavState
+}
 
 const useBreakpoint = createBreakpoint({
   notsmall: 768,

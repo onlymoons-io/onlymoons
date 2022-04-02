@@ -1,4 +1,4 @@
-import React, { CSSProperties, useState, useContext, useEffect, ReactNode } from 'react'
+import React, { CSSProperties, useState, useEffect, ReactNode } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import tw from 'tailwind-styled-components'
 import styled from 'styled-components'
@@ -16,7 +16,7 @@ import {
   faUniversity,
 } from '@fortawesome/free-solid-svg-icons'
 // import Tooltip from '../Tooltip'
-import { AppNavState } from '../../App'
+import { useAppNavState } from '../../App'
 
 const Outer = tw.nav`
   bg-gray-200
@@ -67,7 +67,7 @@ interface NavItemProps {
 
 const NavItem: React.FC<NavItemProps> = ({ to, icon = '', label = 'TEST', className = '', style = {} }) => {
   const { pathname } = useLocation()
-  const { isSmall, leftNavExpanded, setLeftNavExpanded } = useContext(AppNavState)
+  const { isSmall, leftNavExpanded, setLeftNavExpanded } = useAppNavState()
   const [active, setActive] = useState<boolean>(false)
 
   useEffect(() => setActive(pathname.startsWith(to)), [pathname, to])
@@ -95,7 +95,7 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon = '', label = 'TEST', classN
 
 const LeftNav: React.FC = () => {
   const { chainId } = useWeb3React()
-  const { leftNavExpanded } = useContext(AppNavState)
+  const { leftNavExpanded } = useAppNavState()
 
   return (
     <Outer className={`${leftNavExpanded ? 'border-r' : 'border-r-0'}`}>

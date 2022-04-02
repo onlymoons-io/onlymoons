@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
-import { UtilContractContext } from './Util'
+import { useUtilContract } from './Util'
 import { BigNumber, utils, providers } from 'ethers'
 import { LPData, NetworkData } from '../../typings'
 import { getNetworkDataByChainId } from '../../util'
@@ -22,7 +22,19 @@ export interface IPriceTrackerContext {
   getStablePairAddress: (lpData: LPData) => string | undefined
 }
 
-export const PriceTrackerContext = createContext<IPriceTrackerContext | undefined>(undefined)
+export const PriceTrackerContext = createContext<IPriceTrackerContext>({
+  getPriceForPair: async () => 0,
+  isSupportedPair: () => false,
+  isSupportedToken: () => false,
+  getTokenFromPair: () => undefined,
+  getStablePairAddress: () => undefined,
+})
+
+export const usePriceTracker = () => {
+  const context = useContext(PriceTrackerContext)
+  if (!context) throw new Error('usePriceTracker can only be used within PriceTrackerContextProvider')
+  return context
+}
 
 interface PriceCache {
   price: number
@@ -36,7 +48,7 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
   const { chainId: chainIdConstant, connector: connectorConstant } = useContext(getWeb3ReactContext('constant'))
   const { chainId, connector } = useWeb3React()
   const [provider, setProvider] = useState<Web3ProviderClass>()
-  const { contract, getLpData, getTokenData } = useContext(UtilContractContext)
+  const { getLpData, getTokenData } = useUtilContract()
   const [networkData, setNetworkData] = useState<NetworkData>()
   const [nativeStablePair, setNativeStablePair] = useState<string>()
   const [nativeCoinPrice, setNativeCoinPrice] = useState<number>()
@@ -230,23 +242,19 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
 
   return (
     <PriceTrackerContext.Provider
-      value={
-        contract && getLpData
-          ? {
-              nativeCoinPrice,
+      value={{
+        nativeCoinPrice,
 
-              networkData,
+        networkData,
 
-              getPriceForPair,
+        getPriceForPair,
 
-              isSupportedToken,
-              isSupportedPair,
+        isSupportedToken,
+        isSupportedPair,
 
-              getTokenFromPair,
-              getStablePairAddress,
-            }
-          : undefined
-      }
+        getTokenFromPair,
+        getStablePairAddress,
+      }}
     >
       {children}
     </PriceTrackerContext.Provider>

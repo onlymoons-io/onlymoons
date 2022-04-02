@@ -1,8 +1,8 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import tw from 'tailwind-styled-components'
 import { useWeb3React } from '@web3-react/core'
-import { StakingManagerV1ContractContext } from '../contracts/StakingManagerV1'
+import { useStakingManagerV1Contract } from '../contracts/StakingManagerV1'
 import { Primary as PrimaryButton } from '../Button'
 
 const TopSection = tw.section`
@@ -32,7 +32,7 @@ interface Props {
 
 const Header: React.FC<Props> = ({ filterEnabled = true, onFilterInput }) => {
   const { account } = useWeb3React()
-  const { owner } = useContext(StakingManagerV1ContractContext)
+  const { owner } = useStakingManagerV1Contract()
 
   return (
     <TopSection>

@@ -5,9 +5,9 @@ import { NetworkConnector } from '@web3-react/network-connector'
 import { Light as LightButton } from './Button'
 import { getNetworkDataByChainId } from '../util'
 import { NetworkData } from '../typings'
-import { ModalControllerContext } from './ModalController'
+import { useModal } from './ModalController'
 import DetailsCard from './DetailsCard'
-import { PriceTrackerContext } from './contracts/PriceTracker'
+import { usePriceTracker } from './contracts/PriceTracker'
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faWrench } from '@fortawesome/free-solid-svg-icons'
 import { networks } from '../util/getNetworkDataByChainId'
@@ -31,8 +31,8 @@ export interface NetworkSelectProps {
 
 const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {} }) => {
   const mounted = usePromise()
-  const { nativeCoinPrice } = useContext(PriceTrackerContext) || {}
-  const { setCurrentModal, closeModal } = useContext(ModalControllerContext)
+  const { nativeCoinPrice } = usePriceTracker()
+  const { setCurrentModal, closeModal } = useModal()
   const { chainId: connectedChainId, connector: connectedConnector } = useWeb3React()
   const { chainId, connector } = useContext(getWeb3ReactContext('constant'))
   const [networkData, setNetworkData] = useState<NetworkData>()

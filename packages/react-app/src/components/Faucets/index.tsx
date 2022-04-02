@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from 'react'
-import { ContractCacheContext } from '../contracts/ContractCache'
+import React, { useEffect } from 'react'
+import { useContractCache } from '../contracts/ContractCache'
 // import { Primary as Button } from '../Button'
 import { Outer, MidSection, SectionInner } from '../Layout'
 import Faucet from './Faucet'
@@ -12,7 +12,7 @@ const FAUCETS: string[] = [
 ]
 
 const Faucets: React.FC = () => {
-  const { getContract } = useContext(ContractCacheContext)
+  const { getContract } = useContractCache()
 
   useEffect(() => {}, [getContract])
 
@@ -21,7 +21,7 @@ const Faucets: React.FC = () => {
       <MidSection>
         <SectionInner>
           <div className="flex flex-col gap-8 items-center w-full">
-            {FAUCETS.map(address => (
+            {FAUCETS.map((address) => (
               <Faucet key={address} address={address} />
             ))}
           </div>

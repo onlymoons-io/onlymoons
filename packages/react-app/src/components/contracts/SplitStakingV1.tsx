@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { Contract } from 'ethers'
-import { ContractCacheContext } from './ContractCache'
+import { useContractCache } from './ContractCache'
 import { GlobalStakingData, SplitStakingRewardsData, AllRewardsForAddress } from '../../typings'
 import { usePromise } from 'react-use'
 
@@ -27,9 +27,16 @@ export const SplitStakingV1ContractContext = createContext<ISplitStakingV1Contra
   // canDistribute: false,
 })
 
+export const useSplitStakingV1Contract = () => {
+  const context = useContext(SplitStakingV1ContractContext)
+  if (!context)
+    throw new Error('useSplitStakingV1Contract can only be used within SplitStakingV1ContractContextProvider')
+  return context
+}
+
 const SplitStakingV1ContractContextProvider: React.FC = ({ children }) => {
   const mounted = usePromise()
-  const { getContract } = useContext(ContractCacheContext)
+  const { getContract } = useContractCache()
   const [contract, setContract] = useState<Contract>()
   const [owner, setOwner] = useState<string>()
   const [globalStakingData, setGlobalStakingData] = useState<GlobalStakingData>()
@@ -107,7 +114,7 @@ const SplitStakingV1ContractContextProvider: React.FC = ({ children }) => {
 
     mounted(getGlobalStakingData())
       .then(setGlobalStakingData)
-      .catch(err => {
+      .catch((err) => {
         console.error(err)
       })
   }, [mounted, contract, getGlobalStakingData])

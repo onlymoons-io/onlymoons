@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useEffect, useState } from 'react'
 import { usePromise } from 'react-use'
 import { useWeb3React } from '@web3-react/core'
 import { Card } from './styles'
@@ -7,7 +7,7 @@ import TokenInput from '../TokenInput'
 import { BigNumber, Contract, providers } from 'ethers'
 import Button, { Light, Primary as PrimaryButton } from '../Button'
 import { BridgeData, NetworkData, TokenData } from '../../typings'
-import { UtilContractContext } from '../contracts/Util'
+import { useUtilContract } from '../contracts/Util'
 import { getExplorerAddressLink, getNativeCoin, getNetworkDataByChainId, getShortAddress, remove0x } from '../../util'
 import { utils, ContractTransaction } from 'ethers'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -18,7 +18,7 @@ import {
   faExclamationTriangle,
 } from '@fortawesome/free-solid-svg-icons'
 import bridges from '../../data/bridges'
-import { ModalControllerContext } from '../ModalController'
+import { useModal } from '../ModalController'
 import DetailsCard from '../DetailsCard'
 import Anchor from '../Anchor'
 import { ERC20ABI, BridgeABI } from '../../contracts/external_contracts'
@@ -37,8 +37,8 @@ const EMPTY_TOKEN = {
 const Bridge: React.FC = () => {
   const mounted = usePromise()
   const { account, chainId, connector } = useWeb3React()
-  const { setCurrentModal } = useContext(ModalControllerContext)
-  const { getTokenData } = useContext(UtilContractContext)
+  const { setCurrentModal } = useModal()
+  const { getTokenData } = useUtilContract()
   const [bridgeTokens, setBridgeTokens] = useState<Array<TokenData>>([])
   const [bridgeData, setBridgeData] = useState<BridgeData>()
   const [bridgeTokenData, setBridgeTokenData] = useState<TokenData>()

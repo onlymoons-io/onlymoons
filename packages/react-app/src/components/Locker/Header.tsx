@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import tw from 'tailwind-styled-components'
-import { useWeb3React } from '@web3-react/core'
+import { useWeb3React, getWeb3ReactContext } from '@web3-react/core'
 import { Primary as PrimaryButton, Light as LightButton } from '../Button'
 import Input from '../Input'
-import { ContractCacheContext } from '../contracts/ContractCache'
+import { useContractCache } from '../contracts/ContractCache'
 import Anchor from '../Anchor'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
@@ -46,13 +46,16 @@ interface Props {
 const Header: React.FC<Props> = ({ filterEnabled = true, onFilterInput }) => {
   const mounted = usePromise()
   const { account, chainId } = useWeb3React()
-  const { getContract } = useContext(ContractCacheContext)
+  const { chainId: constantChainId } = useContext(getWeb3ReactContext('constant'))
+  const { getContract } = useContractCache()
   const { watchlist } = useContext(LockWatchlist)
   const [address, setAddress] = useState<string>()
 
+  const eitherChainId = typeof chainId !== 'undefined' ? chainId : constantChainId
+
   useEffect(() => {
     mounted(getContract('TokenLockerManagerV1'))
-      .then(contract => setAddress(contract?.address))
+      .then((contract) => setAddress(contract?.address))
       .catch((err: Error) => {
         console.error(err)
         setAddress(undefined)
@@ -64,8 +67,8 @@ const Header: React.FC<Props> = ({ filterEnabled = true, onFilterInput }) => {
       <SectionInner>
         <Title>
           <Link to="/locker">Token Locker V1</Link>
-          {chainId && address && (
-            <Anchor target="_blank" rel="noopener noreferrer" href={getExplorerContractLink(chainId, address)}>
+          {eitherChainId && address && (
+            <Anchor target="_blank" rel="noopener noreferrer" href={getExplorerContractLink(eitherChainId, address)}>
               <FontAwesomeIcon icon={faExternalLinkAlt} fixedWidth />
             </Anchor>
           )}
@@ -87,7 +90,7 @@ const Header: React.FC<Props> = ({ filterEnabled = true, onFilterInput }) => {
               <LightButton disabled={true}>Your locks</LightButton>
             )}
 
-            {chainId ? (
+            {eitherChainId ? (
               <Link to={`/locker/watchlist`}>
                 <LightButton className="w-full">Watchlist ({(watchlist || []).length})</LightButton>
               </Link>
@@ -97,13 +100,13 @@ const Header: React.FC<Props> = ({ filterEnabled = true, onFilterInput }) => {
           </div>
 
           <Input
-            disabled={!chainId || !filterEnabled}
+            disabled={!eitherChainId || !filterEnabled}
             color="dark"
             placeholder="Filter by address"
             className="w-full md:w-auto"
             style={{ maxWidth: '100%' }}
             size={48}
-            onInput={e => onFilterInput && onFilterInput(e.currentTarget.value)}
+            onInput={(e) => onFilterInput && onFilterInput(e.currentTarget.value)}
           />
         </div>
       </SectionInner>
