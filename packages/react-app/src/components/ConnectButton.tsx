@@ -7,6 +7,8 @@ import { getShortAddress } from '../util'
 import { Dark, Light, Primary, Secondary } from './Button'
 import { useNotifications } from './NotificationCatcher'
 import { networks } from '../util/getNetworkDataByChainId'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUserSlash } from '@fortawesome/free-solid-svg-icons'
 
 export interface ConnectButtonProps {
   color?: 'dark' | 'light' | 'primary' | 'secondary'
@@ -87,8 +89,14 @@ const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light', className = ''
 
   return (
     <>
-      <Button className={className} style={style} onClick={onClickConnect}>
-        {account ? getShortAddress(account) : 'Connect'}
+      <Button disabled={!(window as any).ethereum} className={className} style={style} onClick={onClickConnect}>
+        {!(window as any).ethereum ? (
+          <FontAwesomeIcon icon={faUserSlash} opacity={0.8} />
+        ) : account ? (
+          getShortAddress(account)
+        ) : (
+          'Connect'
+        )}
       </Button>
     </>
   )
