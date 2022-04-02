@@ -1,5 +1,5 @@
-import React, { CSSProperties, useCallback, useEffect, useState } from 'react'
-import { useWeb3React } from '@web3-react/core'
+import React, { CSSProperties, useContext, useCallback, useEffect, useState } from 'react'
+import { useWeb3React, getWeb3ReactContext } from '@web3-react/core'
 import { providers } from 'ethers'
 import { getExplorerAddressLink, getShortAddress } from '../util'
 import { Web3Provider } from '@ethersproject/providers'
@@ -37,42 +37,46 @@ const AddressLink: React.FC<AddressLinkProps> = ({
 }) => {
   const mounted = usePromise()
   const { chainId, connector } = useWeb3React()
+  const { chainId: chainIdConstant, connector: connectorConstant } = useContext(getWeb3ReactContext('constant'))
   // const [explorerUrl, setExplorerUrl] = useState<string>()
   const [provider, setProvider] = useState<Web3Provider>()
   const [isContract, setIsContract] = useState<boolean>(definitelyContract)
+
+  const eitherChainId = typeof chainId !== 'undefined' ? chainId : chainIdConstant
+  const eitherConnector = typeof connector !== 'undefined' ? connector : connectorConstant
 
   const getIsContract = useCallback(async () => {
     if (!showContractIcon) return false
 
     if (definitelyContract) return true
 
-    if (!chainId) return false
+    if (!eitherChainId) return false
 
-    if (IS_CONTRACT_CACHE[chainId]?.hasOwnProperty(address)) return IS_CONTRACT_CACHE[chainId][address]
+    if (IS_CONTRACT_CACHE[eitherChainId]?.hasOwnProperty(address)) return IS_CONTRACT_CACHE[eitherChainId][address]
 
     if (!provider) return false
 
-    if (!IS_CONTRACT_CACHE[chainId]) IS_CONTRACT_CACHE[chainId] = {}
+    if (!IS_CONTRACT_CACHE[eitherChainId]) IS_CONTRACT_CACHE[eitherChainId] = {}
 
-    IS_CONTRACT_CACHE[chainId][address] = (await mounted(provider.getCode(address))) !== '0x'
+    IS_CONTRACT_CACHE[eitherChainId][address] = (await mounted(provider.getCode(address))) !== '0x'
 
-    return IS_CONTRACT_CACHE[chainId][address]
-  }, [mounted, definitelyContract, showContractIcon, chainId, provider, address])
+    return IS_CONTRACT_CACHE[eitherChainId][address]
+  }, [mounted, definitelyContract, showContractIcon, eitherChainId, provider, address])
 
   useEffect(() => {
-    if (definitelyContract || !showContractIcon || !chainId || !connector) {
+    if (definitelyContract || !showContractIcon || !eitherChainId || !eitherConnector) {
       setProvider(undefined)
       return
     }
 
-    mounted(connector.getProvider())
+    mounted(eitherConnector.getProvider())
       .then((_provider) => new Web3ProviderClass(_provider))
       .then(setProvider)
       .catch((err: Error) => {
         console.error(err)
         setProvider(undefined)
       })
-  }, [mounted, definitelyContract, chainId, connector, showContractIcon])
+  }, [mounted, definitelyContract, eitherChainId, eitherConnector, showContractIcon])
 
   useEffect(() => {
     mounted(getIsContract())
@@ -99,12 +103,12 @@ const AddressLink: React.FC<AddressLinkProps> = ({
         </>
       )}
 
-      {chainId ? (
+      {eitherChainId ? (
         <Anchor
           className="shrink-0"
           target="_blank"
           rel="noopener noreferrer"
-          href={getExplorerAddressLink(chainId, address)}
+          href={getExplorerAddressLink(eitherChainId, address)}
         >
           <FontAwesomeIcon icon={faExternalLinkAlt} fixedWidth />
         </Anchor>

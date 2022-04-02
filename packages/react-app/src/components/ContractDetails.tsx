@@ -1,4 +1,4 @@
-import React, { CSSProperties, useContext, useEffect, useState } from 'react'
+import React, { CSSProperties, useEffect, useState } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import { providers } from 'ethers'
 import styled from 'styled-components'
@@ -6,7 +6,7 @@ import tw from 'tailwind-styled-components'
 import CodeViewer from './CodeViewer'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileCode, faTimes } from '@fortawesome/free-solid-svg-icons'
-import { ModalControllerContext } from './ModalController'
+import { useModal } from './ModalController'
 import { Light as Button } from './Button'
 import CopyButton from './CopyButton'
 import { usePromise } from 'react-use'
@@ -57,7 +57,7 @@ export interface ContractDetailsProps {
 const ContractDetails: React.FC<ContractDetailsProps> = ({ children, address, abi, className = '', style = {} }) => {
   const mounted = usePromise()
   const { connector } = useWeb3React()
-  const { closeModal } = useContext(ModalControllerContext)
+  const { closeModal } = useModal()
   const [bytecode, setBytecode] = useState<string>()
 
   useEffect(() => {

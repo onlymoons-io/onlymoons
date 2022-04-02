@@ -1,12 +1,14 @@
-import { CSSProperties, FC, useCallback, useContext } from 'react'
+import { CSSProperties, FC, useCallback } from 'react'
 import { useMount, usePromise } from 'react-use'
 import { useWeb3React } from '@web3-react/core'
 import { InjectedConnector } from '@web3-react/injected-connector'
 // import { NetworkConnector } from '@web3-react/network-connector'
 import { getShortAddress } from '../util'
 import { Dark, Light, Primary, Secondary } from './Button'
-import { NotificationCatcherContext } from './NotificationCatcher'
+import { useNotifications } from './NotificationCatcher'
 import { networks } from '../util/getNetworkDataByChainId'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUserSlash } from '@fortawesome/free-solid-svg-icons'
 
 export interface ConnectButtonProps {
   color?: 'dark' | 'light' | 'primary' | 'secondary'
@@ -17,7 +19,7 @@ export interface ConnectButtonProps {
 const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light', className = '', style = {} }) => {
   const mounted = usePromise()
   const { account, activate, deactivate } = useWeb3React()
-  const { push: pushNotification } = useContext(NotificationCatcherContext)
+  const { push: pushNotification } = useNotifications()
 
   const getButton = () => {
     switch (color) {
@@ -87,8 +89,14 @@ const ConnectButton: FC<ConnectButtonProps> = ({ color = 'light', className = ''
 
   return (
     <>
-      <Button className={className} style={style} onClick={onClickConnect}>
-        {account ? getShortAddress(account) : 'Connect'}
+      <Button disabled={!(window as any).ethereum} className={className} style={style} onClick={onClickConnect}>
+        {!(window as any).ethereum ? (
+          <FontAwesomeIcon icon={faUserSlash} opacity={0.8} />
+        ) : account ? (
+          getShortAddress(account)
+        ) : (
+          'Connect'
+        )}
       </Button>
     </>
   )

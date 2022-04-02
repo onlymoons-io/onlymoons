@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { Contract } from 'ethers'
-import { ContractCacheContext } from './ContractCache'
+import { useContractCache } from './ContractCache'
 import { TokenData, LPData } from '../../typings'
 import { usePromise } from 'react-use'
 import { useCallback } from 'react'
@@ -20,9 +20,15 @@ export const UtilContractContext = createContext<IUtilContractContext>({
   //
 })
 
+export const useUtilContract = () => {
+  const context = useContext(UtilContractContext)
+  if (!context) throw new Error('useUtilContract can only be used within UtilContractContextProvider')
+  return context
+}
+
 const UtilContractContextProvider: React.FC = ({ children }) => {
   const mounted = usePromise()
-  const { getContract } = useContext(ContractCacheContext)
+  const { getContract } = useContractCache()
   const [contract, setContract] = useState<UtilContract>()
 
   useEffect(() => {

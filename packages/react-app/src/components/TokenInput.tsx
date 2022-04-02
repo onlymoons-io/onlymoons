@@ -1,7 +1,7 @@
-import React, { useEffect, useState, createRef, CSSProperties, useContext } from 'react'
+import React, { useEffect, useState, createRef, CSSProperties } from 'react'
 // import tw from 'tailwind-styled-components'
 import { usePromise } from 'react-use'
-import { UtilContractContext } from './contracts/Util'
+import { useUtilContract } from './contracts/Util'
 import { utils, BigNumber } from 'ethers'
 // import { Primary as PrimaryButton } from './Button'
 import { TokenData } from '../typings'
@@ -33,7 +33,7 @@ const TokenInput: React.FC<Props> = ({
 }) => {
   const mounted = usePromise()
   const [amount, setAmount] = useState<string>('')
-  const { getTokenData } = useContext(UtilContractContext)
+  const { getTokenData } = useUtilContract()
   const [currentTokenData, setCurrentTokenData] = useState<TokenData>(tokenData)
 
   if (!inputRef) {

@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { BigNumber, Contract } from 'ethers'
-import { ContractCacheContext } from './ContractCache'
+import { useContractCache } from './ContractCache'
 import { StakingData, GlobalStakingData, AllRewardsForAddress } from '../../typings'
-import { FeesContractContext } from '../contracts/Fees'
+import { useFeesContract } from '../contracts/Fees'
 import { usePromise } from 'react-use'
 
 export interface IStakingManagerV1ContractContext {
@@ -31,10 +31,17 @@ export const StakingManagerV1ContractContext = createContext<IStakingManagerV1Co
   // stakingEnabledOnNetwork: () => false,
 })
 
+export const useStakingManagerV1Contract = () => {
+  const context = useContext(StakingManagerV1ContractContext)
+  if (!context)
+    throw new Error('useStakingManagerV1Contract can only be used within StakingManagerV1ContractContextProvider')
+  return context
+}
+
 const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
   const mounted = usePromise()
-  const { getFeeAmountForType } = useContext(FeesContractContext)
-  const { getContract } = useContext(ContractCacheContext)
+  const { getFeeAmountForType } = useFeesContract()
+  const { getContract } = useContractCache()
   const [contract, setContract] = useState<Contract>()
   const [count, setCount] = useState<number>(0)
   const [owner, setOwner] = useState<string>()

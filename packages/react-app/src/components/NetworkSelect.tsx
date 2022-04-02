@@ -5,11 +5,11 @@ import { NetworkConnector } from '@web3-react/network-connector'
 import { Light as LightButton } from './Button'
 import { getNetworkDataByChainId } from '../util'
 import { NetworkData } from '../typings'
-import { ModalControllerContext } from './ModalController'
+import { useModal } from './ModalController'
 import DetailsCard from './DetailsCard'
-import { PriceTrackerContext } from './contracts/PriceTracker'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faWrench } from '@fortawesome/free-solid-svg-icons'
+import { usePriceTracker } from './contracts/PriceTracker'
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// import { faWrench } from '@fortawesome/free-solid-svg-icons'
 import { networks } from '../util/getNetworkDataByChainId'
 // import { providers } from 'ethers'
 import { usePromise } from 'react-use'
@@ -31,8 +31,8 @@ export interface NetworkSelectProps {
 
 const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {} }) => {
   const mounted = usePromise()
-  const { nativeCoinPrice } = useContext(PriceTrackerContext) || {}
-  const { setCurrentModal, closeModal } = useContext(ModalControllerContext)
+  const { nativeCoinPrice } = usePriceTracker()
+  const { setCurrentModal, closeModal } = useModal()
   const { chainId: connectedChainId, connector: connectedConnector } = useWeb3React()
   const { chainId, connector } = useContext(getWeb3ReactContext('constant'))
   const [networkData, setNetworkData] = useState<NetworkData>()
@@ -188,13 +188,13 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
         {networkData?.icon && (
           <img alt={networkData?.name || ''} width={20} height={20} src={`/network-icons${networkData.icon}`} />
         )}
-        {networkData?.isTestNet && (
+        {/* {networkData?.isTestNet && (
           <FontAwesomeIcon
             className="text-red-300 bg-gray-800 rounded-full p-1 transform-gpu scale-125"
             icon={faWrench}
           />
-        )}
-        <span>{networkData?.nativeCurrency.symbol || '???'}</span>
+        )} */}
+        <span className="hidden md:inline">{networkData?.nativeCurrency.symbol || '???'}</span>
         {nativeCoinPrice ? (
           <span className="ml-1 opacity-60">
             $

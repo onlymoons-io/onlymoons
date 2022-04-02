@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { BigNumber, Contract } from 'ethers'
-import { ContractCacheContext } from './ContractCache'
+import { useContractCache } from './ContractCache'
 import { LPLockData, TokenLockData } from '../../typings'
 import { usePromise } from 'react-use'
 import { useWeb3React, getWeb3ReactContext } from '@web3-react/core'
@@ -23,9 +23,18 @@ export const TokenLockerManagerV1ContractContext = createContext<ITokenLockerMan
   tokenLockerCount: 0,
 })
 
+export const useTokenLockerManagerV1Contract = () => {
+  const context = useContext(TokenLockerManagerV1ContractContext)
+  if (!context)
+    throw new Error(
+      'useTokenLockerManagerV1Contract can only be used within TokenLockerManagerV1ContractContextProvider',
+    )
+  return context
+}
+
 const TokenLockerManagerV1ContractContextProvider: React.FC = ({ children }) => {
   const mounted = usePromise()
-  const { getContract } = useContext(ContractCacheContext)
+  const { getContract } = useContractCache()
   const [contract, setContract] = useState<Contract>()
   const [tokenLockerCount, setTokenLockerCount] = useState<number>(0)
   const { chainId } = useWeb3React()

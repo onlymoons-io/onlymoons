@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
 import tw from 'tailwind-styled-components'
 import { BigNumber, utils } from 'ethers'
-import { UtilContractContext } from './contracts/Util'
-import { PriceTrackerContext } from './contracts/PriceTracker'
-import { useWeb3React } from '@web3-react/core'
+import { useUtilContract } from './contracts/Util'
+import { usePriceTracker } from './contracts/PriceTracker'
+import { useWeb3React, getWeb3ReactContext } from '@web3-react/core'
 import { getNetworkDataByChainId, getFormattedAmount } from '../util'
 import { LPData, NetworkData, TokenData } from '../typings'
 import humanNumber from 'human-number'
@@ -47,17 +47,20 @@ const TokenWithValue: React.FC<TokenWithValueProps> = ({
 }) => {
   const mounted = usePromise()
   const { chainId } = useWeb3React()
-  const { getLpData } = useContext(UtilContractContext)
-  const { isSupportedToken, getPriceForPair } = useContext(PriceTrackerContext) || {}
+  const { chainId: chainIdConstant } = useContext(getWeb3ReactContext('constant'))
+  const { getLpData } = useUtilContract()
+  const { isSupportedToken, getPriceForPair } = usePriceTracker()
   const [networkData, setNetworkData] = useState<NetworkData>()
   const [lpData, setLpData] = useState<LPData>()
   // const [pairedTokenData, setPairedTokenData] = useState<TokenData>()
   const [supported, setSupported] = useState<boolean>(false)
   const [price, setPrice] = useState<number>()
 
+  const eitherChainId = typeof chainId !== 'undefined' ? chainId : chainIdConstant
+
   useEffect(() => {
-    setNetworkData(chainId ? getNetworkDataByChainId(chainId) : undefined)
-  }, [chainId])
+    setNetworkData(eitherChainId ? getNetworkDataByChainId(eitherChainId) : undefined)
+  }, [eitherChainId])
 
   useEffect(() => {
     setSupported(isSupportedToken && isSupportedToken(tokenData.address) ? true : false)

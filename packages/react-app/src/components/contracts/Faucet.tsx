@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import contracts from '../../contracts/production_contracts.json'
 import { useWeb3React } from '@web3-react/core'
 import { Contract } from 'ethers'
@@ -12,6 +12,12 @@ export interface IFaucetContext {
 export const FaucetContext = createContext<IFaucetContext>({
   //
 })
+
+export const useFaucetContract = () => {
+  const context = useContext(FaucetContext)
+  if (!context) throw new Error('useFaucetContract can only be used within FaucetContextProvider')
+  return context
+}
 
 const FaucetContextProvider: React.FC = ({ children }) => {
   const { chainId, connector } = useWeb3React()

@@ -1,36 +1,30 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSadTear } from '@fortawesome/free-solid-svg-icons'
 import SplitStakingV1ContractContextProvider from '../contracts/SplitStakingV1'
-import StakingManagerV1ContractContextProvider, { StakingManagerV1ContractContext } from '../contracts/StakingManagerV1'
-// import { ModalControllerContext } from '../ModalController'
+import StakingManagerV1ContractContextProvider, { useStakingManagerV1Contract } from '../contracts/StakingManagerV1'
 import Staking from './Staking'
 import NotConnected from '../NotConnected'
-import { StakingData /*SplitStakingRewardsData, AllRewardsForAddress, StakingDataForAccount*/ } from '../../typings'
+import { StakingData } from '../../typings'
 import Button from '../Button'
 import { Outer, MidSection, SectionInner, Grid } from '../Layout'
 import SplitStaking from './SplitStaking'
 import { usePromise } from 'react-use'
 import CreateStaking from './Create'
 
-// const { Web3Provider } = providers
-
 export interface StakingProps {
-  //
   viewMode: 'split' | 'all' | 'deploy'
 }
 
 const StakingComponent: React.FC<StakingProps> = ({ viewMode }) => {
   const mounted = usePromise()
-  // const { setCurrentModal } = useContext(ModalControllerContext)
   const { account: accountToCheck, chainId: chainIdToUse, id: idToUse } = useParams()
   const { connector, chainId } = useWeb3React()
-  const { stakingEnabledOnNetwork, contract, count, getStakingDataById } = useContext(StakingManagerV1ContractContext)
+  const { stakingEnabledOnNetwork, contract, count, getStakingDataById } = useStakingManagerV1Contract()
   const [stakingInstances, setStakingInstances] = useState<Array<StakingData>>([])
   const [sortedStakingInstances, setSortedStakingInstances] = useState<Array<StakingData>>([])
-  // const [_viewMode, setViewMode] = useState<'split' | 'all'>(viewMode)
 
   useEffect(() => {
     if (chainId && chainIdToUse && chainId !== parseInt(chainIdToUse)) {

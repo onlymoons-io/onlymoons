@@ -1,4 +1,4 @@
-import React, { ReactNode, createContext, useState, useEffect } from 'react'
+import React, { ReactNode, createContext, useContext, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import tw from 'tailwind-styled-components'
 
@@ -21,6 +21,12 @@ export const ModalControllerContext = createContext<IModalControllerContext>({
   setCurrentModal: () => {},
   closeModal: () => {},
 })
+
+export const useModal = () => {
+  const modalController = useContext(ModalControllerContext)
+  if (!modalController) throw new Error('useModal can only be used within ModalControllerProvider')
+  return modalController
+}
 
 const ModalControllerProvider: React.FC = ({ children }) => {
   const [currentModal, setCurrentModal] = useState<ReactNode>()

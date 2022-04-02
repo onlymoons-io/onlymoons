@@ -1,23 +1,23 @@
-import React, { useState, useEffect, useCallback, useContext, useRef, CSSProperties } from 'react'
+import React, { useState, useEffect, useCallback, useRef, CSSProperties } from 'react'
 import { useMount, usePromise, useUnmount } from 'react-use'
 import { Link } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
 import { BigNumber, Contract, providers, utils } from 'ethers'
 import 'react-circular-progressbar/dist/styles.css'
-import { UtilContractContext } from '../contracts/Util'
-import { StakingManagerV1ContractContext } from '../contracts/StakingManagerV1'
+import { useUtilContract } from '../contracts/Util'
+import { useStakingManagerV1Contract } from '../contracts/StakingManagerV1'
 import { TokenData, StakingData, StakingDataForAccount } from '../../typings'
 import { motion } from 'framer-motion'
 import { Primary as PrimaryButton } from '../Button'
-import { NotificationCatcherContext } from '../NotificationCatcher'
+import { useNotifications } from '../NotificationCatcher'
 import { getNativeCoin } from '../../util'
 import { ERC20ABI } from '../../contracts/external_contracts'
 import DetailsCard, { Detail, Title } from '../DetailsCard'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faCircleNotch } from '@fortawesome/free-solid-svg-icons'
 import TokenInput from '../TokenInput'
-import { ContractCacheContext } from '../contracts/ContractCache'
-import { SplitStakingV1ContractContext } from '../contracts/SplitStakingV1'
+import { useContractCache } from '../contracts/ContractCache'
+import { useSplitStakingV1Contract } from '../contracts/SplitStakingV1'
 import AddressLink from '../AddressLink'
 
 const { Web3Provider } = providers
@@ -39,11 +39,11 @@ const Staking: React.FC<StakingProps> = ({
 }) => {
   const mounted = usePromise()
   const { account, chainId, connector } = useWeb3React()
-  const { getContract } = useContext(ContractCacheContext)
-  const { push: pushNotification } = useContext(NotificationCatcherContext)
-  const { getTokenData } = useContext(UtilContractContext)
-  const { contract, owner } = useContext(StakingManagerV1ContractContext)
-  const { setSoloStakingAddress, setLpStakingAddress } = useContext(SplitStakingV1ContractContext)
+  const { getContract } = useContractCache()
+  const { push: pushNotification } = useNotifications()
+  const { getTokenData } = useUtilContract()
+  const { contract, owner } = useStakingManagerV1Contract()
+  const { setSoloStakingAddress, setLpStakingAddress } = useSplitStakingV1Contract()
   const [_stakingData, setStakingData] = useState<StakingData | undefined>(stakingData)
   const [stakingTokenData, setStakingTokenData] = useState<TokenData>()
   const [rewardsTokenData, setRewardsTokenData] = useState<TokenData>()
@@ -63,10 +63,6 @@ const Staking: React.FC<StakingProps> = ({
 
   useMount(() => setStakingData(_stakingData))
   useUnmount(() => setStakingData(undefined))
-
-  // const getChainId = useCallback(() => {
-  //   return chainId || 0
-  // }, [chainId])
 
   useEffect(() => {
     if (!contract || !connector || !getTokenData || !_stakingData) {

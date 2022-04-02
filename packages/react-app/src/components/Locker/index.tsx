@@ -5,7 +5,7 @@ import { utils } from 'ethers'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons'
 import { motion } from 'framer-motion'
-import { TokenLockerManagerV1ContractContext } from '../contracts/TokenLockerManagerV1'
+import { useTokenLockerManagerV1Contract } from '../contracts/TokenLockerManagerV1'
 import Lock from './Lock'
 import NotConnected from '../NotConnected'
 import Header from './Header'
@@ -29,7 +29,7 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
   const mounted = usePromise()
   const { account: accountToCheck, chainId: _chainIdToUse, id: idToUse } = useParams()
   const { chainId, connector } = useContext(getWeb3ReactContext('constant'))
-  const { contract, getTokenLockersForAddress, tokenLockerCount } = useContext(TokenLockerManagerV1ContractContext)
+  const { contract, getTokenLockersForAddress, tokenLockerCount } = useTokenLockerManagerV1Contract()
   const [filterInputValue, setFilterInputValue] = useState<string>()
   const [lockIds, setLockIds] = useState<number[]>([])
   const wasUsingWatchlist = useRef<boolean>(false)

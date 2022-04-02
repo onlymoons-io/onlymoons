@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import DetailsCard from '../DetailsCard'
-import { ContractCacheContext } from '../contracts/ContractCache'
-import { UtilContractContext } from '../contracts/Util'
+import { useContractCache } from '../contracts/ContractCache'
+import { useUtilContract } from '../contracts/Util'
 import { TokenData } from '../../typings'
 import { BigNumber, Contract, utils } from 'ethers'
 import { useWeb3React } from '@web3-react/core'
@@ -22,8 +22,8 @@ export interface FaucetProps {
 
 const Faucet: React.FC<FaucetProps> = ({ address }) => {
   const { account, chainId } = useWeb3React()
-  const { getContract } = useContext(ContractCacheContext)
-  const { contract: utilContract, getTokenData } = useContext(UtilContractContext)
+  const { getContract } = useContractCache()
+  const { contract: utilContract, getTokenData } = useUtilContract()
   const [contract, setContract] = useState<Contract>()
   const [tokenData, setTokenData] = useState<TokenData>()
   const [claimLimits, setClaimLimits] = useState<ClaimLimits>()

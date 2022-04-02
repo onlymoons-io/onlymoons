@@ -19,9 +19,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { faStar as faStarOutline } from '@fortawesome/free-regular-svg-icons'
 import humanizeDuration from 'humanize-duration'
-import { UtilContractContext } from '../contracts/Util'
-import { TokenLockerManagerV1ContractContext } from '../contracts/TokenLockerManagerV1'
-import { ModalControllerContext } from '../ModalController'
+import { useUtilContract } from '../contracts/Util'
+import { useTokenLockerManagerV1Contract } from '../contracts/TokenLockerManagerV1'
+import { useModal } from '../ModalController'
 import { TokenData, TokenLockData, LPLockData, NetworkData } from '../../typings'
 import { motion } from 'framer-motion'
 import { Primary as PrimaryButton, Ghost as Button } from '../Button'
@@ -37,7 +37,7 @@ import {
 } from '../../util'
 import { ERC20ABI } from '../../contracts/external_contracts'
 import DetailsCard, { Detail, Title } from '../DetailsCard'
-import { ContractCacheContext } from '../contracts/ContractCache'
+import { useContractCache } from '../contracts/ContractCache'
 import Input from '../Input'
 import ContractDetails from '../ContractDetails'
 import AddressLink from '../AddressLink'
@@ -89,10 +89,10 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
   const { isWatching, addToWatchlist, removeFromWatchlist } = useContext(LockWatchlist)
   const { account, chainId, connector } = useWeb3React()
   const { chainId: chainIdConstant, connector: connectorConstant } = useContext(getWeb3ReactContext('constant'))
-  const { getContract } = useContext(ContractCacheContext)
-  const { getTokenData } = useContext(UtilContractContext)
-  const { contract, getTokenLockData } = useContext(TokenLockerManagerV1ContractContext)
-  const { setCurrentModal } = useContext(ModalControllerContext)
+  const { getContract } = useContractCache()
+  const { getTokenData } = useUtilContract()
+  const { contract, getTokenLockData } = useTokenLockerManagerV1Contract()
+  const { setCurrentModal } = useModal()
   const [lockData, setLockData] = useState<TokenLockData | undefined>()
   const [lockTokenData, setLockTokenData] = useState<TokenData>()
   const [lockContract, setLockContract] = useState<Contract>()
@@ -151,14 +151,6 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
     currentlyVisible.current = false
     setLockData(undefined)
   })
-
-  // useEffect(() => {
-  //   if (chainId) {
-  //     setLockData(undefined)
-  //   } else {
-  //     setLockData(undefined)
-  //   }
-  // }, [chainId])
 
   const updateIsVisible = useCallback(() => {
     currentlyVisible.current = intersection && intersection.intersectionRatio > 0 ? true : false

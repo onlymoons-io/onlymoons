@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import tw from 'tailwind-styled-components'
@@ -9,8 +9,8 @@ import { useWeb3React } from '@web3-react/core'
 import { Primary as PrimaryButton } from '../Button'
 import Input from '../Input'
 import { TokenData, LPLockData } from '../../typings'
-import { TokenLockerManagerV1ContractContext } from '../contracts/TokenLockerManagerV1'
-import { UtilContractContext } from '../contracts/Util'
+import { useTokenLockerManagerV1Contract } from '../contracts/TokenLockerManagerV1'
+import { useUtilContract } from '../contracts/Util'
 import { ERC20ABI } from '../../contracts/external_contracts'
 import { timestampToDateTimeLocal, getNetworkDataByChainId } from '../../util'
 import Header from './Header'
@@ -60,8 +60,8 @@ const Create: React.FC = () => {
   const mounted = usePromise()
   const navigate = useNavigate()
   const { account, chainId, connector } = useWeb3React()
-  const { address: lockerManagerAddress, createTokenLocker } = useContext(TokenLockerManagerV1ContractContext)
-  const { getTokenData, isLpToken, getLpData } = useContext(UtilContractContext)
+  const { address: lockerManagerAddress, createTokenLocker } = useTokenLockerManagerV1Contract()
+  const { getTokenData, isLpToken, getLpData } = useUtilContract()
   const [loadingTokenData, setLoadingTokenData] = useState<boolean>(false)
   const [tokenData, setTokenData] = useState<TokenData>()
   const [amount, setAmount] = useState<string>()

@@ -4,9 +4,11 @@ import tw from 'tailwind-styled-components'
 import { Link } from 'react-router-dom'
 import NetworkSelect from '../NetworkSelect'
 import ConnectButton from '../ConnectButton'
-// import { PriceTrackerContext } from '../contracts/PriceTracker'
-
 import logoSrc from '../../images/logo-white.svg'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBars } from '@fortawesome/free-solid-svg-icons'
+import Button from '../Button'
+import { useAppNavState } from '../../App'
 
 const Outer = tw.nav`
   h-16
@@ -19,7 +21,8 @@ const Outer = tw.nav`
   overflow-hidden
   fixed
   top-0
-  left-16
+  left-0
+  md:left-16
   right-0
   z-30
 `
@@ -41,7 +44,11 @@ const HeaderCSS = styled.h1`
     'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 `
 
-const Header = tw(HeaderCSS)``
+const Header = tw(HeaderCSS)`
+  flex
+  items-center
+  gap-2
+`
 
 const LogoLinkCSS = styled(Link)``
 
@@ -93,28 +100,23 @@ const Right = tw.div`
   items-center
 `
 
-// const RightLinks = tw.div`
-//   flex
-//   gap-4
-//   items-center
-// `
-
-// const RightLink = tw(Link)`
-//   text-lg
-//   text-indigo-500
-//   hover:text-indigo-400
-//   dark:text-indigo-300
-//   dark:hover:text-indigo-100
-// `
-
 const NavBar: React.FC = () => {
-  // const { nativeCoinPrice } = useContext(PriceTrackerContext) || {}
+  const { leftNavExpanded, setLeftNavExpanded } = useAppNavState()
 
   return (
     <Outer>
       <Inner>
         <Left>
           <Header>
+            <Button
+              className="md:hidden"
+              onClick={() => {
+                setLeftNavExpanded(!leftNavExpanded)
+              }}
+            >
+              <FontAwesomeIcon icon={faBars} />
+            </Button>
+
             <LogoLink to="/">
               <LogoImgWrapper>
                 <LogoImg src={logoSrc} width={36} height={36} />
@@ -129,17 +131,6 @@ const NavBar: React.FC = () => {
         </Left>
 
         <Right>
-          {/* <RightLinks>
-            <RightLink to="/staking">Staking</RightLink>
-            <RightLink to="/locker">Locker</RightLink>
-          </RightLinks> */}
-
-          {/* <DarkModeToggle /> */}
-
-          {/* <span className="mx-4">
-            ${(nativeCoinPrice || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </span> */}
-
           <NetworkSelect className="rounded-tr-none rounded-br-none" />
           <ConnectButton className="rounded-tl-none rounded-bl-none" />
         </Right>
