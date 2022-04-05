@@ -32,6 +32,7 @@
     "deploy:metis": "yarn deploy --network metis",
     "deploy:metistest": "yarn deploy --network metistest",
     "deploy:milkomeda": "yarn deploy --network milkomeda",
+    "deploy:avax": "yarn deploy --network avax",
     "deploy:fuse": "yarn deploy --network fuse",
     "deploy:fusetest": "yarn deploy --network fusetest",
     "deploy:polygon": "yarn deploy --network polygon",
