@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 
 export const Outer = tw(motion.div)`
   h-full
+  pointer-events-none
 `
 
 Outer.defaultProps = {
@@ -20,6 +21,7 @@ export const Inner = tw.div`
   h-full
   flex
   flex-col
+  pointer-events-auto
 `
 
 export const Section = tw.section`
