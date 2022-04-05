@@ -4,7 +4,7 @@ import * as Switch from '@radix-ui/react-switch'
 
 const StyledRoot = styled(Switch.Root)`
   width: 48px;
-  height: 28px;
+  height: 26px;
 `
 
 export const Root = tw(StyledRoot)`
@@ -14,18 +14,18 @@ export const Root = tw(StyledRoot)`
   relative
   shadow
   px-1
+  flex
+  items-center
 `
 
 const StyledThumb = styled(Switch.Thumb)`
   width: 20px;
   height: 20px;
   transform: translateX(0);
-  opacity: 0.666;
-  filter: saturate(0.5);
+  filter: saturate(0.25);
 
   &[data-state='checked'] {
     transform: translateX(100%);
-    opacity: 1;
     filter: saturate(1);
   }
 `

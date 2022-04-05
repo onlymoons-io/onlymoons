@@ -13,7 +13,8 @@ import { Outer, MidSection, SectionInner, Grid as Locks, Loading as LocksLoading
 import { usePromise } from 'react-use'
 import { LockWatchlist } from './LockWatchlist'
 import contracts from '../../contracts/compiled_contracts.json'
-// import { getNetworkDataByChainId } from '../../util'
+import SwitchNetworkButton from '../SwitchNetworkButton'
+import { getNetworkDataByChainId } from '../../util'
 // import { NetworkData } from '../../typings'
 
 // const contracts = _contracts as any
@@ -135,7 +136,12 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
               parseInt(idToUse) === lockIds[0] ? (
                 <div className="w-full md:max-w-md">
                   {chainId && chainIdToUse && chainId !== parseInt(chainIdToUse) ? (
-                    <div className="text-center">Connected to the wrong network to view this lock.</div>
+                    <div className="text-center">
+                      To view this lock, switch to{' '}
+                      <SwitchNetworkButton
+                        targetNetwork={getNetworkDataByChainId(parseInt(chainIdToUse))}
+                      ></SwitchNetworkButton>{' '}
+                    </div>
                   ) : (
                     <Lock key={lockIds[0]} lockId={lockIds[0]} />
                   )}

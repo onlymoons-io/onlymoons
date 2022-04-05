@@ -1,9 +1,9 @@
 import React, { createContext, useContext } from 'react'
 import { usePromise } from 'react-use'
-import { AbstractConnector } from '@web3-react/abstract-connector'
 import { NetworkConnector } from '@web3-react/network-connector'
 import { getNetworkDataByChainId } from '../util'
-import { useModal } from './ModalController'
+import { useCallback } from 'react'
+import { getWeb3ReactContext, useWeb3React } from '@web3-react/core'
 
 interface ErrorInterface {
   code: number
@@ -11,7 +11,7 @@ interface ErrorInterface {
 }
 
 export interface INetworkSwitcherContext {
-  switchNetwork: (_connector: AbstractConnector, _provider: any, targetChainId: number) => Promise<void>
+  switchNetwork: (targetChainId: number) => Promise<void>
 }
 
 export const NetworkSwitcherContext = createContext<INetworkSwitcherContext>({
@@ -24,56 +24,66 @@ export const useNetworkSwitcherContext = () => {
 
 const NetworkSwitcherContextProvider: React.FC = ({ children }) => {
   const mounted = usePromise()
-  const { closeModal } = useModal()
+  const { connector: connectedConnector } = useWeb3React()
+  const { connector: constantConnector } = useContext(getWeb3ReactContext('constant'))
 
-  const switchNetwork = async (_connector: AbstractConnector, _provider: any, targetChainId: number) => {
-    try {
-      if (_connector instanceof NetworkConnector) {
-        _connector.changeChainId(targetChainId)
-      } else {
-        await mounted(
-          _provider.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: `0x${targetChainId.toString(16)}` }],
-          }),
-        )
-      }
-    } catch (error) {
-      if ((error as ErrorInterface).code === 4902) {
-        try {
-          const targetNetworkData = getNetworkDataByChainId(targetChainId)
+  const eitherConnector = typeof connectedConnector !== 'undefined' ? connectedConnector : constantConnector
 
-          if (!targetNetworkData) {
-            //
-            return
-          }
+  const switchNetwork = useCallback(
+    async (targetChainId: number) => {
+      if (!eitherConnector) return
 
+      try {
+        if (eitherConnector instanceof NetworkConnector) {
+          eitherConnector.changeChainId(targetChainId)
+        } else {
           await mounted(
-            _provider.request({
-              method: 'wallet_addEthereumChain',
-              params: [
-                {
-                  chainId: `0x${targetChainId.toString(16)}`,
-                  chainName: targetNetworkData.name,
-                  rpcUrls: [targetNetworkData.rpcURL],
-                  nativeCurrency: {
-                    name: targetNetworkData.nativeCurrency.name,
-                    symbol: targetNetworkData.nativeCurrency.symbol,
-                    decimals: targetNetworkData.nativeCurrency.decimals,
-                  },
-                  blockExplorerUrls: [targetNetworkData.explorerURL],
-                },
-              ],
+            (
+              await eitherConnector.getProvider()
+            ).request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: `0x${targetChainId.toString(16)}` }],
             }),
           )
-        } catch (error) {
-          console.error(error)
+        }
+      } catch (error) {
+        if ((error as ErrorInterface).code === 4902) {
+          try {
+            const targetNetworkData = getNetworkDataByChainId(targetChainId)
+
+            if (!targetNetworkData) {
+              //
+              return
+            }
+
+            await mounted(
+              (
+                await eitherConnector.getProvider()
+              ).request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                  {
+                    chainId: `0x${targetChainId.toString(16)}`,
+                    chainName: targetNetworkData.name,
+                    rpcUrls: [targetNetworkData.rpcURL],
+                    nativeCurrency: {
+                      name: targetNetworkData.nativeCurrency.name,
+                      symbol: targetNetworkData.nativeCurrency.symbol,
+                      decimals: targetNetworkData.nativeCurrency.decimals,
+                    },
+                    blockExplorerUrls: [targetNetworkData.explorerURL],
+                  },
+                ],
+              }),
+            )
+          } catch (error) {
+            console.error(error)
+          }
         }
       }
-    }
-
-    closeModal()
-  }
+    },
+    [mounted, eitherConnector],
+  )
 
   return (
     <NetworkSwitcherContext.Provider

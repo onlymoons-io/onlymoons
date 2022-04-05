@@ -310,11 +310,11 @@ const App: React.FC = () => {
   return IS_HTTPS ? (
     <Web3ReactProvider getLibrary={getLibrary}>
       <Web3ReactProviderConstant getLibrary={getLibrary}>
-        <ModalControllerProvider>
-          <NetworkSwitcherProvider>
+        <NetworkSwitcherProvider>
+          <ModalControllerProvider>
             <AppWeb3 />
-          </NetworkSwitcherProvider>
-        </ModalControllerProvider>
+          </ModalControllerProvider>
+        </NetworkSwitcherProvider>
       </Web3ReactProviderConstant>
     </Web3ReactProvider>
   ) : (
