@@ -20,6 +20,30 @@ export const networks: Record<number, NetworkData> = {
     isTestNet: true,
     supportedLiquidityPairTokens: [],
   },
+  25: {
+    chainId: 25,
+    name: 'Cronos',
+    shortName: 'CRO',
+    urlName: 'cro',
+    nativeCurrency: {
+      address: '0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23',
+      name: 'Wrapped CRO',
+      symbol: 'WCRO',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://cronos.org/explorer/',
+    rpcURL: 'https://evm-cronos.crypto.org',
+    icon: '/cro.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      {
+        address: '0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23',
+        // pair w/ USDC on https://mm.finance/
+        stablePair: '0xa68466208F1A3Eb21650320D2520ee8eBA5ba623',
+      },
+    ],
+  },
   56: {
     chainId: 56,
     name: 'Binance Smart Chain',
