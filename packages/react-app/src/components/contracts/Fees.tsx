@@ -38,7 +38,6 @@ const FeesContractContextProvider: React.FC = ({ children }) => {
     mounted(getContract('Fees'))
       .then(setContract)
       .catch((err: Error) => {
-        console.error(err)
         setContract(undefined)
       })
   }, [mounted, getContract])

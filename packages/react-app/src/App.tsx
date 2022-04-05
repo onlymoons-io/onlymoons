@@ -29,12 +29,13 @@ import ComingSoon from './components/ComingSoon'
 import Faucets from './components/Faucets'
 import Fundraising from './components/Fundraising'
 import Bridge from './components/Bridge'
+import NetworkSwitcherProvider from './components/NetworkSwitcher'
 
 import './App.css'
 
 import { networks } from './util/getNetworkDataByChainId'
 
-import { Web3ReactProvider, createWeb3ReactRoot, getWeb3ReactContext } from '@web3-react/core'
+import { Web3ReactProvider, createWeb3ReactRoot, getWeb3ReactContext, useWeb3React } from '@web3-react/core'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { NetworkConnector } from '@web3-react/network-connector'
 
@@ -145,107 +146,112 @@ const AppContent: React.FC = () => {
         setLeftNavExpanded,
       }}
     >
-      <ModalControllerProvider>
-        <Outer>
-          <LeftArea
-            $expanded={leftNavExpanded}
-            onMouseEnter={() => {
-              mouseLeaveTimer.current && clearTimeout(mouseLeaveTimer.current)
-              !isSmall && setLeftNavExpanded(true)
-            }}
-            onMouseLeave={() => {
-              mouseLeaveTimer.current && clearTimeout(mouseLeaveTimer.current)
-              if (!isSmall) {
-                mouseLeaveTimer.current = setTimeout(() => {
-                  setLeftNavExpanded(false)
-                }, 500)
+      <Outer>
+        <LeftArea
+          $expanded={leftNavExpanded}
+          onMouseEnter={() => {
+            mouseLeaveTimer.current && clearTimeout(mouseLeaveTimer.current)
+            !isSmall && setLeftNavExpanded(true)
+          }}
+          onMouseLeave={() => {
+            mouseLeaveTimer.current && clearTimeout(mouseLeaveTimer.current)
+            if (!isSmall) {
+              mouseLeaveTimer.current = setTimeout(() => {
+                setLeftNavExpanded(false)
+              }, 500)
+            }
+          }}
+        >
+          <LeftNav />
+          <BottomLeftArea $expanded={leftNavExpanded}>
+            <DarkModeToggle className="-ml-1" />
+          </BottomLeftArea>
+        </LeftArea>
+
+        <RightArea>
+          <NavBar />
+
+          <Routes>
+            <Route path="/launches" element={<ComingSoon />} />
+            <Route path="/deployer" element={<ComingSoon />} />
+            <Route
+              path="/locker/search/:account"
+              element={
+                <TokenLockerManagerV1ContractContextProvider>
+                  <LockWatchlistProvider children={<ManageLockers />} />
+                </TokenLockerManagerV1ContractContextProvider>
               }
-            }}
-          >
-            <LeftNav />
-            <BottomLeftArea $expanded={leftNavExpanded}>
-              <DarkModeToggle className="-ml-1" />
-            </BottomLeftArea>
-          </LeftArea>
+            />
+            <Route
+              path="/locker/account/:account"
+              element={
+                <TokenLockerManagerV1ContractContextProvider>
+                  <LockWatchlistProvider children={<ManageLockers />} />
+                </TokenLockerManagerV1ContractContextProvider>
+              }
+            />
+            <Route
+              path="/locker/create"
+              element={
+                <TokenLockerManagerV1ContractContextProvider>
+                  <LockWatchlistProvider children={<CreateLocker />} />
+                </TokenLockerManagerV1ContractContextProvider>
+              }
+            />
+            <Route
+              path="/locker/watchlist"
+              element={
+                <TokenLockerManagerV1ContractContextProvider>
+                  <LockWatchlistProvider children={<Locker useWatchlist={true} />} />{' '}
+                </TokenLockerManagerV1ContractContextProvider>
+              }
+            />
+            <Route
+              path="/locker/:chainId/:id"
+              element={
+                <TokenLockerManagerV1ContractContextProvider>
+                  <LockWatchlistProvider children={<Locker />} />
+                </TokenLockerManagerV1ContractContextProvider>
+              }
+            />
+            <Route
+              path="/locker"
+              element={
+                <TokenLockerManagerV1ContractContextProvider>
+                  <LockWatchlistProvider children={<Locker />} />
+                </TokenLockerManagerV1ContractContextProvider>
+              }
+            />
+            <Route path="/bridge" element={<Bridge />} />
+            {/* <Route path="/staking/create" element={<CreateStaking />} /> */}
+            <Route path="/staking/deploy" element={<Staking viewMode="deploy" />} />
+            <Route path="/staking/all" element={<Staking viewMode="all" />} />
+            <Route path="/staking" element={<Staking viewMode="split" />} />
+            <Route path="/fundraising" element={<Fundraising />} />
+            <Route path="/governance" element={<ComingSoon />} />
+            <Route path="/faucet" element={<Faucets />} />
+            <Route path="/stats" element={<ComingSoon />} />
+            <Route path="/" element={<Home />} />
+          </Routes>
+        </RightArea>
 
-          <RightArea>
-            <NavBar />
-
-            <Routes>
-              <Route path="/launches" element={<ComingSoon />} />
-              <Route path="/deployer" element={<ComingSoon />} />
-              <Route
-                path="/locker/search/:account"
-                element={
-                  <TokenLockerManagerV1ContractContextProvider>
-                    <LockWatchlistProvider children={<ManageLockers />} />
-                  </TokenLockerManagerV1ContractContextProvider>
-                }
-              />
-              <Route
-                path="/locker/account/:account"
-                element={
-                  <TokenLockerManagerV1ContractContextProvider>
-                    <LockWatchlistProvider children={<ManageLockers />} />
-                  </TokenLockerManagerV1ContractContextProvider>
-                }
-              />
-              <Route
-                path="/locker/create"
-                element={
-                  <TokenLockerManagerV1ContractContextProvider>
-                    <LockWatchlistProvider children={<CreateLocker />} />
-                  </TokenLockerManagerV1ContractContextProvider>
-                }
-              />
-              <Route
-                path="/locker/watchlist"
-                element={
-                  <TokenLockerManagerV1ContractContextProvider>
-                    <LockWatchlistProvider children={<Locker useWatchlist={true} />} />{' '}
-                  </TokenLockerManagerV1ContractContextProvider>
-                }
-              />
-              <Route
-                path="/locker/:chainId/:id"
-                element={
-                  <TokenLockerManagerV1ContractContextProvider>
-                    <LockWatchlistProvider children={<Locker />} />
-                  </TokenLockerManagerV1ContractContextProvider>
-                }
-              />
-              <Route
-                path="/locker"
-                element={
-                  <TokenLockerManagerV1ContractContextProvider>
-                    <LockWatchlistProvider children={<Locker />} />
-                  </TokenLockerManagerV1ContractContextProvider>
-                }
-              />
-              <Route path="/bridge" element={<Bridge />} />
-              {/* <Route path="/staking/create" element={<CreateStaking />} /> */}
-              <Route path="/staking/deploy" element={<Staking viewMode="deploy" />} />
-              <Route path="/staking/all" element={<Staking viewMode="all" />} />
-              <Route path="/staking" element={<Staking viewMode="split" />} />
-              <Route path="/fundraising" element={<Fundraising />} />
-              <Route path="/governance" element={<ComingSoon />} />
-              <Route path="/faucet" element={<Faucets />} />
-              <Route path="/stats" element={<ComingSoon />} />
-              <Route path="/" element={<Home />} />
-            </Routes>
-          </RightArea>
-
-          {/* {leftNavExpanded && <div className="absolute inset-0 left-64 bg-gray-900 bg-opacity-80 z-50" />} */}
-        </Outer>
-      </ModalControllerProvider>
+        {/* {leftNavExpanded && <div className="absolute inset-0 left-64 bg-gray-900 bg-opacity-80 z-50" />} */}
+      </Outer>
     </AppNavState.Provider>
   )
 }
 
 const AppWeb3: React.FC = () => {
   const mounted = usePromise()
+  const { chainId: connectedChainId } = useWeb3React()
   const { activate, connector, chainId } = useContext(getWeb3ReactContext('constant'))
   const [connecting, setConnecting] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (connectedChainId && connector instanceof NetworkConnector) {
+      connector.changeChainId(connectedChainId)
+    }
+  }, [connectedChainId, connector])
 
   useEffect(() => {
     if (chainId !== undefined) {
@@ -304,7 +310,11 @@ const App: React.FC = () => {
   return IS_HTTPS ? (
     <Web3ReactProvider getLibrary={getLibrary}>
       <Web3ReactProviderConstant getLibrary={getLibrary}>
-        <AppWeb3 />
+        <ModalControllerProvider>
+          <NetworkSwitcherProvider>
+            <AppWeb3 />
+          </NetworkSwitcherProvider>
+        </ModalControllerProvider>
       </Web3ReactProviderConstant>
     </Web3ReactProvider>
   ) : (

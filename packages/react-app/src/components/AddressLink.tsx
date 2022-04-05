@@ -2,14 +2,13 @@ import React, { CSSProperties, useContext, useCallback, useEffect, useState } fr
 import { useWeb3React, getWeb3ReactContext } from '@web3-react/core'
 import { providers } from 'ethers'
 import { getExplorerAddressLink, getShortAddress } from '../util'
-import { Web3Provider } from '@ethersproject/providers'
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faExternalLinkAlt, faFileCode } from '@fortawesome/free-solid-svg-icons'
 import Anchor from './Anchor'
 import { usePromise } from 'react-use'
 
-const { Web3Provider: Web3ProviderClass } = providers
+// const { Web3Provider: Web3ProviderClass } = providers
 
 // const { is } = utils
 
@@ -39,7 +38,7 @@ const AddressLink: React.FC<AddressLinkProps> = ({
   const { chainId, connector } = useWeb3React()
   const { chainId: chainIdConstant, connector: connectorConstant } = useContext(getWeb3ReactContext('constant'))
   // const [explorerUrl, setExplorerUrl] = useState<string>()
-  const [provider, setProvider] = useState<Web3Provider>()
+  const [provider, setProvider] = useState<providers.Web3Provider>()
   const [isContract, setIsContract] = useState<boolean>(definitelyContract)
 
   const eitherChainId = typeof chainId !== 'undefined' ? chainId : chainIdConstant
@@ -70,7 +69,7 @@ const AddressLink: React.FC<AddressLinkProps> = ({
     }
 
     mounted(eitherConnector.getProvider())
-      .then((_provider) => new Web3ProviderClass(_provider))
+      .then((_provider) => new providers.Web3Provider(_provider))
       .then(setProvider)
       .catch((err: Error) => {
         console.error(err)

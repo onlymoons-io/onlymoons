@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import contracts from '../../contracts/production_contracts.json'
+import _contracts from '../../contracts/compiled_contracts.json'
 import { useWeb3React } from '@web3-react/core'
 import { Contract } from 'ethers'
 import { Web3Provider } from '@ethersproject/providers'
+
+const contracts = _contracts as any
 
 export interface IFaucetContext {
   //
@@ -32,12 +34,10 @@ const FaucetContextProvider: React.FC = ({ children }) => {
       return
     }
 
-    const chains = (contracts as any)[chainId.toString()]
-    const key = Object.keys(chains)[0]
-    const _contract = chains[key]?.contracts['Faucet']
-
-    setAddress(_contract?.address)
-    setAbi(_contract?.abi)
+    setAddress(
+      contracts.Faucet?.networks[chainId.toString()][Object.keys(contracts.Faucet?.networks[chainId.toString()])[0]],
+    )
+    setAbi(contracts.Faucet?.abi)
   }, [chainId])
 
   useEffect(() => {
