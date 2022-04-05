@@ -27,13 +27,13 @@ export const networks: Record<number, NetworkData> = {
     urlName: 'cro',
     nativeCurrency: {
       address: '0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23',
-      name: 'Wrapped CRO',
-      symbol: 'WCRO',
+      name: 'Cronos',
+      symbol: 'CRO',
       decimals: 18,
       balance: BigNumber.from(0),
     },
     explorerURL: 'https://cronos.org/explorer/',
-    rpcURL: 'https://evm-cronos.crypto.org',
+    rpcURL: 'https://evm-cronos.crypto.org/',
     icon: '/cro.png',
     isTestNet: false,
     supportedLiquidityPairTokens: [
