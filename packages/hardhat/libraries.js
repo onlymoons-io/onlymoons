@@ -9,5 +9,7 @@ module.exports = {
   // mainnet - NEVER CHANGE!
   // Util: "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE",
   // polygon
+  // Util: "0x77110f67C0EF3c98c43570BADe06046eF6549876",
+  // avax
   Util: "0x77110f67C0EF3c98c43570BADe06046eF6549876",
 };
