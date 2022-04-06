@@ -78,11 +78,11 @@ const ModalControllerProvider: React.FC = ({ children }) => {
         onClick={clickCloseHandler}
       >
         <motion.div
-          className="w-full h-full flex justify-center items-center"
+          // NOTE: children will need to enable pointer-events manually with this setup
+          className="w-full h-full flex justify-center items-center pointer-events-none px-4"
           initial={{ scale: 0.8 }}
           animate={{ scale: currentModal ? 1 : 0.8 }}
           transition={{ duration: 0.15 }}
-          onClick={clickCloseHandler}
         >
           <ModalOuter>{currentModal}</ModalOuter>
         </motion.div>

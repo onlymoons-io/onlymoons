@@ -21,7 +21,7 @@ import { getExplorerContractLink, getNativeCoin, getShortAddress } from '../../u
 import humanNumber from 'human-number'
 import { Web3Provider as Web3ProviderClass } from '@ethersproject/providers'
 import { ERC20ABI } from '../../contracts/external_contracts'
-import contracts from '../../contracts/production_contracts.json'
+import contracts from '../../contracts/compiled_contracts.json'
 import Tooltip from '../Tooltip'
 
 const { Web3Provider } = providers
@@ -42,6 +42,8 @@ const SplitStakingTopSectionInner = tw.div`
   rounded
 `
 
+const stakingAbi = contracts['StakingV1'].abi
+
 const SplitStakingComponent: React.FC = () => {
   const mounted = usePromise()
   const { account, chainId, connector } = useWeb3React()
@@ -58,7 +60,6 @@ const SplitStakingComponent: React.FC = () => {
   const { getStakingDataByAddress } = useStakingManagerV1Contract()
   const [tokenContract, setTokenContract] = useState<Contract>()
   const { push: pushNotification } = useNotifications()
-  const [stakingAbi, setStakingAbi] = useState<any>()
   const [soloStakingContract, setSoloStakingContract] = useState<Contract>()
   const [lpStakingContract, setLpStakingContract] = useState<Contract>()
   const [soloStakingData, setSoloStakingData] = useState<StakingData>()
@@ -75,24 +76,9 @@ const SplitStakingComponent: React.FC = () => {
   const [rewardsRatio, setRewardsRatio] = useState<number>(5000)
   const timerRef = useRef<NodeJS.Timeout>()
 
-  useEffect(() => {
-    switch (chainId) {
-      // bsc testnet
-      case 56:
-        // setStakingAbi(contracts['56'].bsc.contracts.TokenLockerV1.abi)
-        break
-      case 97:
-        setStakingAbi(contracts['97'].bsctest.contracts.StakingV1.abi)
-        break
-      // localhost
-      // case 31337:
-      //   setStakingAbi(contracts['31337'].localhost.contracts[_tokenOrLp === 'token' ? 'TokenLockerV1' : 'LPLockerV1'].abi)
-      //   break
-
-      default:
-        setStakingAbi(undefined)
-    }
-  }, [chainId])
+  // useEffect(() => {
+  //   setStakingAbi(contracts['StakingV1'].abi)
+  // }, [chainId])
 
   useEffect(() => {
     if (!soloStakingData || !lpStakingData || !stakingAbi || !connector) {
@@ -127,7 +113,7 @@ const SplitStakingComponent: React.FC = () => {
         setSoloStakingContract(undefined)
         setLpStakingContract(undefined)
       })
-  }, [mounted, contract, soloStakingData, lpStakingData, connector, stakingAbi])
+  }, [mounted, contract, soloStakingData, lpStakingData, connector])
 
   useEffect(() => {
     if (!getStakingDataByAddress || !globalStakingData?.ready) {

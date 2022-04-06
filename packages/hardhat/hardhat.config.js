@@ -163,6 +163,14 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    cro: {
+      // url: "https://evm-cronos.crypto.org/",
+      url: "https://evm.cronos.org",
+      // gasPrice: 5000000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
     bsc: {
       url: "https://bsc-dataseed.binance.org/",
       accounts: {
