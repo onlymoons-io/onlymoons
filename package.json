@@ -26,6 +26,7 @@
     "start": "yarn workspace @onlymoons-io/react-app start",
     "compile": "yarn workspace @onlymoons-io/hardhat compile",
     "deploy": "yarn workspace @onlymoons-io/hardhat deploy",
+    "deploy:cro": "yarn deploy --network cro",
     "deploy:bsc": "yarn deploy --network bsc",
     "deploy:localhost": "yarn deploy --network localhost",
     "deploy:bsctest": "yarn deploy --network bsctest",

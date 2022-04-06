@@ -70,10 +70,10 @@ module.exports = {
   networks: {
     localhost: {
       url: "http://localhost:8545",
-      /*      
+      /*
         notice no mnemonic here? it will just use account 0 of the hardhat node to deploy
         (you can put in a mnemonic here to set the deployer locally)
-      
+
       */
     },
 
@@ -153,6 +153,14 @@ module.exports = {
 
       //      url: "https://speedy-nodes-nyc.moralis.io/XXXXXXXXXXXXXXXXXXXXXXXXX/eth/goerli", // <---- YOUR MORALIS ID! (not limited to infura)
 
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
+    cro: {
+      // url: "https://evm-cronos.crypto.org/",
+      url: "https://evm.cronos.org",
+      // gasPrice: 5000000000000,
       accounts: {
         mnemonic: mnemonic(),
       },
