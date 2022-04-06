@@ -3,12 +3,17 @@ import { useWeb3React, getWeb3ReactContext } from '@web3-react/core'
 import { Contract } from 'ethers'
 import { Web3Provider } from '@ethersproject/providers'
 import { NetworkConnector } from '@web3-react/network-connector'
-import _contracts from '../../contracts/production_contracts.json'
+import _compiledContracts from '../../contracts/compiled_contracts.json'
 
 const getContractData = (chainId: number, name: string) => {
-  const chains = (_contracts as any)[chainId.toString()]
-  const key = Object.keys(chains)[0]
-  return chains[key]?.contracts[name]
+  const compiledContracts = _compiledContracts as any
+  const address =
+    compiledContracts[name].networks[chainId.toString()][
+      Object.keys(compiledContracts[name].networks[chainId.toString()])[0]
+    ]
+  if (!address) return undefined
+  const abi = compiledContracts[name].abi
+  return { address, abi }
 }
 
 export interface GetContractOptions {

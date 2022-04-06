@@ -12,13 +12,16 @@ import Header from './Header'
 import { Outer, MidSection, SectionInner, Grid as Locks, Loading as LocksLoading } from '../Layout'
 import { usePromise } from 'react-use'
 import { LockWatchlist } from './LockWatchlist'
-import contracts from '../../contracts/production_contracts.json'
+import contracts from '../../contracts/compiled_contracts.json'
+import SwitchNetworkButton from '../SwitchNetworkButton'
 import { getNetworkDataByChainId } from '../../util'
-import { NetworkData } from '../../typings'
+// import { NetworkData } from '../../typings'
+
+// const contracts = _contracts as any
 
 const { isAddress, getAddress } = utils
 
-const allNetworkData = Object.keys(contracts).map((key) => getNetworkDataByChainId(parseInt(key)) as NetworkData)
+// const allNetworkData = Object.keys(contracts).map((key) => getNetworkDataByChainId(parseInt(key)) as NetworkData)
 
 export interface LockerProps {
   useWatchlist?: boolean
@@ -35,8 +38,11 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
   const wasUsingWatchlist = useRef<boolean>(false)
   const setupLockTimer = useRef<NodeJS.Timeout>()
 
-  const networkToUse = allNetworkData.find((v) => v.urlName === _chainIdToUse)
-  const chainIdToUse = networkToUse ? networkToUse.chainId.toString() : _chainIdToUse
+  const networkToUse = Object.keys(contracts.TokenLockerManagerV1.networks)
+    .filter((v) => Object.keys((contracts.TokenLockerManagerV1.networks as any)[v])[0] === _chainIdToUse)
+    .map((v) => v)
+    .shift()
+  const chainIdToUse = networkToUse ? networkToUse : _chainIdToUse
 
   const setupLocks = useCallback(() => {
     if (!chainId || !contract || !connector || !tokenLockerCount || !getTokenLockersForAddress) {
@@ -130,7 +136,12 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
               parseInt(idToUse) === lockIds[0] ? (
                 <div className="w-full md:max-w-md">
                   {chainId && chainIdToUse && chainId !== parseInt(chainIdToUse) ? (
-                    <div className="text-center">Connected to the wrong network to view this lock.</div>
+                    <div className="text-center">
+                      To view this lock, switch to{' '}
+                      <SwitchNetworkButton
+                        targetNetwork={getNetworkDataByChainId(parseInt(chainIdToUse))}
+                      ></SwitchNetworkButton>{' '}
+                    </div>
                   ) : (
                     <Lock key={lockIds[0]} lockId={lockIds[0]} />
                   )}

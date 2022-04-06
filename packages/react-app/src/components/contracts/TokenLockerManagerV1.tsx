@@ -119,7 +119,6 @@ const TokenLockerManagerV1ContractContextProvider: React.FC = ({ children }) => 
     mounted(getContract('TokenLockerManagerV1'))
       .then(setContract)
       .catch((err: Error) => {
-        console.error(err)
         setContract(undefined)
       })
   }, [mounted, getContract, eitherChainId])
