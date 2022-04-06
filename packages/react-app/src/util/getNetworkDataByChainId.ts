@@ -32,9 +32,9 @@ export const networks: Record<number, NetworkData> = {
       decimals: 18,
       balance: BigNumber.from(0),
     },
-    explorerURL: 'https://cronos.org/explorer/',
+    explorerURL: 'https://cronoscan.com/',
     rpcURL: 'https://evm-cronos.crypto.org/',
-    icon: '/cro.png',
+    icon: '/cro.svg',
     isTestNet: false,
     supportedLiquidityPairTokens: [
       {

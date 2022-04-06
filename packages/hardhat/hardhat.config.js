@@ -158,7 +158,9 @@ module.exports = {
       },
     },
     cro: {
-      url: "https://evm-cronos.crypto.org/",
+      // url: "https://evm-cronos.crypto.org/",
+      url: "https://evm.cronos.org",
+      // gasPrice: 5000000000000,
       accounts: {
         mnemonic: mnemonic(),
       },
