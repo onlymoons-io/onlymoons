@@ -178,6 +178,31 @@ export const networks: Record<number, NetworkData> = {
     isTestNet: true,
     supportedLiquidityPairTokens: [],
   },
+  592: {
+    chainId: 592,
+    name: 'Astar',
+    shortName: 'Astar',
+    urlName: 'astar',
+    nativeCurrency: {
+      address: '0xEcC867DE9F5090F55908Aaa1352950b9eed390cD',
+      name: 'Astar',
+      symbol: 'ASTR',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://blockscout.com/astar/',
+    rpcURL: 'https://rpc.astar.network:8545',
+    icon: '/astar.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // WMATIC
+      {
+        address: '0xEcC867DE9F5090F55908Aaa1352950b9eed390cD',
+        // pair w/ USDC on https://www.arthswap.org/
+        stablePair: '0xBB1290c1829007F440C771b37718FAbf309cd527',
+      },
+    ],
+  },
   1088: {
     chainId: 1088,
     name: 'Metis Andromeda',
