@@ -184,7 +184,7 @@ export const networks: Record<number, NetworkData> = {
     shortName: 'Astar',
     urlName: 'astar',
     nativeCurrency: {
-      address: '0xEcC867DE9F5090F55908Aaa1352950b9eed390cD',
+      address: '0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720',
       name: 'Astar',
       symbol: 'ASTR',
       decimals: 18,
@@ -195,9 +195,9 @@ export const networks: Record<number, NetworkData> = {
     icon: '/astar.png',
     isTestNet: false,
     supportedLiquidityPairTokens: [
-      // WMATIC
+      // WAstar
       {
-        address: '0xEcC867DE9F5090F55908Aaa1352950b9eed390cD',
+        address: '0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720',
         // pair w/ USDC on https://www.arthswap.org/
         stablePair: '0xBB1290c1829007F440C771b37718FAbf309cd527',
       },
