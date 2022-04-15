@@ -1,5 +1,5 @@
-import React, { CSSProperties, useEffect, useState } from 'react'
-import { useWeb3React } from '@web3-react/core'
+import React, { CSSProperties, useEffect, useState, useContext } from 'react'
+import { getWeb3ReactContext } from '@web3-react/core'
 import { providers } from 'ethers'
 import styled from 'styled-components'
 import tw from 'tailwind-styled-components'
@@ -28,6 +28,7 @@ const Outer = tw(OuterCSS)`
   rounded
   flex
   flex-col
+  pointer-events-auto
 `
 
 const Header = tw.div`
@@ -56,7 +57,7 @@ export interface ContractDetailsProps {
 
 const ContractDetails: React.FC<ContractDetailsProps> = ({ children, address, abi, className = '', style = {} }) => {
   const mounted = usePromise()
-  const { connector } = useWeb3React()
+  const { connector } = useContext(getWeb3ReactContext('constant'))
   const { closeModal } = useModal()
   const [bytecode, setBytecode] = useState<string>()
 
