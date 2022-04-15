@@ -201,6 +201,11 @@ export const networks: Record<number, NetworkData> = {
         // pair w/ USDC on https://www.arthswap.org/
         stablePair: '0xBB1290c1829007F440C771b37718FAbf309cd527',
       },
+      {
+        address: '0xEcC867DE9F5090F55908Aaa1352950b9eed390cD',
+        // pair w/ USDC on https://astar.exchange/
+        stablePair: '0xA6E7448463dF706862E424208838047D8Aa0ED11',
+      },
     ],
   },
   1088: {
