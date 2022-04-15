@@ -19,6 +19,9 @@
       "588": {
         "metistest": "0xB024E25eC9B2d132CEEB358E9aCBb0e40C9ba9Fe"
       },
+      "592": {
+        "astar": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+      },
       "2001": {
         "milkomeda": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
       },
@@ -47,6 +50,9 @@
       },
       "588": {
         "metistest": "0x5C4e25abac5e6B0a5da6493Cf6Ae3Ee1f62Afd3f"
+      },
+      "592": {
+        "astar": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
       },
       "2001": {
         "milkomeda": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
@@ -82,6 +88,9 @@
       },
       "588": {
         "metistest": "0x8DEE2F1768ed500FA9e0598378C6e8F18DAB07D6"
+      },
+      "592": {
+        "astar": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
       },
       "1088": {
         "metis": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
@@ -467,6 +476,9 @@
       "588": {
         "metistest": "0x92586B715c85b644a1fCe5186Bf51f759ECD3597"
       },
+      "592": {
+        "astar": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
+      },
       "1088": {
         "metis": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
       },
@@ -781,6 +793,9 @@
       },
       "588": {
         "metistest": "0x67be50aCd00883C9E85539b88aABE7697d607576"
+      },
+      "592": {
+        "astar": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       },
       "1088": {
         "metis": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
