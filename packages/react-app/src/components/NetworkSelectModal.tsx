@@ -64,7 +64,7 @@ const NetworkSelectModal: React.FC = () => {
                 >
                   <div className="flex gap-3 items-center">
                     {_networkData.icon && (
-                      <img alt={_networkData.name} width={28} height={28} src={`/network-icons${_networkData.icon}`} />
+                      <img alt={_networkData.name} width={28} height={28} src={`./network-icons${_networkData.icon}`} />
                     )}
                     <span>{_networkData.name}</span>
                   </div>

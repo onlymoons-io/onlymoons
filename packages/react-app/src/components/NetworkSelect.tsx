@@ -36,9 +36,7 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
         style={style}
         onClick={() => setCurrentModal(<NetworkSelectModal />)}
       >
-        {networkData?.icon && (
-          <img alt={networkData?.name || ''} width={20} height={20} src={`/network-icons${networkData.icon}`} />
-        )}
+        {networkData?.icon && <img alt={''} width={20} height={20} src={`./network-icons${networkData.icon}`} />}
         {/* {networkData?.isTestNet && (
           <FontAwesomeIcon
             className="text-red-300 bg-gray-800 rounded-full p-1 transform-gpu scale-125"
