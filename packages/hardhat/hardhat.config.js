@@ -110,6 +110,14 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    
+    dogechain: {
+      url: "https://rpc01-sg.dogechain.dog",
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
+
     avax: {
       url: "https://api.avax.network/ext/bc/C/rpc",
 
