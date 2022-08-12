@@ -251,6 +251,31 @@ export const networks: Record<number, NetworkData> = {
       // },
     ],
   },
+  2000 : {
+    chainId: 2000,
+    name: 'Dogechain',
+    shortName: 'Dogechain',
+    urlName: 'dogechain',
+    nativeCurrency: {
+      address: '0xB7ddC6414bf4F5515b52D8BdD69973Ae205ff101',
+      name: 'Doge',
+      symbol: 'DOGE',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://explorer.dogechain.dog/',
+    rpcURL: 'https://rpc01-sg.dogechain.dog',
+    icon: '/dogechain.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // DOGE
+      {
+        address: '0xB7ddC6414bf4F5515b52D8BdD69973Ae205ff101',
+        // pair w/  on https://dogeswap.org/
+        stablePair: '',
+      },
+    ],
+  },
   2001: {
     chainId: 2001,
     name: 'Milkomeda',
