@@ -251,7 +251,7 @@ export const networks: Record<number, NetworkData> = {
       // },
     ],
   },
-  2000 : {
+  2000: {
     chainId: 2000,
     name: 'Dogechain',
     shortName: 'Dogechain',
@@ -271,8 +271,8 @@ export const networks: Record<number, NetworkData> = {
       // DOGE
       {
         address: '0xB7ddC6414bf4F5515b52D8BdD69973Ae205ff101',
-        // pair w/  on https://dogeswap.org/
-        stablePair: '',
+        // pair w/ USDC on https://dogeswap.org/
+        stablePair: '0xa8E4040B7085A937b278e7aa95C36e9044CC6D9c',
       },
     ],
   },
