@@ -66,7 +66,8 @@ const Create: React.FC = () => {
   const [tokenData, setTokenData] = useState<TokenData>()
   const [amount, setAmount] = useState<string>()
   // lock for 90 days by default
-  const [unlockTime, setUnlockTime] = useState<number>(Math.ceil((Date.now() + 1000 * 60 * 60 * 24 * 90) / 1000))
+  // const [unlockTime, setUnlockTime] = useState<number>(Math.ceil((Date.now() + 1000 * 60 * 60 * 24 * 90) / 1000))
+  const [unlockTime, setUnlockTime] = useState<number>()
   const [approved, setApproved] = useState<boolean>(false)
   const [contract, setContract] = useState<Contract>()
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
@@ -181,7 +182,16 @@ const Create: React.FC = () => {
 
   const onClickSubmit = useCallback(() => {
     //
-    if (!account || !contract || !lockerManagerAddress || !amount || !tokenData || !createTokenLocker) {
+    if (
+      !account ||
+      !contract ||
+      !lockerManagerAddress ||
+      !amount ||
+      !tokenData ||
+      !createTokenLocker ||
+      !unlockTime ||
+      !isUnlockTimeValid()
+    ) {
       return console.log('not ready') // not ready
     }
 
@@ -234,6 +244,30 @@ const Create: React.FC = () => {
   // useEffect(() => {
   //   setCanSubmit(BigNumber.from(amount || 0).gt(0))
   // }, [amount])
+
+  const isUnlockTimeValid = (): boolean => {
+    return unlockTime ? unlockTime * 1000 > Date.now() : false
+  }
+
+  const getSubmitText = (): React.ReactNode => {
+    if (isSubmitting) {
+      return <FontAwesomeIcon icon={faCircleNotch} fixedWidth spin />
+    }
+
+    if (!amount) {
+      return 'Select an amount'
+    }
+
+    if (!unlockTime) {
+      return 'Select an unlock time'
+    }
+
+    if (unlockTime * 1000 < Date.now()) {
+      return 'Unlock time must be in the future'
+    }
+
+    return approved ? 'Create lock' : 'Approve'
+  }
 
   return (
     <Outer className="text-gray-800 dark:text-gray-200">
@@ -310,23 +344,17 @@ const Create: React.FC = () => {
                       <input
                         type="datetime-local"
                         className="flex-grow p-3 outline-none bg-white dark:bg-gray-700 rounded-r"
-                        defaultValue={timestampToDateTimeLocal(unlockTime)}
+                        defaultValue={unlockTime ? timestampToDateTimeLocal(unlockTime) : undefined}
                         onInput={(e) => setUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))}
                       />
                     </div>
 
                     <PrimaryButton
                       className="py-4 text-gray-100"
-                      disabled={!canSubmit || !amount}
+                      disabled={!canSubmit || !amount || !isUnlockTimeValid()}
                       onClick={onClickSubmit}
                     >
-                      {isSubmitting ? (
-                        <FontAwesomeIcon icon={faCircleNotch} fixedWidth spin />
-                      ) : approved ? (
-                        'Create lock'
-                      ) : (
-                        'Approve'
-                      )}
+                      {getSubmitText()}
                     </PrimaryButton>
                   </div>
                 </div>
