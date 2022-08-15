@@ -77,6 +77,10 @@ const Create: React.FC = () => {
   const [lpToken0Data, setLpToken0Data] = useState<TokenData>()
   const [lpToken1Data, setLpToken1Data] = useState<TokenData>()
 
+  const isUnlockTimeValid = useCallback(() => {
+    return unlockTime ? unlockTime * 1000 > Date.now() : false
+  }, [unlockTime])
+
   const onInputAddress = useCallback(
     (e: React.FormEvent<HTMLInputElement>) => {
       //
@@ -239,15 +243,12 @@ const Create: React.FC = () => {
     chainId,
     createTokenLocker,
     navigate,
+    isUnlockTimeValid,
   ])
 
   // useEffect(() => {
   //   setCanSubmit(BigNumber.from(amount || 0).gt(0))
   // }, [amount])
-
-  const isUnlockTimeValid = (): boolean => {
-    return unlockTime ? unlockTime * 1000 > Date.now() : false
-  }
 
   const getSubmitText = (): React.ReactNode => {
     if (isSubmitting) {
