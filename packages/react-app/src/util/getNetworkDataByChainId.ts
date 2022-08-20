@@ -251,6 +251,31 @@ export const networks: Record<number, NetworkData> = {
       // },
     ],
   },
+  2000: {
+    chainId: 2000,
+    name: 'Dogechain',
+    shortName: 'Dogechain',
+    urlName: 'dogechain',
+    nativeCurrency: {
+      address: '0xB7ddC6414bf4F5515b52D8BdD69973Ae205ff101',
+      name: 'Doge',
+      symbol: 'DOGE',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://explorer.dogechain.dog/',
+    rpcURL: 'https://rpc01-sg.dogechain.dog',
+    icon: '/dogechain.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // DOGE
+      {
+        address: '0xB7ddC6414bf4F5515b52D8BdD69973Ae205ff101',
+        // pair w/ USDC on https://dogeswap.org/
+        stablePair: '0xa8E4040B7085A937b278e7aa95C36e9044CC6D9c',
+      },
+    ],
+  },
   2001: {
     chainId: 2001,
     name: 'Milkomeda',
@@ -297,6 +322,30 @@ export const networks: Record<number, NetworkData> = {
         address: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7',
         // pair w/ USDC.e on https://traderjoexyz.com/home#/
         stablePair: '0xA389f9430876455C36478DeEa9769B7Ca4E3DDB1',
+      },
+    ],
+  },
+  80001: {
+    chainId: 43114,
+    name: 'Polygon Mumbai (testnet)',
+    shortName: 'Mumbai',
+    urlName: 'mumbai',
+    nativeCurrency: {
+      address: '0x9c3c9283d3e44854697cd22d3faa240cfb032889',
+      name: 'Matic',
+      symbol: 'MATIC',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://mumbai.polygonscan.com/',
+    rpcURL: 'https://rpc-mumbai.maticvigil.com/',
+    icon: '/polygon.png',
+    isTestNet: true,
+    supportedLiquidityPairTokens: [
+      {
+        address: '0x9c3c9283d3e44854697cd22d3faa240cfb032889',
+        // pair w/ dai on https://legacy.quickswap.exchange/
+        stablePair: '0xc0ec4271d306f0ea4a70298c0243ea59a58bfd7f',
       },
     ],
   },
