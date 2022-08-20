@@ -230,7 +230,7 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
-    polytest: {
+    mumbai: {
       // url: "https://speedy-nodes-nyc.moralis.io/abe6dedb3ddb2a52245b68af/polygon/mumbai", // <---- YOUR MORALIS ID! (not limited to infura)
       url: "https://rpc-mumbai.maticvigil.com/",
       // gasPrice: 1000000000,

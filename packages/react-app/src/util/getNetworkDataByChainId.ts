@@ -325,6 +325,30 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  80001: {
+    chainId: 43114,
+    name: 'Polygon Mumbai (testnet)',
+    shortName: 'Mumbai',
+    urlName: 'mumbai',
+    nativeCurrency: {
+      address: '0x9c3c9283d3e44854697cd22d3faa240cfb032889',
+      name: 'Matic',
+      symbol: 'MATIC',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://mumbai.polygonscan.com/',
+    rpcURL: 'https://rpc-mumbai.maticvigil.com/',
+    icon: '/polygon.png',
+    isTestNet: true,
+    supportedLiquidityPairTokens: [
+      {
+        address: '0x9c3c9283d3e44854697cd22d3faa240cfb032889',
+        // pair w/ dai on https://legacy.quickswap.exchange/
+        stablePair: '0xc0ec4271d306f0ea4a70298c0243ea59a58bfd7f',
+      },
+    ],
+  },
 }
 
 export default function getNetworkDataByChainId(chainId: number): NetworkData | undefined {
