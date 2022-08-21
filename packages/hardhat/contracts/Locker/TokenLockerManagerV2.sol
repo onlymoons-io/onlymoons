@@ -23,26 +23,39 @@ import { Governable } from "../Governance/Governable.sol";
 import { Pausable } from "../Control/Pausable.sol";
 import { IDCounter } from "../IDCounter.sol";
 import { ITokenLockerBaseV2 } from "./ITokenLockerBaseV2.sol";
-import { ITokenLockerLPV2 } from "./ITokenLockerLPV2.sol";
+// import { ITokenLockerLPV2 } from "./ITokenLockerLPV2.sol";
 import { ITokenLockerFactoryV2 } from "./ITokenLockerFactoryV2.sol";
 import { IERC20 } from "../library/IERC20.sol";
+// import { INonfungiblePositionManager } from "../library/uniswap-v3/INonfungiblePositionManager.sol";
 
 contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, IDCounter {
-  constructor() Governable(_msgSender(), _msgSender()) {
-    //
+  constructor(address factoryAddress_) Governable(_msgSender(), _msgSender()) {
+    _setFactory(factoryAddress_);
 
+    // shared uniswap v2 locker
+    (_uniswapV2LockId,) = _createTokenLocker(0);
+
+    // shared uniswap v3 locker
+    (_uniswapV3LockId,) = _createTokenLocker(1);
   }
 
-  
-
   ITokenLockerFactoryV2 internal _factory;
+
+  uint40 internal immutable _uniswapV2LockId;
+  uint40 internal immutable _uniswapV3LockId;
+
+  mapping(uint40 => address) internal _locks;
 
   function factory() external virtual returns (address) {
     return address(_factory);
   }
 
-  function setFactory(address address_) external virtual onlyOwner {
+  function _setFactory(address address_) internal virtual {
     _factory = ITokenLockerFactoryV2(address_);
+  }
+
+  function setFactory(address address_) external virtual onlyOwner {
+    _setFactory(address_);
   }
 
   /**
@@ -68,41 +81,74 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
   }
 
   function _createTokenLocker(
-    address tokenAddress_,
-    uint256 amount_,
-    uint40 unlockTime_
+    uint8 lockType_,
+    bytes memory extraData_
   ) internal virtual returns (
     uint40 id,
     address lockAddress
   ) {
+    id = uint40(_next());
+    lockAddress = _factory.createLocker(
+      lockType_,
+      address(this),
+      id,
+      extraData_
+    );
+    _locks[id] = lockAddress;
+  }
 
+  function _createTokenLocker(
+    uint8 lockType_
+  ) internal virtual returns (
+    uint40 id,
+    address lockAddress
+  ) {
+    id = uint40(_next());
+    lockAddress = _factory.createLocker(
+      lockType_,
+      address(this),
+      id,
+      new bytes(0)
+    );
+    _locks[id] = lockAddress;
   }
 
   function createTokenLocker(
     address tokenAddress_,
     uint256 amount_,
     uint40 unlockTime_
-  ) external virtual onlyNotPaused {
-    _createTokenLocker(tokenAddress_, amount_, unlockTime_);
+  ) external virtual override onlyNotPaused {
+
+    // _createTokenLocker(lockType_, extraData_);
   }
+
+  // function createTokenLocker(
+  //   address tokenAddress_,
+  //   uint256 amount_,
+  //   uint40 unlockTime_
+  // ) external virtual onlyNotPaused {
+  //   _createTokenLocker(
+  //     3 // 3 = erc20 token
+  //   );
+  // }
 
   /**
    * @dev this is the same as createTokenLocker, but it
    * returns the id and address of the created lock.
    */
   function createTokenLockerV2(
-    address tokenAddress_,
-    uint256 amount_,
-    uint40 unlockTime_
+    uint8 lockType_,
+    bytes memory extraData_
   ) external virtual onlyNotPaused returns (
     uint40 id,
     address lockAddress
   ) {
-    return _createTokenLocker(tokenAddress_, amount_, unlockTime_);
+    return _createTokenLocker(lockType_, extraData_);
   }
 
   function getTokenLockAddress(uint40 id_) external virtual view returns (address) {
-
+    require(id_ < _count, "Invalid id");
+    return _locks[id_];
   }
 
   function getTokenLockData(uint40 id_) external virtual view returns (

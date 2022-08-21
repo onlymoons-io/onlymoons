@@ -24,8 +24,8 @@ import { Authorizable } from "../Control/Authorizable.sol";
 import { Pausable } from "../Control/Pausable.sol";
 import { IDCounter } from "../IDCounter.sol";
 import { IERC20 } from "../library/IERC20.sol";
-import { ReentrancyGuard } from "../library/ReentrancyGuard.sol";
 import { SafeERC20 } from "../library/SafeERC20.sol";
+import { ReentrancyGuard } from "../library/ReentrancyGuard.sol";
 import { Util } from "../Util.sol";
 import { Math } from "../Math.sol";
 

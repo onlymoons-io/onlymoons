@@ -19,11 +19,11 @@
 pragma solidity ^0.8.0;
 
 interface ITokenLockerFactoryV2 {
-  function createTokenLocker(
-    // 0 = uniswap v2 lp token, 1 = uniswap v3 lp, 2 = erc20 token
+  function createLocker(
+    // 0 = uniswap v2 lp token, 1 = uniswap v3 lp position nft, 2 = erc721 nft, 3 = erc20 token
     uint8 lockType_,
-    address tokenAddress_,
-    uint256 amount_,
-    uint40 unlockTime_
+    address manager_,
+    uint40 lockId_,
+    bytes memory extraData_
   ) external returns (address lockAddress);
 }
