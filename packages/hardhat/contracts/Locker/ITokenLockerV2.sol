@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0+
+// SPDX-License-Identifier: UNLICENSED
 
 /**
   /$$$$$$            /$$           /$$      /$$                                        
@@ -18,6 +18,16 @@
 
 pragma solidity ^0.8.0;
 
-interface ITokenLockerV2 {
-  
+import { ITokenLockerBaseV2 } from "./ITokenLockerBaseV2.sol";
+
+interface ITokenLockerV2 is ITokenLockerBaseV2 {
+  event Extended(uint40 newUnlockTime);
+  event Deposited(uint256 amount);
+  event Withdrew();
+
+  function deposit(uint256 amount_, uint40 newUnlockTime_) external;
+  function withdraw() external;
+  function withdrawToken(address address_) external;
+  function withdrawEth() external;
+  receive() external payable;
 }

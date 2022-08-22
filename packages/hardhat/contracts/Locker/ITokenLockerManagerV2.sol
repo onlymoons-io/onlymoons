@@ -39,15 +39,24 @@ interface ITokenLockerManagerV2 is ITokenLockerManagerV1, IGovernable, IPausable
     uint40 unlockTime
   );
 
+  event LockOwnershipTransfered(
+    uint40 id,
+    address oldOwner,
+    address newOwner
+  );
+
   function factory() external returns (address);
 
   function setFactory(address address_) external;
 
-  function createTokenLockerV2(
-    uint8 lockType_,
-    bytes memory extraData_
+  function createTokenLockerWithReturnValue(
+    address tokenAddress_,
+    uint256 amount_,
+    uint40 unlockTime_
   ) external returns (
     uint40 id,
     address lockAddress
   );
+
+  function transferLockOwnership(uint40 id_, address newOwner_) external;
 }

@@ -21,9 +21,13 @@ pragma solidity ^0.8.0;
 import { ITokenLockerV2 } from "./ITokenLockerV2.sol";
 import { TokenLockerBaseV2 } from "./TokenLockerBaseV2.sol";
 
-contract TokenLockerV2 is ITokenLockerV2, TokenLockerBaseV2 {
+abstract contract TokenLockerV2 is ITokenLockerV2, TokenLockerBaseV2 {
   constructor() {
 
+  }
+
+  receive() external virtual override payable {
+    //
   }
 }
 

@@ -21,6 +21,6 @@ pragma solidity ^0.8.0;
 import { ITokenLockerLPV2 } from "./ITokenLockerLPV2.sol";
 import { TokenLockerBaseV2 } from "./TokenLockerBaseV2.sol";
 
-contract TokenLockerLPV2 is ITokenLockerLPV2, TokenLockerBaseV2 {
+abstract contract TokenLockerLPV2 is ITokenLockerLPV2, TokenLockerBaseV2 {
 
 }

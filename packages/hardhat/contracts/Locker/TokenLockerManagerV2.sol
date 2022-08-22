@@ -31,22 +31,19 @@ import { IERC20 } from "../library/IERC20.sol";
 contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, IDCounter {
   constructor(address factoryAddress_) Governable(_msgSender(), _msgSender()) {
     _setFactory(factoryAddress_);
-
-    // shared uniswap v2 locker
-    (_uniswapV2LockId,) = _createTokenLocker(0);
-
-    // shared uniswap v3 locker
-    (_uniswapV3LockId,) = _createTokenLocker(1);
   }
 
   ITokenLockerFactoryV2 internal _factory;
 
-  uint40 internal immutable _uniswapV2LockId;
-  uint40 internal immutable _uniswapV3LockId;
+  mapping(uint40 => address) internal _lockAddresses;
 
-  mapping(uint40 => address) internal _locks;
+  /**
+   * @dev this mapping makes it possible to search for locks,
+   * at the cost of paying higher gas fees to store the data.
+   */
+  mapping(address => uint40[]) internal _tokenLockersForAddress;
 
-  function factory() external virtual returns (address) {
+  function factory() external virtual override returns (address) {
     return address(_factory);
   }
 
@@ -54,7 +51,7 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
     _factory = ITokenLockerFactoryV2(address_);
   }
 
-  function setFactory(address address_) external virtual onlyOwner {
+  function setFactory(address address_) external virtual override onlyOwner {
     _setFactory(address_);
   }
 
@@ -62,21 +59,21 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
    * @dev _count is a uint256, but locker V1 used uint40, so we cast to uint40.
    * since the max value is uint40 is over a trillion, i think it will be ok.
    */
-  function tokenLockerCount() external virtual view returns (uint40) {
+  function tokenLockerCount() external virtual override view returns (uint40) {
     return uint40(_count);
   }
 
   /**
    * @dev maps to _paused to maintain compatibility with locker V1
    */
-  function creationEnabled() external virtual view returns (bool) {
+  function creationEnabled() external virtual override view returns (bool) {
     return _paused;
   }
   
   /**
    * @dev maps to _setPaused to maintain compatibility with locker V1
    */
-  function setCreationEnabled(bool value_) external virtual onlyOwner {
+  function setCreationEnabled(bool value_) external virtual override onlyOwner {
     _setPaused(value_);
   }
 
@@ -94,7 +91,7 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
       id,
       extraData_
     );
-    _locks[id] = lockAddress;
+    _lockAddresses[id] = lockAddress;
   }
 
   function _createTokenLocker(
@@ -110,7 +107,7 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
       id,
       new bytes(0)
     );
-    _locks[id] = lockAddress;
+    _lockAddresses[id] = lockAddress;
   }
 
   function createTokenLocker(
@@ -136,22 +133,28 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
    * @dev this is the same as createTokenLocker, but it
    * returns the id and address of the created lock.
    */
-  function createTokenLockerV2(
-    uint8 lockType_,
-    bytes memory extraData_
-  ) external virtual onlyNotPaused returns (
+  function createTokenLockerWithReturnValue(
+    address tokenAddress_,
+    uint256 amount_,
+    uint40 unlockTime_
+  ) external virtual override onlyNotPaused returns (
     uint40 id,
     address lockAddress
   ) {
-    return _createTokenLocker(lockType_, extraData_);
+    // return _createTokenLocker(tokenAddress_, amount_, unlockTime_);
   }
 
-  function getTokenLockAddress(uint40 id_) external virtual view returns (address) {
+  /** @dev this may need overriding on inherited contracts! */
+  function _getTokenLockAddress(uint40 id_) internal virtual view returns (address) {
     require(id_ < _count, "Invalid id");
-    return _locks[id_];
+    return address(this);
   }
 
-  function getTokenLockData(uint40 id_) external virtual view returns (
+  function getTokenLockAddress(uint40 id_) external virtual override view returns (address) {
+    return _getTokenLockAddress(id_);
+  }
+
+  function getTokenLockData(uint40 id_) external virtual override view returns (
     bool isLpToken,
     uint40 id,
     address contractAddress,
@@ -166,7 +169,7 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
 
   }
 
-  function getLpData(uint40 id_) external virtual view returns (
+  function getLpData(uint40 id_) external virtual override view returns (
     bool hasLpData,
     uint40 id,
     address token0,
@@ -181,10 +184,10 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
 
   function getTokenLockersForAddress(
     address address_
-  ) external virtual view returns (
+  ) external virtual override view returns (
     uint40[] memory
   ) {
-
+    return _tokenLockersForAddress[address_];
   }
 
   function notifyLockerOwnerChange(
@@ -192,7 +195,12 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
     address newOwner_,
     address previousOwner_,
     address createdBy_
-  ) external virtual {
+  ) external virtual override {
 
+  }
+
+  /** @dev for overriding */
+  function transferLockOwnership(uint40 id_, address newOwner_) external virtual {
+    //
   }
 }

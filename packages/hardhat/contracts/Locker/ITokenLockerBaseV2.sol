@@ -18,7 +18,8 @@
 
 pragma solidity ^0.8.0;
 
+import { IOwnableV2 } from "../Control/IOwnableV2.sol";
 
-interface ITokenLockerBaseV2 {
+interface ITokenLockerBaseV2 is IOwnableV2 {
   
 }

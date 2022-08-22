@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0+
+// SPDX-License-Identifier: UNLICENSED
 
 /**
   /$$$$$$            /$$           /$$      /$$                                        
@@ -18,16 +18,14 @@
 
 pragma solidity ^0.8.0;
 
+import { ITokenLockerManagerV2 } from "./ITokenLockerManagerV2.sol";
 import { ITokenLockerBaseV2 } from "./ITokenLockerBaseV2.sol";
 
-abstract contract TokenLockerBaseV2 is ITokenLockerBaseV2 {
-  modifier onlyLockOwner(uint40 id) {
-    require(_ownerAuthorized(id), "UNAUTHORIZED");
-    _;
-  }
+interface ITokenLockerUniV2 is ITokenLockerManagerV2, ITokenLockerBaseV2 {
+  event Extended(uint40 id, uint40 newUnlockTime);
+  event Deposited(uint40 id, uint256 amount);
+  event Withdrew(uint40 id);
 
-  /** @dev this is for overriding */
-  function _ownerAuthorized(uint40 /* id */) internal virtual returns (bool) {
-    return false;
-  }
+  function deposit(uint40 id_, uint256 amount_, uint40 newUnlockTime_) external;
+  function withdraw() external;
 }
