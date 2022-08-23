@@ -18,7 +18,16 @@
 
 pragma solidity ^0.8.0;
 
+import { ITokenLockerManagerV2 } from "./ITokenLockerManagerV2.sol";
+import { ITokenLockerBaseV2 } from "./ITokenLockerBaseV2.sol";
 
-interface ITokenLockerLPV2 {
-  
+
+interface ITokenLockerLPV2 is ITokenLockerManagerV2, ITokenLockerBaseV2 {
+  event LockOwnershipTransfered(
+    uint40 id,
+    address oldOwner,
+    address newOwner
+  );
+
+  function withdraw() external;
 }

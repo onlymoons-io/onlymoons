@@ -26,9 +26,10 @@ import { ITokenLockerBaseV2 } from "./ITokenLockerBaseV2.sol";
 // import { ITokenLockerLPV2 } from "./ITokenLockerLPV2.sol";
 import { ITokenLockerFactoryV2 } from "./ITokenLockerFactoryV2.sol";
 import { IERC20 } from "../library/IERC20.sol";
+import { ReentrancyGuard } from "../library/ReentrancyGuard.sol";
 // import { INonfungiblePositionManager } from "../library/uniswap-v3/INonfungiblePositionManager.sol";
 
-contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, IDCounter {
+contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, IDCounter, ReentrancyGuard {
   constructor(address factoryAddress_) Governable(_msgSender(), _msgSender()) {
     _setFactory(factoryAddress_);
   }
@@ -37,13 +38,25 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
 
   mapping(uint40 => address) internal _lockAddresses;
 
+  mapping(address => bool) internal _allowedRouters;
+
   /**
    * @dev this mapping makes it possible to search for locks,
    * at the cost of paying higher gas fees to store the data.
    */
   mapping(address => uint40[]) internal _tokenLockersForAddress;
+  mapping(address => mapping(uint40 => bool)) internal _tokenLockersForAddressLookup;
 
-  function factory() external virtual override returns (address) {
+  modifier onlyLockExists(uint40 id_) {
+    require(_lockExists(id_), "INVALID_ID");
+    _;
+  }
+
+  function _lockExists(uint40 id_) internal virtual view returns (bool) {
+    return id_ < uint40(_count);
+  }
+
+  function factory() external virtual override view returns (address) {
     return address(_factory);
   }
 
@@ -129,14 +142,12 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
   //   );
   // }
 
-  /**
-   * @dev this is the same as createTokenLocker, but it
-   * returns the id and address of the created lock.
-   */
-  function createTokenLockerWithReturnValue(
+  function createTokenLockerV2(
     address tokenAddress_,
     uint256 amount_,
-    uint40 unlockTime_
+    uint40 unlockTime_,
+    string[] calldata socialKeys_,
+    string[] calldata socialUrls_
   ) external virtual override onlyNotPaused returns (
     uint40 id,
     address lockAddress
@@ -202,5 +213,12 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
   /** @dev for overriding */
   function transferLockOwnership(uint40 id_, address newOwner_) external virtual {
     //
+  }
+
+  function setAllowedRouterAddress(
+    address routerAddress_,
+    bool allowed_
+  ) external virtual override onlyGovernor {
+    _allowedRouters[routerAddress_] = allowed_;
   }
 }
