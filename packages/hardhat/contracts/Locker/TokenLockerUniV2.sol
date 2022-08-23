@@ -154,7 +154,11 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2 {
     );
   }
 
-  function _deposit(uint40 id_, uint256 amount_, uint40 newUnlockTime_) internal virtual {
+  function _deposit(
+    uint40 id_,
+    uint256 amount_,
+    uint40 newUnlockTime_
+  ) internal virtual {
     require(newUnlockTime_ > uint40(block.timestamp), "TOO_SOON");
 
     // make note of extended time if needed
@@ -188,7 +192,9 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2 {
     _deposit(id_, amount_, newUnlockTime_);
   }
 
-  function withdrawById(uint40 id_) external virtual override onlyLockOwner(id_) nonReentrant {
+  function withdrawById(
+    uint40 id_
+  ) external virtual override onlyLockOwner(id_) nonReentrant {
     require(uint40(block.timestamp) >= _locks[id_].unlockTime, "LOCKED");
 
     uint256 amount = _locks[id_].amount;
@@ -229,9 +235,10 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2 {
       oldPair.token1(),
       _locks[id_].amount,
       // accept any amount of "slippage"
-      0,
-      0,
+      0,0,
+      // send unpaired tokens to this address temporarily
       address(this),
+      // must finish in the same tx
       block.timestamp
     );
 
@@ -240,8 +247,8 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2 {
     IUniswapV2Router02 newRouter = IUniswapV2Router02(newRouterAddress_);
 
     (
-      uint256 amount0,
-      uint256 amount1,
+      uint256 amountAdded0,
+      uint256 amountAdded1,
       uint256 newTokenAmount
     ) = newRouter.addLiquidity(
       oldPair.token0(),
@@ -249,13 +256,18 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2 {
       amountRemoved0,
       amountRemoved1,
       // accept any amount of "slippage"
-      0,
-      0,
+      0,0,
+      // send the new lp tokens to this address
       address(this),
+      // must finish in the same tx
       block.timestamp
     );
 
-    require(amount0 == amountRemoved0 && amount1 == amountRemoved1, "LOST_TOKENS");
+    // amount removed and amount added must match or something went wrong
+    require(
+      amountAdded0 == amountRemoved0 && amountAdded1 == amountRemoved1,
+      "LOST_TOKENS"
+    );
 
     address tokenAddress = IUniswapV2Factory(
       newRouter.factory()
@@ -264,6 +276,7 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2 {
       oldPair.token1()
     );
 
+    // update the existing lock instead of creating a new one
     _locks[id_].tokenAddress = tokenAddress;
     _locks[id_].amount = newTokenAmount;
   }

@@ -29,5 +29,9 @@ interface ITokenLockerLPV2 is ITokenLockerManagerV2, ITokenLockerBaseV2 {
     address newOwner
   );
 
-  function withdraw() external;
+  function migrate(
+    uint40 id_,
+    address oldRouterAddress_,
+    address newRouterAddress_
+  ) external;
 }

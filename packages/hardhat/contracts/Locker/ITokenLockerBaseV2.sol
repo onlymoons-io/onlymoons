@@ -30,9 +30,5 @@ interface ITokenLockerBaseV2 is IOwnableV2 {
     string[] calldata keys_,
     string[] calldata urls_
   ) external;
-  function migrate(
-    uint40 id_,
-    address oldRouterAddress_,
-    address newRouterAddress_
-  ) external;
+  function withdraw() external;
 }
