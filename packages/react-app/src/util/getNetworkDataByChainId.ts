@@ -300,6 +300,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  7700 : {
+    chainId: 7700,
+    name: 'Canto',
+    shortName: 'Canto',
+    urlName: 'canto',
+    nativeCurrency: {
+      address: '0x826551890Dc65655a0Aceca109aB11AbDbD7a07B',
+      name: 'CANTO',
+      symbol: 'CANTO',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://evm.explorer.canto.io/',
+    rpcURL: 'https://canto.evm.chandrastation.com/',
+    icon: '/canto.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // CANTO
+      {
+        address: '0x826551890Dc65655a0Aceca109aB11AbDbD7a07B',
+        // pair w/ USDC on Slingshot
+        stablePair: '0xb00626F6237e065a57f2AFAD20cB4Ec927030759',
+      },
+    ],
+  },
   43114: {
     chainId: 43114,
     name: 'Avalanche',

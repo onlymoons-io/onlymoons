@@ -125,6 +125,15 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+
+    canto: {
+      url: "https://canto.evm.chandrastation.com/",
+
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
+
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/cfeb072b8469447e889da944481d5874", // <---- YOUR INFURA ID! (or it won't work)
 
