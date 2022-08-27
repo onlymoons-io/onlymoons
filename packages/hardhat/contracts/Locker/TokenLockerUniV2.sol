@@ -21,28 +21,20 @@ pragma solidity ^0.8.0;
 import { ITokenLockerUniV2 } from "./ITokenLockerUniV2.sol";
 import { TokenLockerManagerV2 } from "./TokenLockerManagerV2.sol";
 import { TokenLockerLPV2 } from "./TokenLockerLPV2.sol";
+import { TokenLockerERC20V2 } from "./TokenLockerERC20V2.sol";
+import { LockData } from "./TokenLockerBaseV2.sol";
 import { IERC20 } from "../library/IERC20.sol";
 import { IUniswapV2Pair, IUniswapV2Router02, IUniswapV2Factory } from "../library/Dex.sol";
 import { SafeERC20 } from "../library/SafeERC20.sol";
 import { Util } from "../Util.sol";
 
-struct UniV2LockData {
-  address tokenAddress;
-  address owner;
-  address createdBy;
-  uint256 amount;
-  uint40 createdAt;
-  uint40 extendedAt;
-  uint40 unlockTime;
-}
-
-contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2 {
+contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2, TokenLockerERC20V2 {
   using SafeERC20 for IERC20;
 
   /** @dev initialize TokenLockerManagerV2 without a valid factory, because we don't need one */
   constructor() TokenLockerManagerV2(address(0)) {}
 
-  mapping(uint40 => UniV2LockData) internal _locks;
+  mapping(uint40 => LockData) internal _locks;
 
   function _ownerAuthorized(uint40 id) internal virtual override view returns (bool) {
     return _msgSender() == _locks[id].owner;
@@ -55,6 +47,8 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2 {
   ) internal virtual returns (
     uint40 id
   ) {
+    require(Util.isLpToken(tokenAddress_), "INVALID_TOKEN");
+
     // this should throw an error if it's not a valid pair,
     // which is what we want to happen as early as possible.
     IUniswapV2Pair pair = IUniswapV2Pair(tokenAddress_);
@@ -97,21 +91,6 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2 {
     _createTokenLocker(tokenAddress_, amount_, unlockTime_);
   }
 
-  function createTokenLockerV2(
-    address tokenAddress_,
-    uint256 amount_,
-    uint40 unlockTime_,
-    string[] calldata socialKeys_,
-    string[] calldata socialUrls_
-  ) external virtual override onlyNotPaused nonReentrant returns (
-    uint40 id,
-    address lockAddress
-  ) {
-    id = _createTokenLocker(tokenAddress_, amount_, unlockTime_);
-    lockAddress = address(this);
-    _setSocials(id, socialKeys_, socialUrls_);
-  }
-
   function getLpData(uint40 id_) external virtual override view returns (
     bool hasLpData,
     uint40 id,
@@ -136,6 +115,30 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2 {
     price1 = 0;
   }
 
+  function getTokenLockData(uint40 id_) external virtual override view returns (
+    bool isLpToken,
+    uint40 id,
+    address contractAddress,
+    address lockOwner,
+    address token,
+    address createdBy,
+    uint40 createdAt,
+    uint40 unlockTime,
+    uint256 balance,
+    uint256 totalSupply
+  ){
+    isLpToken = id_ < _count;
+    id = id_;
+    contractAddress = address(this);
+    lockOwner = _locks[id_].owner;
+    token = _locks[id_].tokenAddress;
+    createdBy = _locks[id_].createdBy;
+    createdAt = _locks[id_].createdAt;
+    unlockTime = _locks[id_].unlockTime;
+    balance = _locks[id_].amountOrTokenId;
+    totalSupply = IERC20(token).totalSupply();
+  }
+
   function _transferLockOwnership(uint40 id_, address newOwner_) internal virtual override {
     address oldOwner = _locks[id_].owner;
     _locks[id_].owner = newOwner_;
@@ -158,7 +161,7 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2 {
     uint40 id_,
     uint256 amount_,
     uint40 newUnlockTime_
-  ) internal virtual {
+  ) internal virtual override {
     require(newUnlockTime_ > uint40(block.timestamp), "TOO_SOON");
 
     // make note of extended time if needed
@@ -168,7 +171,7 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2 {
     }
 
     // add to locked amount local state before transfer
-    _locks[id_].amount += amount_;
+    _locks[id_].amountOrTokenId += amount_;
 
     IERC20 token = IERC20(_locks[id_].tokenAddress);
 
@@ -184,23 +187,15 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2 {
     require(amount_ == amountSent, "BORKED_TRANSFER");
   }
 
-  function deposit(
-    uint40 id_,
-    uint256 amount_,
-    uint40 newUnlockTime_
-  ) external virtual override onlyLockOwner(id_) nonReentrant {
-    _deposit(id_, amount_, newUnlockTime_);
-  }
-
   function withdrawById(
     uint40 id_
   ) external virtual override onlyLockOwner(id_) nonReentrant {
     require(uint40(block.timestamp) >= _locks[id_].unlockTime, "LOCKED");
 
-    uint256 amount = _locks[id_].amount;
+    uint256 amount = _locks[id_].amountOrTokenId;
 
     // save to local state before transfer
-    _locks[id_].amount = 0;
+    _locks[id_].amountOrTokenId = 0;
 
     IERC20 token = IERC20(_locks[id_].tokenAddress);
     uint256 oldBalance = token.balanceOf(address(this));
@@ -224,6 +219,9 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2 {
 
     IUniswapV2Pair oldPair = IUniswapV2Pair(_locks[id_].tokenAddress);
 
+    // approve the old router
+    IERC20(_locks[id_].tokenAddress).safeApprove(oldRouterAddress_, _locks[id_].amountOrTokenId);
+
     // unpair on old router and send tokens to this address
     (
       uint256 amountRemoved0,
@@ -233,7 +231,7 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2 {
     ).removeLiquidity(
       oldPair.token0(),
       oldPair.token1(),
-      _locks[id_].amount,
+      _locks[id_].amountOrTokenId,
       // accept any amount of "slippage"
       0,0,
       // send unpaired tokens to this address temporarily
@@ -242,7 +240,9 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2 {
       block.timestamp
     );
 
-    require(amountRemoved0 > 0 && amountRemoved1 > 0, "NO_LIQ");
+    // approve the new router
+    IERC20(oldPair.token0()).safeApprove(newRouterAddress_, amountRemoved0);
+    IERC20(oldPair.token1()).safeApprove(newRouterAddress_, amountRemoved1);
 
     IUniswapV2Router02 newRouter = IUniswapV2Router02(newRouterAddress_);
 
@@ -269,15 +269,13 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2 {
       "LOST_TOKENS"
     );
 
-    address tokenAddress = IUniswapV2Factory(
+    // update the existing lock instead of creating a new one
+    _locks[id_].tokenAddress = IUniswapV2Factory(
       newRouter.factory()
     ).getPair(
       oldPair.token0(),
       oldPair.token1()
     );
-
-    // update the existing lock instead of creating a new one
-    _locks[id_].tokenAddress = tokenAddress;
-    _locks[id_].amount = newTokenAmount;
+    _locks[id_].amountOrTokenId = newTokenAmount;
   }
 }

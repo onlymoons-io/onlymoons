@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0+
+// SPDX-License-Identifier: UNLICENSED
 
 /**
   /$$$$$$            /$$           /$$      /$$                                        
@@ -18,22 +18,9 @@
 
 pragma solidity ^0.8.0;
 
-import { IOwnableV2 } from "../Control/IOwnableV2.sol";
+import { ITokenLockerLPV2 } from "./ITokenLockerLPV2.sol";
+import { ITokenLockerERC721V2 } from "./ITokenLockerERC721V2.sol";
 
-interface ITokenLockerBaseV2 is IOwnableV2 {
-  function setSocials(
-    string[] calldata keys_,
-    string[] calldata urls_
-  ) external;
-  function getUrlForSocialKey(
-    string calldata key_
-  ) external view returns (
-    string memory
-  );
-  function deposit(
-    uint40 id_,
-    uint256 amountOrTokenId_,
-    uint40 newUnlockTime_
-  ) external;
-  function withdraw() external;
+interface ITokenLockerUniV3 is ITokenLockerLPV2, ITokenLockerERC721V2 {
+  
 }

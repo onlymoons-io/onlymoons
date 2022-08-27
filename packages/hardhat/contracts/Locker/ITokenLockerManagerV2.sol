@@ -35,7 +35,8 @@ interface ITokenLockerManagerV2 is ITokenLockerManagerV1, IGovernable, IPausable
     address indexed token0,
     address indexed token1,
     address createdBy,
-    uint256 balance,
+    /** this is balance for erc20 locks, and tokenId for erc721 locks */
+    uint256 balanceOrTokenId,
     uint40 unlockTime
   );
 
@@ -45,7 +46,7 @@ interface ITokenLockerManagerV2 is ITokenLockerManagerV1, IGovernable, IPausable
 
   function createTokenLockerV2(
     address tokenAddress_,
-    uint256 amount_,
+    uint256 amountOrTokenId_,
     uint40 unlockTime_,
     string[] calldata socialKeys_,
     string[] calldata socialUrls_
@@ -54,7 +55,10 @@ interface ITokenLockerManagerV2 is ITokenLockerManagerV1, IGovernable, IPausable
     address lockAddress
   );
 
-  function transferLockOwnership(uint40 id_, address newOwner_) external;
+  function transferLockOwnership(
+    uint40 id_,
+    address newOwner_
+  ) external;
 
   function setAllowedRouterAddress(
     address routerAddress_,

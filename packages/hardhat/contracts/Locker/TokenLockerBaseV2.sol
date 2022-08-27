@@ -19,8 +19,19 @@
 pragma solidity ^0.8.0;
 
 import { ITokenLockerBaseV2 } from "./ITokenLockerBaseV2.sol";
+import { ReentrancyGuard } from "../library/ReentrancyGuard.sol";
 
-abstract contract TokenLockerBaseV2 is ITokenLockerBaseV2 {
+struct LockData {
+  address tokenAddress;
+  address owner;
+  address createdBy;
+  uint256 amountOrTokenId;
+  uint40 createdAt;
+  uint40 extendedAt;
+  uint40 unlockTime;
+}
+
+abstract contract TokenLockerBaseV2 is ITokenLockerBaseV2, ReentrancyGuard {
   /** @dev id => siteKey => url */
   mapping(uint40 => mapping(string => string)) internal _socials;
 
@@ -46,18 +57,32 @@ abstract contract TokenLockerBaseV2 is ITokenLockerBaseV2 {
     }
   }
 
-  function setSocialsById(
-    uint40 id_,
-    string[] calldata keys_,
-    string[] calldata urls_
-  ) external virtual override onlyLockOwner(id_) {
-    _setSocials(id_, keys_, urls_);
-  }
-
   function setSocials(
     string[] calldata keys_,
     string[] calldata urls_
   ) external virtual override onlyLockOwner(0) {
     _setSocials(0, keys_, urls_);
+  }
+
+  function getUrlForSocialKey(
+    string calldata key_
+  ) external virtual override view returns (
+    string memory
+  ){
+    return _socials[0][key_];
+  }
+
+  function _deposit(
+    uint40 id_,
+    uint256 amountOrTokenId_,
+    uint40 newUnlockTime_
+  ) internal virtual {}
+
+  function deposit(
+    uint40 id_,
+    uint256 amount_,
+    uint40 newUnlockTime_
+  ) external virtual override onlyLockOwner(id_) nonReentrant {
+    _deposit(id_, amount_, newUnlockTime_);
   }
 }

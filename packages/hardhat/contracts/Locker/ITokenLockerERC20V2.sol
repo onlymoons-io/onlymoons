@@ -18,22 +18,8 @@
 
 pragma solidity ^0.8.0;
 
-import { IOwnableV2 } from "../Control/IOwnableV2.sol";
+import { ITokenLockerBaseV2 } from "./ITokenLockerBaseV2.sol";
 
-interface ITokenLockerBaseV2 is IOwnableV2 {
-  function setSocials(
-    string[] calldata keys_,
-    string[] calldata urls_
-  ) external;
-  function getUrlForSocialKey(
-    string calldata key_
-  ) external view returns (
-    string memory
-  );
-  function deposit(
-    uint40 id_,
-    uint256 amountOrTokenId_,
-    uint40 newUnlockTime_
-  ) external;
-  function withdraw() external;
+interface ITokenLockerERC20V2 is ITokenLockerBaseV2 {
+  // function splitLock() external;
 }

@@ -77,10 +77,10 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
   }
 
   /**
-   * @dev maps to _paused to maintain compatibility with locker V1
+   * @dev maps to !_paused to maintain compatibility with locker V1
    */
   function creationEnabled() external virtual override view returns (bool) {
-    return _paused;
+    return !_paused;
   }
   
   /**
@@ -90,57 +90,46 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
     _setPaused(value_);
   }
 
-  function _createTokenLocker(
-    uint8 lockType_,
-    bytes memory extraData_
-  ) internal virtual returns (
-    uint40 id,
-    address lockAddress
-  ) {
-    id = uint40(_next());
-    lockAddress = _factory.createLocker(
-      lockType_,
-      address(this),
-      id,
-      extraData_
-    );
-    _lockAddresses[id] = lockAddress;
-  }
+  // function _createTokenLocker(
+  //   uint8 lockType_,
+  //   bytes memory extraData_
+  // ) internal virtual returns (
+  //   uint40 id,
+  //   address lockAddress
+  // ) {
+  //   id = uint40(_next());
+  //   lockAddress = _factory.createLocker(
+  //     lockType_,
+  //     address(this),
+  //     id,
+  //     extraData_
+  //   );
+  //   _lockAddresses[id] = lockAddress;
+  // }
 
-  function _createTokenLocker(
-    uint8 lockType_
-  ) internal virtual returns (
-    uint40 id,
-    address lockAddress
-  ) {
-    id = uint40(_next());
-    lockAddress = _factory.createLocker(
-      lockType_,
-      address(this),
-      id,
-      new bytes(0)
-    );
-    _lockAddresses[id] = lockAddress;
-  }
+  // function _createTokenLocker(
+  //   uint8 lockType_
+  // ) internal virtual returns (
+  //   uint40 id,
+  //   address lockAddress
+  // ) {
+  //   id = uint40(_next());
+  //   lockAddress = _factory.createLocker(
+  //     lockType_,
+  //     address(this),
+  //     id,
+  //     new bytes(0)
+  //   );
+  //   _lockAddresses[id] = lockAddress;
+  // }
 
   function createTokenLocker(
     address tokenAddress_,
     uint256 amount_,
     uint40 unlockTime_
   ) external virtual override onlyNotPaused {
-
     // _createTokenLocker(lockType_, extraData_);
   }
-
-  // function createTokenLocker(
-  //   address tokenAddress_,
-  //   uint256 amount_,
-  //   uint40 unlockTime_
-  // ) external virtual onlyNotPaused {
-  //   _createTokenLocker(
-  //     3 // 3 = erc20 token
-  //   );
-  // }
 
   function createTokenLockerV2(
     address tokenAddress_,

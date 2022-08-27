@@ -26,16 +26,6 @@ import { TokenLockerManagerV2 } from "./TokenLockerManagerV2.sol";
 import { TokenLockerBaseV2 } from "./TokenLockerBaseV2.sol";
 
 abstract contract TokenLockerLPV2 is ITokenLockerLPV2, TokenLockerManagerV2, TokenLockerBaseV2 {
-  function setSocials(
-    string[] calldata /* sites_ */,
-    string[] calldata /* urls_ */
-  ) external virtual override(
-    ITokenLockerBaseV2,
-    TokenLockerBaseV2
-  ){
-    revert("NOT_IMPLEMENTED");
-  }
-
   function withdraw() external virtual override {
     revert("NOT_IMPLEMENTED");
   }
@@ -80,4 +70,70 @@ abstract contract TokenLockerLPV2 is ITokenLockerLPV2, TokenLockerManagerV2, Tok
   ){
     _transferLockOwnership(id_, newOwner_);
   }
+
+  function setSocials(
+    string[] calldata /* sites_ */,
+    string[] calldata /* urls_ */
+  ) external virtual override(
+    ITokenLockerBaseV2,
+    TokenLockerBaseV2
+  ){
+    revert("NOT_IMPLEMENTED");
+  }
+
+  /** @dev not implemented, but don't revert */
+  function getUrlForSocialKey(
+    string calldata /* key_ */
+  ) external virtual override(ITokenLockerBaseV2, TokenLockerBaseV2) view returns (
+    string memory
+  ){
+    return "";
+  }
+
+  function setSocialsById(
+    uint40 id_,
+    string[] calldata keys_,
+    string[] calldata urls_
+  ) external virtual override onlyLockOwner(id_) {
+    _setSocials(id_, keys_, urls_);
+  }
+
+  function getUrlForSocialKeyById(
+    uint40 id_,
+    string calldata key_
+  ) external virtual override view returns (
+    string memory
+  ){
+    return _socials[id_][key_];
+  }
+
+  function createTokenLockerV2(
+    address tokenAddress_,
+    uint256 amountOrTokenId_,
+    uint40 unlockTime_,
+    string[] calldata socialKeys_,
+    string[] calldata socialUrls_
+  ) external virtual override(ITokenLockerManagerV2, TokenLockerManagerV2) onlyNotPaused nonReentrant returns (
+    uint40 id,
+    address lockAddress
+  ) {
+    id = _createTokenLocker(tokenAddress_, amountOrTokenId_, unlockTime_);
+    lockAddress = address(this);
+    _setSocials(id, socialKeys_, socialUrls_);
+  }
+
+  // function getLockData() external virtual override returns (
+  //   bool isLpToken,
+  //   uint40 id,
+  //   address contractAddress,
+  //   address lockOwner,
+  //   address token,
+  //   address createdBy,
+  //   uint40 createdAt,
+  //   uint40 unlockTime,
+  //   uint256 balance,
+  //   uint256 totalSupply
+  // ) {
+    
+  // }
 }
