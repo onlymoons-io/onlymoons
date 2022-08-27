@@ -125,6 +125,16 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+
+    canto: {
+      url: "https://jsonrpc.canto.nodestake.top/",
+
+      gasPrice: 225000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
+
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/cfeb072b8469447e889da944481d5874", // <---- YOUR INFURA ID! (or it won't work)
 
@@ -230,7 +240,7 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
-    polytest: {
+    mumbai: {
       // url: "https://speedy-nodes-nyc.moralis.io/abe6dedb3ddb2a52245b68af/polygon/mumbai", // <---- YOUR MORALIS ID! (not limited to infura)
       url: "https://rpc-mumbai.maticvigil.com/",
       // gasPrice: 1000000000,

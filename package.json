@@ -1,6 +1,6 @@
 {
   "name": "@onlymoons-io/onlymoons",
-  "version": "0.0.13",
+  "version": "0.0.15",
   "keywords": [
     "ethereum",
     "react",
@@ -34,10 +34,11 @@
     "deploy:metistest": "yarn deploy --network metistest",
     "deploy:milkomeda": "yarn deploy --network milkomeda",
     "deploy:avax": "yarn deploy --network avax",
+    "deploy:canto": "yarn deploy --network canto",
     "deploy:fuse": "yarn deploy --network fuse",
     "deploy:fusetest": "yarn deploy --network fusetest",
     "deploy:polygon": "yarn deploy --network polygon",
-    "deploy:polygontest": "yarn deploy --network polytest",
+    "deploy:mumbai": "yarn deploy --network mumbai",
     "deploy:astar": "yarn deploy --network astar",
     "deploy:rinkeby": "yarn deploy --network rinkeby",
     "deploy:ropsten": "yarn deploy --network ropsten",

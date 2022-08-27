@@ -49,7 +49,7 @@ const FaucetContextProvider: React.FC = ({ children }) => {
     //
     connector
       .getProvider()
-      .then((_provider: any) => setContract(new Contract(address, abi, new Web3Provider(_provider.getSigner()))))
+      .then((_provider: any) => setContract(new Contract(address, abi, new Web3Provider(_provider.getSigner(), 'any'))))
       .catch((err: Error) => {
         console.error(err)
         setContract(undefined)

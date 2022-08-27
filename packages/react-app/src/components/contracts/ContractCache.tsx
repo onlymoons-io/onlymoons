@@ -68,7 +68,7 @@ const ContractCacheContextProvider: React.FC = ({ children }) => {
 
       // create the contract, only if it isn't already cached
       if (!contracts[eitherChainId].hasOwnProperty(addressToUse)) {
-        const provider = new Web3Provider(await eitherConnector.getProvider())
+        const provider = new Web3Provider(await eitherConnector.getProvider(), 'any')
 
         // why does this need to be here, if it's also above?
         if (!contracts[eitherChainId]) {

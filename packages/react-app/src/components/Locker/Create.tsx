@@ -158,7 +158,7 @@ const Create: React.FC = () => {
         //
         if (!_provider) return Promise.reject(new Error('Invalid provider'))
 
-        setContract(new Contract(tokenData.address, ERC20ABI, new Web3Provider(_provider).getSigner()))
+        setContract(new Contract(tokenData.address, ERC20ABI, new Web3Provider(_provider, 'any').getSigner()))
       })
       .catch((err) => {
         console.error(err)

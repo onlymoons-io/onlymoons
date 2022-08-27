@@ -183,7 +183,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
 
     mounted(eitherConnector.getProvider())
       .then((provider) =>
-        setTokenContract(new Contract(lockData.token, ERC20ABI, new Web3Provider(provider).getSigner())),
+        setTokenContract(new Contract(lockData.token, ERC20ABI, new Web3Provider(provider, 'any').getSigner())),
       )
       .catch((err: Error) => {
         console.error(err)
@@ -284,7 +284,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
     }
 
     mounted(connector.getProvider())
-      .then((_provider) => mounted(new Web3Provider(_provider).getBalance(lockContract.address)))
+      .then((_provider) => mounted(new Web3Provider(_provider, 'any').getBalance(lockContract.address)))
       .then(setClaimableEth)
       .catch((err: Error) => {
         console.error(err)
@@ -307,7 +307,7 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
     setCheckingTokenBalance(true)
 
     mounted(connector.getProvider())
-      .then((provider) => new Contract(claimTokenAddress, ERC20ABI, new Web3Provider(provider)))
+      .then((provider) => new Contract(claimTokenAddress, ERC20ABI, new Web3Provider(provider, 'any')))
       .then((claimTokenContract) => mounted<BigNumber>(claimTokenContract.balanceOf(lockData.contractAddress)))
       .then(setClaimableTokens)
       .catch((err: Error) => {
