@@ -127,8 +127,9 @@ module.exports = {
     },
 
     canto: {
-      url: "https://canto.evm.chandrastation.com/",
+      url: "https://jsonrpc.canto.nodestake.top/",
 
+      gasPrice: 225000000000,
       accounts: {
         mnemonic: mnemonic(),
       },

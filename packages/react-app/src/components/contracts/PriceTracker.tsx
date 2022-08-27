@@ -213,7 +213,7 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
     }
 
     mounted<any>(eitherConnector.getProvider())
-      .then((_provider) => new Web3Provider(_provider))
+      .then((_provider) => new Web3Provider(_provider, 'any'))
       .then(setProvider)
       .catch((err: Error) => {
         console.error(err)

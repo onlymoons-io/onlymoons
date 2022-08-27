@@ -45,7 +45,7 @@ import { createBreakpoint, usePromise } from 'react-use'
 const { Web3Provider } = providers
 
 function getLibrary(provider?: any, connector?: AbstractConnector) {
-  return new Web3Provider(provider)
+  return new Web3Provider(provider, 'any')
 }
 
 const Outer = tw.div`

@@ -73,7 +73,9 @@ const Staking: React.FC<StakingProps> = ({
 
     mounted(connector.getProvider())
       .then((provider) =>
-        setTokenContract(new Contract(_stakingData.stakedToken, ERC20ABI, new Web3Provider(provider).getSigner())),
+        setTokenContract(
+          new Contract(_stakingData.stakedToken, ERC20ABI, new Web3Provider(provider, 'any').getSigner()),
+        ),
       )
       .catch((err: Error) => {
         console.error(err)

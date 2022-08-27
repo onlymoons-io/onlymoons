@@ -68,7 +68,7 @@ const ContractDetails: React.FC<ContractDetailsProps> = ({ children, address, ab
     }
 
     mounted(connector.getProvider())
-      .then((provider) => new Web3Provider(provider).getCode(address))
+      .then((provider) => new Web3Provider(provider, 'any').getCode(address))
       // remove the first 2 characters if they are 0x (they should be)
       .then((result) => (result.startsWith('0x') ? result.substring(2) : result))
       .then(setBytecode)

@@ -300,7 +300,7 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
-  7700 : {
+  7700: {
     chainId: 7700,
     name: 'Canto',
     shortName: 'Canto',
@@ -320,8 +320,8 @@ export const networks: Record<number, NetworkData> = {
       // CANTO
       {
         address: '0x826551890Dc65655a0Aceca109aB11AbDbD7a07B',
-        // pair w/ USDC on Slingshot
-        stablePair: '0xb00626F6237e065a57f2AFAD20cB4Ec927030759',
+        // pair w/ USDC on cantoswap.fi
+        stablePair: '0x628851EF2aAd2ACC4c4dD2E13fdceEBA0e5106bA',
       },
     ],
   },
