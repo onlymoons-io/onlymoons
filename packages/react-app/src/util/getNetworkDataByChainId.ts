@@ -313,7 +313,7 @@ export const networks: Record<number, NetworkData> = {
       balance: BigNumber.from(0),
     },
     explorerURL: 'https://evm.explorer.canto.io/',
-    rpcURL: 'https://canto.evm.chandrastation.com/',
+    rpcURL: 'https://jsonrpc.canto.nodestake.top/',
     icon: '/canto.png',
     isTestNet: false,
     supportedLiquidityPairTokens: [
