@@ -44,6 +44,7 @@
     "deploy:ropsten": "yarn deploy --network ropsten",
     "deploy:kovan": "yarn deploy --network kovan",
     "deploy:dogechain": "yarn deploy --network dogechain",
+    "deploy:kektest": "yarn deploy --network kektest",
     "watch": "yarn workspace @onlymoons-io/hardhat watch",
     "accounts": "yarn workspace @onlymoons-io/hardhat accounts",
     "balance": "yarn workspace @onlymoons-io/hardhat balance",
