@@ -36,6 +36,9 @@
       },
       "80001": {
         "mumbai": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+      },
+      "420666": {
+        "kektest": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
       }
     },
     "abi": []
@@ -77,6 +80,9 @@
       },
       "80001": {
         "mumbai": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+      },
+      "420666": {
+        "kektest": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       }
     },
     "abi": []
@@ -127,6 +133,9 @@
       },
       "80001": {
         "mumbai": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
+      },
+      "420666": {
+        "kektest": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
       }
     },
     "abi": [
@@ -523,6 +532,9 @@
       },
       "80001": {
         "mumbai": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
+      },
+      "420666": {
+        "kektest": "0x15b7Bd005EfFd43d7C9A05D73beBeBb84e38aFf0"
       }
     },
     "abi": [
@@ -850,6 +862,9 @@
       },
       "80001": {
         "mumbai": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+      },
+      "420666": {
+        "kektest": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
       }
     },
     "abi": [
@@ -4455,7 +4470,10 @@
   "TokenLockerUniV2": {
     "networks": {
       "97": {
-        "bsctest": "0x831a0E5116B0D9ff07bF684831bFD73A6858C8BB"
+        "bsctest": "0x674bDc67aD1655D9Cf7A8A79F0938427Fcfef020"
+      },
+      "80001": {
+        "mumbai": "0x40A686d0273e5BC69Af582e07078F1d37C2C4A99"
       }
     },
     "abi": [
@@ -4476,7 +4494,7 @@
           {
             "indexed": false,
             "internalType": "uint256",
-            "name": "amount",
+            "name": "amountOrTokenId",
             "type": "uint256"
           }
         ],
@@ -4601,7 +4619,7 @@
           {
             "indexed": false,
             "internalType": "uint256",
-            "name": "balance",
+            "name": "balanceOrTokenId",
             "type": "uint256"
           },
           {
@@ -4672,6 +4690,720 @@
           },
           {
             "internalType": "uint256",
+            "name": "amountOrTokenId_",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint40",
+            "name": "unlockTime_",
+            "type": "uint40"
+          }
+        ],
+        "name": "createTokenLockerV2",
+        "outputs": [
+          {
+            "internalType": "uint40",
+            "name": "id",
+            "type": "uint40"
+          },
+          {
+            "internalType": "address",
+            "name": "lockAddress",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "creationEnabled",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "factory",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
+          }
+        ],
+        "name": "getLpData",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "hasLpData",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint40",
+            "name": "id",
+            "type": "uint40"
+          },
+          {
+            "internalType": "address",
+            "name": "token0",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "token1",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance0",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance1",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "price0",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "price1",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
+          }
+        ],
+        "name": "getTokenLockAddress",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
+          }
+        ],
+        "name": "getTokenLockData",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "isLpToken",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint40",
+            "name": "id",
+            "type": "uint40"
+          },
+          {
+            "internalType": "address",
+            "name": "contractAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "lockOwner",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "createdBy",
+            "type": "address"
+          },
+          {
+            "internalType": "uint40",
+            "name": "createdAt",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint40",
+            "name": "unlockTime",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalSupply",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "address_",
+            "type": "address"
+          }
+        ],
+        "name": "getTokenLockersForAddress",
+        "outputs": [
+          {
+            "internalType": "uint40[]",
+            "name": "",
+            "type": "uint40[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
+          },
+          {
+            "internalType": "string",
+            "name": "key_",
+            "type": "string"
+          }
+        ],
+        "name": "getUrlForSocialKey",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "governor",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
+          },
+          {
+            "internalType": "address",
+            "name": "oldRouterAddress_",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "newRouterAddress_",
+            "type": "address"
+          }
+        ],
+        "name": "migrate",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "",
+            "type": "uint40"
+          },
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "notifyLockerOwnerChange",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "paused",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "routerAddress_",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "allowed_",
+            "type": "bool"
+          }
+        ],
+        "name": "setAllowedRouterAddress",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bool",
+            "name": "value_",
+            "type": "bool"
+          }
+        ],
+        "name": "setCreationEnabled",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "setFactory",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bool",
+            "name": "value",
+            "type": "bool"
+          }
+        ],
+        "name": "setPaused",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
+          },
+          {
+            "internalType": "string[]",
+            "name": "keys_",
+            "type": "string[]"
+          },
+          {
+            "internalType": "string[]",
+            "name": "urls_",
+            "type": "string[]"
+          }
+        ],
+        "name": "setSocials",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "tokenLockerCount",
+        "outputs": [
+          {
+            "internalType": "uint40",
+            "name": "",
+            "type": "uint40"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "newGovernor",
+            "type": "address"
+          }
+        ],
+        "name": "transferGovernorship",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
+          },
+          {
+            "internalType": "address",
+            "name": "newOwner_",
+            "type": "address"
+          }
+        ],
+        "name": "transferLockOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "newOwner_",
+            "type": "address"
+          }
+        ],
+        "name": "transferOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "withdraw",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
+          }
+        ],
+        "name": "withdrawById",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ]
+  },
+  "TokenLockerUniV3": {
+    "networks": {
+      "80001": {
+        "mumbai": "0x998aF1f1b511B5402316dBA98FBb3D08fa48Cf03"
+      }
+    },
+    "abi": [
+      {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint40",
+            "name": "id",
+            "type": "uint40"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amountOrTokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "Deposited",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint40",
+            "name": "id",
+            "type": "uint40"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint40",
+            "name": "newUnlockTime",
+            "type": "uint40"
+          }
+        ],
+        "name": "Extended",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "oldGovernor",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "newGovernor",
+            "type": "address"
+          }
+        ],
+        "name": "GovernorshipTransferred",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint40",
+            "name": "id",
+            "type": "uint40"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "oldOwner",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "newOwner",
+            "type": "address"
+          }
+        ],
+        "name": "LockOwnershipTransfered",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "oldOwner",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "newOwner",
+            "type": "address"
+          }
+        ],
+        "name": "OwnershipTransferred",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint40",
+            "name": "id",
+            "type": "uint40"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "token0",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "token1",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "createdBy",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "balanceOrTokenId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint40",
+            "name": "unlockTime",
+            "type": "uint40"
+          }
+        ],
+        "name": "TokenLockerCreated",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint40",
+            "name": "id",
+            "type": "uint40"
+          }
+        ],
+        "name": "Withdrew",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
+          }
+        ],
+        "name": "collect",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "count",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "countdownDuration",
+        "outputs": [
+          {
+            "internalType": "uint40",
+            "name": "",
+            "type": "uint40"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "tokenAddress_",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
             "name": "amount_",
             "type": "uint256"
           },
@@ -4679,16 +5411,29 @@
             "internalType": "uint40",
             "name": "unlockTime_",
             "type": "uint40"
+          }
+        ],
+        "name": "createTokenLocker",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "tokenAddress_",
+            "type": "address"
           },
           {
-            "internalType": "string[]",
-            "name": "socialKeys_",
-            "type": "string[]"
+            "internalType": "uint256",
+            "name": "amountOrTokenId_",
+            "type": "uint256"
           },
           {
-            "internalType": "string[]",
-            "name": "socialUrls_",
-            "type": "string[]"
+            "internalType": "uint40",
+            "name": "unlockTime_",
+            "type": "uint40"
           }
         ],
         "name": "createTokenLockerV2",
@@ -4729,7 +5474,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "amount_",
+            "name": "amountOrTokenId_",
             "type": "uint256"
           },
           {
@@ -4915,17 +5660,47 @@
       {
         "inputs": [
           {
-            "internalType": "string",
-            "name": "",
-            "type": "string"
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
           }
         ],
-        "name": "getUrlForSocialKey",
+        "name": "getUniV3LpData",
         "outputs": [
           {
-            "internalType": "string",
-            "name": "",
-            "type": "string"
+            "internalType": "address",
+            "name": "token0",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "token1",
+            "type": "address"
+          },
+          {
+            "internalType": "uint24",
+            "name": "fee",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance0",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance1",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint128",
+            "name": "liquidity",
+            "type": "uint128"
+          },
+          {
+            "internalType": "address",
+            "name": "pool",
+            "type": "address"
           }
         ],
         "stateMutability": "view",
@@ -4944,7 +5719,7 @@
             "type": "string"
           }
         ],
-        "name": "getUrlForSocialKeyById",
+        "name": "getUrlForSocialKey",
         "outputs": [
           {
             "internalType": "string",
@@ -4972,17 +5747,17 @@
         "inputs": [
           {
             "internalType": "uint40",
-            "name": "id_",
+            "name": "",
             "type": "uint40"
           },
           {
             "internalType": "address",
-            "name": "oldRouterAddress_",
+            "name": "",
             "type": "address"
           },
           {
             "internalType": "address",
-            "name": "newRouterAddress_",
+            "name": "",
             "type": "address"
           }
         ],
@@ -5017,6 +5792,40 @@
         "name": "notifyLockerOwnerChange",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "",
+            "type": "bytes"
+          }
+        ],
+        "name": "onERC721Received",
+        "outputs": [
+          {
+            "internalType": "bytes4",
+            "name": "",
+            "type": "bytes4"
+          }
+        ],
+        "stateMutability": "pure",
         "type": "function"
       },
       {
@@ -5066,6 +5875,19 @@
       {
         "inputs": [
           {
+            "internalType": "uint40",
+            "name": "countdownDuration_",
+            "type": "uint40"
+          }
+        ],
+        "name": "setCountdownDuration",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
             "internalType": "bool",
             "name": "value_",
             "type": "bool"
@@ -5105,24 +5927,6 @@
       {
         "inputs": [
           {
-            "internalType": "string[]",
-            "name": "",
-            "type": "string[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "",
-            "type": "string[]"
-          }
-        ],
-        "name": "setSocials",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
             "internalType": "uint40",
             "name": "id_",
             "type": "uint40"
@@ -5138,7 +5942,20 @@
             "type": "string[]"
           }
         ],
-        "name": "setSocialsById",
+        "name": "setSocials",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
+          }
+        ],
+        "name": "startUnlockCountdown",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -5218,6 +6035,107 @@
         "name": "withdrawById",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ]
+  },
+  "UtilV2": {
+    "networks": {
+      "80001": {
+        "mumbai": "0x88AcAf0B4bC08b9Bf8383f8fF1Fe2f09982bb82C"
+      }
+    },
+    "abi": [
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "address_",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenId_",
+            "type": "uint256"
+          }
+        ],
+        "name": "getUniV3LpData",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "token0",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "token1",
+            "type": "address"
+          },
+          {
+            "internalType": "uint24",
+            "name": "fee",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance0",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance1",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint128",
+            "name": "liquidity",
+            "type": "uint128"
+          },
+          {
+            "internalType": "address",
+            "name": "pool",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "address_",
+            "type": "address"
+          }
+        ],
+        "name": "isERC721",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "address_",
+            "type": "address"
+          }
+        ],
+        "name": "isUniV3Lp",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       }
     ]

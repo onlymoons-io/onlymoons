@@ -118,6 +118,14 @@ module.exports = {
       },
     },
 
+    kektest: {
+      url: "https://testnet.kekchain.com",
+      gasPrice: 1100000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
+
     avax: {
       url: "https://api.avax.network/ext/bc/C/rpc",
 
