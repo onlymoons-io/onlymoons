@@ -12,7 +12,11 @@ const Outer = tw.div`
   items-center
 `
 
-const FullscreenLoading: React.FC = ({ children }) => {
+export interface FullscreenLoadingProps {
+  children?: React.ReactNode
+}
+
+const FullscreenLoading: React.FC<FullscreenLoadingProps> = ({ children }) => {
   return (
     <Outer>
       <motion.div

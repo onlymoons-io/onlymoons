@@ -44,12 +44,13 @@ interface ITokenLockerManagerV2 is ITokenLockerManagerV1, IGovernable, IPausable
 
   function setFactory(address address_) external;
 
+  function countdownDuration() external view returns (uint40);
+  function setCountdownDuration(uint40 countdownDuration_) external;
+
   function createTokenLockerV2(
     address tokenAddress_,
     uint256 amountOrTokenId_,
-    uint40 unlockTime_,
-    string[] calldata socialKeys_,
-    string[] calldata socialUrls_
+    uint40 unlockTime_
   ) external returns (
     uint40 id,
     address lockAddress

@@ -9,6 +9,7 @@ export interface RotateToCursorProps {
   className?: string
   style?: CSSProperties
   ref?: React.RefObject<HTMLDivElement>
+  children?: React.ReactNode
 }
 
 const RotateToCursor: React.FC<RotateToCursorProps> = ({ children, duration = 0, ref, ...rest }) => {

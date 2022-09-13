@@ -94,13 +94,13 @@ const SplitStakingComponent: React.FC = () => {
           .getProvider()
           .then(
             (provider) =>
-              new Contract(soloStakingData.contractAddress, stakingAbi, new Web3Provider(provider).getSigner()),
+              new Contract(soloStakingData.contractAddress, stakingAbi, new Web3Provider(provider, 'any').getSigner()),
           ),
         connector
           .getProvider()
           .then(
             (provider) =>
-              new Contract(lpStakingData.contractAddress, stakingAbi, new Web3Provider(provider).getSigner()),
+              new Contract(lpStakingData.contractAddress, stakingAbi, new Web3Provider(provider, 'any').getSigner()),
           ),
       ]),
     )
@@ -181,7 +181,7 @@ const SplitStakingComponent: React.FC = () => {
     }
 
     mounted(connector.getProvider())
-      .then((_provider: any) => setProvider(new Web3Provider(_provider)))
+      .then((_provider: any) => setProvider(new Web3Provider(_provider, 'any')))
       .catch((err: Error) => {
         console.error(err)
         setProvider(undefined)
@@ -242,7 +242,9 @@ const SplitStakingComponent: React.FC = () => {
 
     mounted(connector.getProvider())
       .then((provider) =>
-        setTokenContract(new Contract(globalStakingData.mainToken, ERC20ABI, new Web3Provider(provider).getSigner())),
+        setTokenContract(
+          new Contract(globalStakingData.mainToken, ERC20ABI, new Web3Provider(provider, 'any').getSigner()),
+        ),
       )
       .catch((err: Error) => {
         console.error(err)

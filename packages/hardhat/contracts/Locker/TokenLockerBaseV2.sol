@@ -21,29 +21,17 @@ pragma solidity ^0.8.0;
 import { ITokenLockerBaseV2 } from "./ITokenLockerBaseV2.sol";
 import { ReentrancyGuard } from "../library/ReentrancyGuard.sol";
 
-struct LockData {
-  address tokenAddress;
-  address owner;
-  address createdBy;
-  uint256 amountOrTokenId;
-  uint40 createdAt;
-  uint40 extendedAt;
-  uint40 unlockTime;
-}
-
 abstract contract TokenLockerBaseV2 is ITokenLockerBaseV2, ReentrancyGuard {
   /** @dev id => siteKey => url */
   mapping(uint40 => mapping(string => string)) internal _socials;
 
-  modifier onlyLockOwner(uint40 id) {
-    require(_ownerAuthorized(id), "UNAUTHORIZED");
+  modifier onlyLockOwner(uint40 id_) {
+    require(_isLockOwner(id_), "UNAUTHORIZED");
     _;
   }
 
-  /** @dev this is for overriding */
-  function _ownerAuthorized(uint40 /* id */) internal virtual returns (bool) {
-    return false;
-  }
+  /** @dev override this */
+  function _isLockOwner(uint40 id_) internal virtual view returns (bool) {}
 
   function _setSocials(
     uint40 id_,
@@ -58,18 +46,20 @@ abstract contract TokenLockerBaseV2 is ITokenLockerBaseV2, ReentrancyGuard {
   }
 
   function setSocials(
+    uint40 id_,
     string[] calldata keys_,
     string[] calldata urls_
-  ) external virtual override onlyLockOwner(0) {
-    _setSocials(0, keys_, urls_);
+  ) external virtual override onlyLockOwner(id_) {
+    _setSocials(id_, keys_, urls_);
   }
 
   function getUrlForSocialKey(
+    uint40 id_,
     string calldata key_
-  ) external virtual override view returns (
+  ) external virtual override onlyLockOwner(id_) view returns (
     string memory
   ){
-    return _socials[0][key_];
+    return _socials[id_][key_];
   }
 
   function _deposit(
@@ -80,9 +70,9 @@ abstract contract TokenLockerBaseV2 is ITokenLockerBaseV2, ReentrancyGuard {
 
   function deposit(
     uint40 id_,
-    uint256 amount_,
+    uint256 amountOrTokenId_,
     uint40 newUnlockTime_
   ) external virtual override onlyLockOwner(id_) nonReentrant {
-    _deposit(id_, amount_, newUnlockTime_);
+    _deposit(id_, amountOrTokenId_, newUnlockTime_);
   }
 }

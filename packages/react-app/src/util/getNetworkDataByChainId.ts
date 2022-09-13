@@ -300,6 +300,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  7700: {
+    chainId: 7700,
+    name: 'Canto',
+    shortName: 'Canto',
+    urlName: 'canto',
+    nativeCurrency: {
+      address: '0x826551890Dc65655a0Aceca109aB11AbDbD7a07B',
+      name: 'CANTO',
+      symbol: 'CANTO',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://evm.explorer.canto.io/',
+    rpcURL: 'https://jsonrpc.canto.nodestake.top/',
+    icon: '/canto.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // CANTO
+      {
+        address: '0x826551890Dc65655a0Aceca109aB11AbDbD7a07B',
+        // pair w/ USDC on cantoswap.fi
+        stablePair: '0x628851EF2aAd2ACC4c4dD2E13fdceEBA0e5106bA',
+      },
+    ],
+  },
   43114: {
     chainId: 43114,
     name: 'Avalanche',
@@ -326,7 +351,7 @@ export const networks: Record<number, NetworkData> = {
     ],
   },
   80001: {
-    chainId: 43114,
+    chainId: 80001,
     name: 'Polygon Mumbai (testnet)',
     shortName: 'Mumbai',
     urlName: 'mumbai',
@@ -338,7 +363,7 @@ export const networks: Record<number, NetworkData> = {
       balance: BigNumber.from(0),
     },
     explorerURL: 'https://mumbai.polygonscan.com/',
-    rpcURL: 'https://rpc-mumbai.maticvigil.com/',
+    rpcURL: 'https://rpc.ankr.com/polygon_mumbai',
     icon: '/polygon.png',
     isTestNet: true,
     supportedLiquidityPairTokens: [

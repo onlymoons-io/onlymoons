@@ -1,11 +1,11 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import React, { ReactNode, createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { BigNumber, Contract } from 'ethers'
 import { useContractCache } from './ContractCache'
-import { LPLockData, TokenLockData } from '../../typings'
+import { LPLockData, TokenLockData, UniV3LPData } from '../../typings'
 import { usePromise } from 'react-use'
 import { useWeb3React, getWeb3ReactContext } from '@web3-react/core'
 
-export interface ITokenLockerManagerV1ContractContext {
+export interface ITokenLockerManagerContractContext {
   //
   contract?: Contract
   address?: string
@@ -16,29 +16,29 @@ export interface ITokenLockerManagerV1ContractContext {
   getTokenLockersForAddress?: (address: string) => Promise<Array<number>>
   getTokenLockData?: (id: number) => Promise<TokenLockData>
   getLpData?: (id: number) => Promise<LPLockData>
+  getUniV3LpData?: (id: number) => Promise<UniV3LPData>
 }
 
-export const TokenLockerManagerV1ContractContext = createContext<ITokenLockerManagerV1ContractContext>({
+export const TokenLockerManagerContractContext = createContext<ITokenLockerManagerContractContext>({
   //
   tokenLockerCount: 0,
 })
 
-export const useTokenLockerManagerV1Contract = () => {
-  const context = useContext(TokenLockerManagerV1ContractContext)
-  if (!context) {
-    throw new Error(
-      'useTokenLockerManagerV1Contract can only be used within TokenLockerManagerV1ContractContextProvider',
-    )
-  }
+export const useTokenLockerManagerContract = () => {
+  const context = useContext(TokenLockerManagerContractContext)
+  if (!context)
+    throw new Error('useTokenLockerManagerContract can only be used within TokenLockerManagerContractContextProvider')
   return context
 }
 
-export interface TokenLockerManagerV1ContractContextProviderProps {
-  children?: React.ReactNode
+export interface TokenLockerManagerContractContextProviderProps {
+  children?: ReactNode
+  lockType?: number
 }
 
-const TokenLockerManagerV1ContractContextProvider: React.FC<TokenLockerManagerV1ContractContextProviderProps> = ({
+const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerContractContextProviderProps> = ({
   children,
+  lockType = 1,
 }) => {
   const mounted = usePromise()
   const { getContract } = useContractCache()
@@ -102,6 +102,26 @@ const TokenLockerManagerV1ContractContextProvider: React.FC<TokenLockerManagerV1
     [contract],
   )
 
+  const getUniV3LpData = useCallback(
+    async (id: number) => {
+      if (!contract) {
+        throw new Error('Token locker contract is not loaded')
+      }
+
+      if (lockType !== 3) {
+        throw new Error('Invalid lockType - must be a UniV3 locker')
+      }
+
+      return {
+        //
+        ...(await contract.getUniV3LpData(id)),
+        hasLpData: true,
+        id,
+      }
+    },
+    [contract, lockType],
+  )
+
   const updateTokenLockerCount = useCallback(async () => {
     if (!contract) {
       setTokenLockerCount(0)
@@ -116,6 +136,18 @@ const TokenLockerManagerV1ContractContextProvider: React.FC<TokenLockerManagerV1
     }
   }, [mounted, contract])
 
+  const getLockContract = useCallback(() => {
+    switch (lockType) {
+      case 1:
+      default:
+        return 'TokenLockerManagerV1'
+      case 2:
+        return 'TokenLockerUniV2'
+      case 3:
+        return 'TokenLockerUniV3'
+    }
+  }, [lockType])
+
   useEffect(() => {
     updateTokenLockerCount()
   }, [updateTokenLockerCount])
@@ -123,12 +155,12 @@ const TokenLockerManagerV1ContractContextProvider: React.FC<TokenLockerManagerV1
   useEffect(() => {
     setContract(undefined)
     if (!eitherChainId) return
-    mounted(getContract('TokenLockerManagerV1'))
+    mounted(getContract(getLockContract()))
       .then(setContract)
       .catch((err: Error) => {
         setContract(undefined)
       })
-  }, [mounted, getContract, eitherChainId])
+  }, [mounted, getContract, eitherChainId, getLockContract])
 
   useEffect(() => {
     if (!contract || !updateTokenLockerCount) {
@@ -145,7 +177,7 @@ const TokenLockerManagerV1ContractContextProvider: React.FC<TokenLockerManagerV1
   }, [contract, updateTokenLockerCount])
 
   return (
-    <TokenLockerManagerV1ContractContext.Provider
+    <TokenLockerManagerContractContext.Provider
       value={{
         //
         contract,
@@ -156,11 +188,12 @@ const TokenLockerManagerV1ContractContextProvider: React.FC<TokenLockerManagerV1
         getTokenLockersForAddress,
         getTokenLockData,
         getLpData,
+        getUniV3LpData,
       }}
     >
       {children}
-    </TokenLockerManagerV1ContractContext.Provider>
+    </TokenLockerManagerContractContext.Provider>
   )
 }
 
-export default TokenLockerManagerV1ContractContextProvider
+export default TokenLockerManagerContractContextProvider

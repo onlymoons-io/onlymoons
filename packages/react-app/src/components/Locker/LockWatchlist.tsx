@@ -11,7 +11,11 @@ export interface ILockWatchlist {
 
 export const LockWatchlist = createContext<ILockWatchlist>({})
 
-const LockWatchlistProvider: React.FC = ({ children }) => {
+export interface LockWatchlistProviderProps {
+  children?: React.ReactNode
+}
+
+const LockWatchlistProvider: React.FC<LockWatchlistProviderProps> = ({ children }) => {
   const { chainId } = useWeb3React()
   const [watchlist, setWatchlist] = useState<string[]>()
 
@@ -20,8 +24,8 @@ const LockWatchlistProvider: React.FC = ({ children }) => {
       ? []
       : (window.localStorage.getItem(`OM_LOCK_WATCH_${chainId}`) || '')
           .split(',')
-          .map(v => v.trim())
-          .filter(v => v !== '')
+          .map((v) => v.trim())
+          .filter((v) => v !== '')
   }, [chainId])
 
   useEffect(() => setWatchlist(getCurrentWatchlist()), [getCurrentWatchlist])
@@ -34,7 +38,7 @@ const LockWatchlistProvider: React.FC = ({ children }) => {
 
   const isWatching = useCallback(
     (id: number) => {
-      return watchlist?.some(v => v === id.toString()) || false
+      return watchlist?.some((v) => v === id.toString()) || false
     },
     [watchlist],
   )

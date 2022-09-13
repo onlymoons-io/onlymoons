@@ -21,7 +21,11 @@ export const useFaucetContract = () => {
   return context
 }
 
-const FaucetContextProvider: React.FC = ({ children }) => {
+export interface FaucetContextProviderProps {
+  children?: React.ReactNode
+}
+
+const FaucetContextProvider: React.FC<FaucetContextProviderProps> = ({ children }) => {
   const { chainId, connector } = useWeb3React()
   const [contract, setContract] = useState<Contract>()
   const [abi, setAbi] = useState<any>()
@@ -49,7 +53,7 @@ const FaucetContextProvider: React.FC = ({ children }) => {
     //
     connector
       .getProvider()
-      .then((_provider: any) => setContract(new Contract(address, abi, new Web3Provider(_provider.getSigner()))))
+      .then((_provider: any) => setContract(new Contract(address, abi, new Web3Provider(_provider.getSigner(), 'any'))))
       .catch((err: Error) => {
         console.error(err)
         setContract(undefined)

@@ -43,9 +43,15 @@ interface PriceCache {
 
 let PRICE_CACHE: Record<string, PriceCache> = {}
 
-const PriceTrackerContextProvider: React.FC = ({ children }) => {
+export interface PriceTrackerContextProviderProps {
+  children?: React.ReactNode
+}
+
+const PriceTrackerContextProvider: React.FC<PriceTrackerContextProviderProps> = ({ children }) => {
   const mounted = usePromise()
-  const { chainId: chainIdConstant, connector: connectorConstant } = useContext(getWeb3ReactContext('constant'))
+  const { chainId: chainIdConstant, connector: connectorConstant } = useContext(
+    getWeb3ReactContext('constant') as React.Context<any>,
+  )
   const { chainId, connector } = useWeb3React()
   const [provider, setProvider] = useState<Web3ProviderClass>()
   const { getLpData, getTokenData } = useUtilContract()
@@ -213,7 +219,7 @@ const PriceTrackerContextProvider: React.FC = ({ children }) => {
     }
 
     mounted<any>(eitherConnector.getProvider())
-      .then((_provider) => new Web3Provider(_provider))
+      .then((_provider) => new Web3Provider(_provider, 'any'))
       .then(setProvider)
       .catch((err: Error) => {
         console.error(err)

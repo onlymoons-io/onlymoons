@@ -53,11 +53,12 @@ export interface ContractDetailsProps {
   abi?: string
   className?: string
   style?: CSSProperties
+  children?: React.ReactNode
 }
 
 const ContractDetails: React.FC<ContractDetailsProps> = ({ children, address, abi, className = '', style = {} }) => {
   const mounted = usePromise()
-  const { connector } = useContext(getWeb3ReactContext('constant'))
+  const { connector } = useContext(getWeb3ReactContext('constant') as React.Context<any>)
   const { closeModal } = useModal()
   const [bytecode, setBytecode] = useState<string>()
 
@@ -68,7 +69,7 @@ const ContractDetails: React.FC<ContractDetailsProps> = ({ children, address, ab
     }
 
     mounted(connector.getProvider())
-      .then((provider) => new Web3Provider(provider).getCode(address))
+      .then((provider: any) => new Web3Provider(provider, 'any').getCode(address))
       // remove the first 2 characters if they are 0x (they should be)
       .then((result) => (result.startsWith('0x') ? result.substring(2) : result))
       .then(setBytecode)

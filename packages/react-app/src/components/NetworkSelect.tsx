@@ -15,7 +15,7 @@ export interface NetworkSelectProps {
 const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {} }) => {
   const { nativeCoinPrice } = usePriceTracker()
   const { setCurrentModal } = useModal()
-  const { chainId } = useContext(getWeb3ReactContext('constant'))
+  const { chainId } = useContext(getWeb3ReactContext('constant') as React.Context<any>)
   const [networkData, setNetworkData] = useState<NetworkData>()
 
   useEffect(() => {

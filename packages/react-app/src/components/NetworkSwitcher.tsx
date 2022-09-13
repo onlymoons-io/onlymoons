@@ -22,10 +22,14 @@ export const useNetworkSwitcherContext = () => {
   return useContext(NetworkSwitcherContext)
 }
 
-const NetworkSwitcherContextProvider: React.FC = ({ children }) => {
+export interface NetworkSwitcherContextProviderProps {
+  children?: React.ReactNode
+}
+
+const NetworkSwitcherContextProvider: React.FC<NetworkSwitcherContextProviderProps> = ({ children }) => {
   const mounted = usePromise()
   const { connector: connectedConnector } = useWeb3React()
-  const { connector: constantConnector } = useContext(getWeb3ReactContext('constant'))
+  const { connector: constantConnector } = useContext(getWeb3ReactContext('constant') as React.Context<any>)
 
   const eitherConnector = typeof connectedConnector !== 'undefined' ? connectedConnector : constantConnector
 

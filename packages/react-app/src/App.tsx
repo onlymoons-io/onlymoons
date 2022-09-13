@@ -7,7 +7,7 @@ import NotificationCatcherContextProvider from './components/NotificationCatcher
 
 import ContractCacheContextProvider from './components/contracts/ContractCache'
 import UtilContractContextProvider from './components/contracts/Util'
-import TokenLockerManagerV1ContractContextProvider from './components/contracts/TokenLockerManagerV1'
+import TokenLockerManagerContractContextProvider from './components/contracts/TokenLockerManager'
 import PriceTrackerContextProvider from './components/contracts/PriceTracker'
 import FeesContractContextProvider from './components/contracts/Fees'
 
@@ -19,8 +19,9 @@ import LeftNav from './components/LeftNav'
 import NavBar from './components/NavBar'
 import Home from './components/Home'
 import Locker from './components/Locker'
-import ManageLockers from './components/Locker/Account'
 import CreateLocker from './components/Locker/Create'
+import CreateLockerV2UniV2 from './components/Locker/CreateV2UniV2'
+import CreateLockerV2UniV3 from './components/Locker/CreateV2UniV3'
 import Staking from './components/Staking'
 // import CreateStaking from './components/Staking/Create'
 import DarkModeToggle from './components/DarkModeToggle'
@@ -45,7 +46,7 @@ import { createBreakpoint, usePromise } from 'react-use'
 const { Web3Provider } = providers
 
 function getLibrary(provider?: any, connector?: AbstractConnector) {
-  return new Web3Provider(provider)
+  return new Web3Provider(provider, 'any')
 }
 
 const Outer = tw.div`
@@ -68,7 +69,7 @@ const LeftArea = tw.div<AreaProps>`
   pt-16
   z-20
   justify-between
-  ${(p) => (p.$expanded ? 'flex w-64 border-r-0' : 'hidden md:flex w-16 border-r')}
+  ${(p: any) => (p.$expanded ? 'flex w-64 border-r-0' : 'hidden md:flex w-16 border-r')}
   flex-col
 `
 
@@ -86,7 +87,7 @@ const BottomLeftArea = tw.div<AreaProps>`
   items-start
   text-gray-800
   dark:text-gray-200
-  ${(p) => (p.$expanded ? 'border-r' : 'border-r-0')}
+  ${(p: any) => (p.$expanded ? 'border-r' : 'border-r-0')}
 `
 
 const RightArea = tw.div`
@@ -174,52 +175,152 @@ const AppContent: React.FC = () => {
           <Routes>
             <Route path="/launches" element={<ComingSoon />} />
             <Route path="/deployer" element={<ComingSoon />} />
+            {/* locker v2 */}
+            {/* uniswap v3 lp locker */}
+            <Route
+              path="/locker/3/search/:account"
+              element={
+                <TokenLockerManagerContractContextProvider lockType={3}>
+                  <LockWatchlistProvider children={<Locker lockType={3} />} />
+                </TokenLockerManagerContractContextProvider>
+              }
+            />
+            <Route
+              path="/locker/3/account/:account"
+              element={
+                <TokenLockerManagerContractContextProvider lockType={3}>
+                  <LockWatchlistProvider children={<Locker lockType={3} />} />
+                </TokenLockerManagerContractContextProvider>
+              }
+            />
+            <Route
+              path="/locker/3/create"
+              element={
+                <TokenLockerManagerContractContextProvider lockType={3}>
+                  <LockWatchlistProvider children={<CreateLockerV2UniV3 />} />
+                </TokenLockerManagerContractContextProvider>
+              }
+            />
+            <Route
+              path="/locker/3/watchlist"
+              element={
+                <TokenLockerManagerContractContextProvider lockType={3}>
+                  <LockWatchlistProvider children={<Locker lockType={3} useWatchlist={true} />} />{' '}
+                </TokenLockerManagerContractContextProvider>
+              }
+            />
+            <Route
+              path="/locker/3/:chainId/:id"
+              element={
+                <TokenLockerManagerContractContextProvider lockType={3}>
+                  <LockWatchlistProvider children={<Locker lockType={3} />} />
+                </TokenLockerManagerContractContextProvider>
+              }
+            />
+            <Route
+              path="/locker/3"
+              element={
+                <TokenLockerManagerContractContextProvider lockType={3}>
+                  <LockWatchlistProvider children={<Locker lockType={3} />} />
+                </TokenLockerManagerContractContextProvider>
+              }
+            />
+            {/* uniswap v2 lp locker */}
+            <Route
+              path="/locker/2/search/:account"
+              element={
+                <TokenLockerManagerContractContextProvider lockType={2}>
+                  <LockWatchlistProvider children={<Locker lockType={2} />} />
+                </TokenLockerManagerContractContextProvider>
+              }
+            />
+            <Route
+              path="/locker/2/account/:account"
+              element={
+                <TokenLockerManagerContractContextProvider lockType={2}>
+                  <LockWatchlistProvider children={<Locker lockType={2} />} />
+                </TokenLockerManagerContractContextProvider>
+              }
+            />
+            <Route
+              path="/locker/2/create"
+              element={
+                <TokenLockerManagerContractContextProvider lockType={2}>
+                  <LockWatchlistProvider children={<CreateLockerV2UniV2 />} />
+                </TokenLockerManagerContractContextProvider>
+              }
+            />
+            <Route
+              path="/locker/2/watchlist"
+              element={
+                <TokenLockerManagerContractContextProvider lockType={2}>
+                  <LockWatchlistProvider children={<Locker lockType={2} useWatchlist={true} />} />{' '}
+                </TokenLockerManagerContractContextProvider>
+              }
+            />
+            <Route
+              path="/locker/2/:chainId/:id"
+              element={
+                <TokenLockerManagerContractContextProvider lockType={2}>
+                  <LockWatchlistProvider children={<Locker lockType={2} />} />
+                </TokenLockerManagerContractContextProvider>
+              }
+            />
+            <Route
+              path="/locker/2"
+              element={
+                <TokenLockerManagerContractContextProvider lockType={2}>
+                  <LockWatchlistProvider children={<Locker lockType={2} />} />
+                </TokenLockerManagerContractContextProvider>
+              }
+            />
+            {/* locker v1 */}
             <Route
               path="/locker/search/:account"
               element={
-                <TokenLockerManagerV1ContractContextProvider>
-                  <LockWatchlistProvider children={<ManageLockers />} />
-                </TokenLockerManagerV1ContractContextProvider>
+                <TokenLockerManagerContractContextProvider>
+                  <LockWatchlistProvider children={<Locker />} />
+                </TokenLockerManagerContractContextProvider>
               }
             />
             <Route
               path="/locker/account/:account"
               element={
-                <TokenLockerManagerV1ContractContextProvider>
-                  <LockWatchlistProvider children={<ManageLockers />} />
-                </TokenLockerManagerV1ContractContextProvider>
+                <TokenLockerManagerContractContextProvider>
+                  <LockWatchlistProvider children={<Locker />} />
+                </TokenLockerManagerContractContextProvider>
               }
             />
             <Route
               path="/locker/create"
               element={
-                <TokenLockerManagerV1ContractContextProvider>
+                <TokenLockerManagerContractContextProvider>
                   <LockWatchlistProvider children={<CreateLocker />} />
-                </TokenLockerManagerV1ContractContextProvider>
+                </TokenLockerManagerContractContextProvider>
               }
             />
             <Route
               path="/locker/watchlist"
               element={
-                <TokenLockerManagerV1ContractContextProvider>
+                <TokenLockerManagerContractContextProvider>
                   <LockWatchlistProvider children={<Locker useWatchlist={true} />} />{' '}
-                </TokenLockerManagerV1ContractContextProvider>
+                </TokenLockerManagerContractContextProvider>
               }
             />
             <Route
               path="/locker/:chainId/:id"
               element={
-                <TokenLockerManagerV1ContractContextProvider>
+                <TokenLockerManagerContractContextProvider>
                   <LockWatchlistProvider children={<Locker />} />
-                </TokenLockerManagerV1ContractContextProvider>
+                </TokenLockerManagerContractContextProvider>
               }
             />
             <Route
               path="/locker"
               element={
-                <TokenLockerManagerV1ContractContextProvider>
+                <TokenLockerManagerContractContextProvider>
                   <LockWatchlistProvider children={<Locker />} />
-                </TokenLockerManagerV1ContractContextProvider>
+                </TokenLockerManagerContractContextProvider>
               }
             />
             <Route path="/bridge" element={<Bridge />} />
@@ -244,7 +345,7 @@ const AppContent: React.FC = () => {
 const AppWeb3: React.FC = () => {
   const mounted = usePromise()
   const { chainId: connectedChainId } = useWeb3React()
-  const { activate, connector, chainId } = useContext(getWeb3ReactContext('constant'))
+  const { activate, connector, chainId } = useContext(getWeb3ReactContext('constant') as React.Context<any>)
   const [connecting, setConnecting] = useState<boolean>(false)
 
   useEffect(() => {

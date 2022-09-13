@@ -70,7 +70,7 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon = '', label = 'TEST', classN
   const { isSmall, leftNavExpanded, setLeftNavExpanded } = useAppNavState()
   const [active, setActive] = useState<boolean>(false)
 
-  useEffect(() => setActive(pathname.startsWith(to)), [pathname, to])
+  useEffect(() => setActive(`/${pathname.split('/')[1]}`.startsWith(to) ?? false), [pathname, to])
 
   return (
     <>
@@ -102,7 +102,7 @@ const LeftNav: React.FC = () => {
       <Inner>
         <NavItem to="/launches" icon={<FontAwesomeIcon icon={faRocket} fixedWidth />} label="Launches" />
         <hr className="mx-auto my-2 border-gray-300 dark:border-gray-800 w-3/4" />
-        <NavItem to="/locker" icon={<FontAwesomeIcon icon={faLock} fixedWidth />} label="Locker" />
+        <NavItem to="/locker/2" icon={<FontAwesomeIcon icon={faLock} fixedWidth />} label="Locker" />
         <NavItem to="/bridge" icon={<FontAwesomeIcon icon={faExchangeAlt} fixedWidth />} label="Bridge" />
         <NavItem to="/staking" icon={<FontAwesomeIcon icon={faPiggyBank} fixedWidth />} label="Staking" />
         <NavItem to="/deployer" icon={<FontAwesomeIcon icon={faFileCode} fixedWidth />} label="Deployer" />

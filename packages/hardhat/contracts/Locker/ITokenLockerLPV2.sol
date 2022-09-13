@@ -32,6 +32,9 @@ interface ITokenLockerLPV2 is ITokenLockerManagerV2, ITokenLockerBaseV2 {
     address newOwner
   );
 
+  function startUnlockCountdown(
+    uint40 id_
+  ) external;
   function withdrawById(
     uint40 id_
   ) external;
@@ -40,17 +43,6 @@ interface ITokenLockerLPV2 is ITokenLockerManagerV2, ITokenLockerBaseV2 {
     address oldRouterAddress_,
     address newRouterAddress_
   ) external;
-  function setSocialsById(
-    uint40 id_,
-    string[] calldata keys_,
-    string[] calldata urls_
-  ) external;
-  function getUrlForSocialKeyById(
-    uint40 id_,
-    string calldata key_
-  ) external view returns (
-    string memory
-  );
   // function getLockData() external returns (
   //   bool isLpToken,
   //   uint40 id,

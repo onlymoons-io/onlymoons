@@ -21,7 +21,11 @@ export const useFeesContract = () => {
   return context
 }
 
-const FeesContractContextProvider: React.FC = ({ children }) => {
+export interface FeesContractContextProviderProps {
+  children?: React.ReactNode
+}
+
+const FeesContractContextProvider: React.FC<FeesContractContextProviderProps> = ({ children }) => {
   const mounted = usePromise()
   const { getContract } = useContractCache()
   const [contract, setContract] = useState<Contract>()

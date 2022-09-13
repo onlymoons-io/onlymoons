@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: GPL-3.0+
 
 /**
   /$$$$$$            /$$           /$$      /$$                                        
@@ -18,22 +18,16 @@
 
 pragma solidity ^0.8.0;
 
-import { ITokenLockerLPV2 } from "./ITokenLockerLPV2.sol";
 import { ITokenLockerERC721V2 } from "./ITokenLockerERC721V2.sol";
+import { IERC721Receiver } from "../library/IERC721Receiver.sol";
 
-interface ITokenLockerUniV3 is ITokenLockerLPV2, ITokenLockerERC721V2 {
-  function getUniV3LpData(uint40 id_) external view returns (
-    address token0,
-    address token1,
-    uint24 fee,
-    uint256 balance0,
-    uint256 balance1,
-    uint128 liquidity,
-    address pool
-  );
-
-  function collect(uint40 id_) external returns (
-    uint256 amount0,
-    uint256 amount1
-  );
+abstract contract TokenLockerERC721V2 is ITokenLockerERC721V2 {
+  function onERC721Received(
+    address /* operator */,
+    address /* from */,
+    uint256 /* tokenId */,
+    bytes calldata /* data */
+  ) external pure returns (bytes4) {
+    return IERC721Receiver.onERC721Received.selector;
+  }
 }

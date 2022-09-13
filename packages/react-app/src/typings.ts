@@ -26,11 +26,17 @@ export interface LPData {
   readonly token1: string
   readonly balance0: BigNumber
   readonly balance1: BigNumber
-  readonly price0: BigNumber
-  readonly price1: BigNumber
+  readonly price0?: BigNumber
+  readonly price1?: BigNumber
 }
 
-export interface LPLockData extends LPData {
+export interface UniV3LPData extends LPData {
+  readonly fee?: number
+  readonly liquidity?: BigNumber
+  readonly pool?: string
+}
+
+export interface LPLockData extends UniV3LPData {
   readonly hasLpData: boolean
   readonly id: number
 }

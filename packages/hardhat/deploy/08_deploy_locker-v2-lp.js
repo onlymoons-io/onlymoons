@@ -7,9 +7,11 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const [
     // erc20,
     utilLibrary,
+    utilV2Library,
   ] = await Promise.all([
     // get("ERC20"),
     get("Util"),
+    get("UtilV2"),
   ]);
 
   await deploy("TokenLockerUniV2", {
@@ -18,6 +20,15 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     log: true,
     libraries: {
       Util: utilLibrary.address,
+    },
+  });
+
+  await deploy("TokenLockerUniV3", {
+    from: deployer,
+    // args: [],
+    log: true,
+    libraries: {
+      UtilV2: utilV2Library.address,
     },
   });
 

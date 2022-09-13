@@ -1,7 +1,7 @@
 require("dotenv").config();
 const { utils } = require("ethers");
 const fs = require("fs");
-const chalk = require("chalk");
+// const chalk = require("chalk");
 
 require("@nomiclabs/hardhat-waffle");
 require("@tenderly/hardhat-tenderly");
@@ -125,6 +125,16 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+
+    canto: {
+      url: "https://jsonrpc.canto.nodestake.top/",
+
+      gasPrice: 225000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
+
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/cfeb072b8469447e889da944481d5874", // <---- YOUR INFURA ID! (or it won't work)
 
@@ -542,8 +552,7 @@ task(
         " and set as mnemonic in packages/hardhat"
     );
     console.log(
-      "📜 This will create the first contract: " +
-        chalk.magenta("0x" + contract_address)
+      "📜 This will create the first contract: 0x" + contract_address
     );
     console.log(
       "💬 Use 'yarn run account' to get more information about the deployment account."

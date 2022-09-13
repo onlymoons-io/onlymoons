@@ -32,5 +32,9 @@
     "**/yarn.lock": true
   },
   "solidity.compileUsingRemoteVersion": "v0.8.10+commit.fc410830",
-  "solidity.defaultCompiler": "remote"
+  "solidity.defaultCompiler": "remote",
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript", // if you are using typescript
+    "typescriptreact": "javascript" // if you are using typescript with react
+  }
 }

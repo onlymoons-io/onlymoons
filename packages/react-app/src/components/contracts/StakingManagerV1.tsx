@@ -38,7 +38,13 @@ export const useStakingManagerV1Contract = () => {
   return context
 }
 
-const StakingManagerV1ContractContextProvider: React.FC = ({ children }) => {
+export interface StakingManagerV1ContractContextProviderProps {
+  children?: React.ReactNode
+}
+
+const StakingManagerV1ContractContextProvider: React.FC<StakingManagerV1ContractContextProviderProps> = ({
+  children,
+}) => {
   const mounted = usePromise()
   const { getFeeAmountForType } = useFeesContract()
   const { getContract } = useContractCache()

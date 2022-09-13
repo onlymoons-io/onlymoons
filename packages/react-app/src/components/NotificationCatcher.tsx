@@ -73,6 +73,7 @@ export const useNotifications = () => {
 
 export interface NotificationCatcherContextProviderProps {
   notificationDurationMS?: number
+  children?: React.ReactNode
 }
 
 const NotificationCatcherContextProvider: React.FC<NotificationCatcherContextProviderProps> = ({

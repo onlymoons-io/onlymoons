@@ -36,7 +36,9 @@ const AddressLink: React.FC<AddressLinkProps> = ({
 }) => {
   const mounted = usePromise()
   const { chainId, connector } = useWeb3React()
-  const { chainId: chainIdConstant, connector: connectorConstant } = useContext(getWeb3ReactContext('constant'))
+  const { chainId: chainIdConstant, connector: connectorConstant } = useContext(
+    getWeb3ReactContext('constant') as React.Context<any>,
+  )
   // const [explorerUrl, setExplorerUrl] = useState<string>()
   const [provider, setProvider] = useState<providers.Web3Provider>()
   const [isContract, setIsContract] = useState<boolean>(definitelyContract)
@@ -69,7 +71,7 @@ const AddressLink: React.FC<AddressLinkProps> = ({
     }
 
     mounted(eitherConnector.getProvider())
-      .then((_provider) => new providers.Web3Provider(_provider))
+      .then((_provider: any) => new providers.Web3Provider(_provider, 'any'))
       .then(setProvider)
       .catch((err: Error) => {
         console.error(err)

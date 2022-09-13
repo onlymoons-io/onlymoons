@@ -56,11 +56,7 @@ const AddressInput = tw(AddressInputCSS)`
   text-center
 `
 
-export interface CreateProps {
-  lockType?: number
-}
-
-const Create: React.FC<CreateProps> = ({ lockType = 1 }) => {
+const Create: React.FC = () => {
   const mounted = usePromise()
   const navigate = useNavigate()
   const { account, chainId, connector } = useWeb3React()
@@ -189,7 +185,6 @@ const Create: React.FC<CreateProps> = ({ lockType = 1 }) => {
   useEffect(checkApproval, [checkApproval])
 
   const onClickSubmit = useCallback(() => {
-    //
     if (
       !account ||
       !contract ||
@@ -200,9 +195,9 @@ const Create: React.FC<CreateProps> = ({ lockType = 1 }) => {
       !unlockTime ||
       !isUnlockTimeValid()
     ) {
-      console.log('account', account)
-      console.log('contract', contract)
-      console.log('lockerManagerAddress', lockerManagerAddress)
+      // console.log('account', account)
+      // console.log('contract', contract)
+      // console.log('lockerManagerAddress', lockerManagerAddress)
       return console.log('not ready') // not ready
     }
 
@@ -215,7 +210,7 @@ const Create: React.FC<CreateProps> = ({ lockType = 1 }) => {
         .then((id: number) => {
           setCanSubmit(true)
           setIsSubmitting(false)
-          navigate(`/locker/${getNetworkDataByChainId(chainId ?? 0)?.urlName || chainId}/${id}`)
+          navigate(`/locker/2/${getNetworkDataByChainId(chainId ?? 0)?.urlName || chainId}/${id}`)
         })
         .catch((err) => {
           console.error(err)
@@ -279,7 +274,7 @@ const Create: React.FC<CreateProps> = ({ lockType = 1 }) => {
 
   return (
     <Outer className="text-gray-800 dark:text-gray-200">
-      <Header lockType={lockType} filterEnabled={false} />
+      <Header lockType={2} filterEnabled={false} />
 
       <MidSection>
         <SectionInner>

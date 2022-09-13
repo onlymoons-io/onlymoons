@@ -28,7 +28,11 @@ export const useModal = () => {
   return modalController
 }
 
-const ModalControllerProvider: React.FC = ({ children }) => {
+export interface ModalControllerProviderProps {
+  children?: React.ReactNode
+}
+
+const ModalControllerProvider: React.FC<ModalControllerProviderProps> = ({ children }) => {
   const [currentModal, setCurrentModal] = useState<ReactNode>()
 
   useEffect(() => {

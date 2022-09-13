@@ -34,7 +34,11 @@ export const useSplitStakingV1Contract = () => {
   return context
 }
 
-const SplitStakingV1ContractContextProvider: React.FC = ({ children }) => {
+export interface SplitStakingV1ContractContextProviderProps {
+  children?: React.ReactNode
+}
+
+const SplitStakingV1ContractContextProvider: React.FC<SplitStakingV1ContractContextProviderProps> = ({ children }) => {
   const mounted = usePromise()
   const { getContract } = useContractCache()
   const [contract, setContract] = useState<Contract>()

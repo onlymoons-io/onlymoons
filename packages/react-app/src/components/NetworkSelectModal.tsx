@@ -16,7 +16,7 @@ const allNetworkData: Array<NetworkData> = Object.keys(networks)
   .sort((a, b) => (a.name > b.name ? 1 : a.name < b.name ? -1 : 0))
 
 const NetworkSelectModal: React.FC = () => {
-  const { chainId } = useContext(getWeb3ReactContext('constant'))
+  const { chainId } = useContext(getWeb3ReactContext('constant') as React.Context<any>)
   const { closeModal } = useContext(ModalControllerContext)
   const { switchNetwork } = useNetworkSwitcherContext()
   const [showTestNets, setShowTestNets] = useState<boolean>(false)
