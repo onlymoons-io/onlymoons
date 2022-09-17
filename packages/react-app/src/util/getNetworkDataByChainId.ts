@@ -374,6 +374,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  420420: {
+    chainId: 420420,
+    name: 'KeKchain',
+    shortName: 'KekChain',
+    urlName: 'kekchain',
+    nativeCurrency: {
+      address: '0x54Bd9D8d758AC3717B37b7DC726877a23afF1B89',
+      name: 'KeK',
+      symbol: 'KEK',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://explorer.kekchain.com/',
+    rpcURL: 'https://mainnet.kekchain.com',
+    icon: '/kekchain.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // Kek
+      {
+        address: '0x54Bd9D8d758AC3717B37b7DC726877a23afF1B89',
+        // pair w/  on
+        stablePair: '',
+      },
+    ],
+  },
   420666: {
     chainId: 420666,
     name: 'KeKchain Testnet (testnet)',
@@ -381,7 +406,7 @@ export const networks: Record<number, NetworkData> = {
     urlName: 'kektest',
     nativeCurrency: {
       address: '0xA888a7A2dc73efdb5705106a216f068e939A2693',
-      name: 'KEK',
+      name: 'KeK',
       symbol: 'KEK',
       decimals: 18,
       balance: BigNumber.from(0),
@@ -391,10 +416,11 @@ export const networks: Record<number, NetworkData> = {
     icon: '/kekchain.png',
     isTestNet: true,
     supportedLiquidityPairTokens: [
+      // Kek
       {
         address: '0xA888a7A2dc73efdb5705106a216f068e939A2693',
-        // pair w/ shibainu on unknown??
-        stablePair: '0xBd403Dd81E81bFDc702d77B763E3Ba3EaDD860A0',
+        // pair w/  on
+        stablePair: '',
       },
     ],
   },
