@@ -16,6 +16,7 @@ import {
   faStar,
   faWrench,
   faLockOpen,
+  faInfinity,
 } from '@fortawesome/free-solid-svg-icons'
 import { faStar as faStarOutline } from '@fortawesome/free-regular-svg-icons'
 import humanizeDuration from 'humanize-duration'
@@ -97,7 +98,8 @@ const Lock: React.FC<LockProps> = ({ lockId, lockType = 1 }) => {
   )
   const { getContract } = useContractCache()
   const { getTokenData } = useUtilContract()
-  const { contract, getTokenLockData, getLpData, getUniV3LpData } = useTokenLockerManagerContract()
+  const { contract, getTokenLockData, getLpData, getUniV3LpData, countdownDuration, unlockMax } =
+    useTokenLockerManagerContract()
   // const { contract: contractV2UniV2, getTokenLockData: getTokenLockDataV2UniV2 } =
   //   useTokenLockerManagerV2UniV2Contract()
   // const contract = lockType === 1 ? contractV1 : lockType === 2 ? contractV2UniV2 : undefined
@@ -137,7 +139,7 @@ const Lock: React.FC<LockProps> = ({ lockId, lockType = 1 }) => {
   const [isVisible, setIsVisible] = useState<boolean>(false)
   const [manageExpanded, setManageExpanded] = useState<boolean>(false)
   const [networkData, setNetworkData] = useState<NetworkData>()
-
+  const [collectingFees, setCollectingFees] = useState<boolean>(false)
   const eitherChainId = typeof chainId !== 'undefined' ? chainId : chainIdConstant
   const eitherConnector = typeof connector !== 'undefined' ? connector : connectorConstant
 
@@ -387,6 +389,25 @@ const Lock: React.FC<LockProps> = ({ lockId, lockType = 1 }) => {
     setNetworkData(getNetworkDataByChainId(eitherChainId))
   }, [eitherChainId])
 
+  // unlockMax will always 1099511627775 for now,
+  // so there's no point in running this
+  // useEffect(() => {
+  //   if (!contract?.UNLOCK_MAX || !lockType || lockType === 1) {
+  //     setUnlockMax(1099511627775)
+  //     return
+  //   }
+
+  //   mounted<number>(contract.UNLOCK_MAX())
+  //     .then(setUnlockMax)
+  //     .catch((err) => {
+  //       console.error(err)
+  //     })
+  // }, [mounted, lockType, contract])
+
+  const isMaxUnlock = () => {
+    return unlockMax === lockData?.unlockTime
+  }
+
   const isWithdrawn = () => {
     switch (lockType) {
       case 1:
@@ -473,7 +494,11 @@ const Lock: React.FC<LockProps> = ({ lockId, lockType = 1 }) => {
                             : progressStyles
                         }
                         children={
-                          BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) ? (
+                          isMaxUnlock() ? (
+                            <>
+                              <FontAwesomeIcon icon={faInfinity} fixedWidth />
+                            </>
+                          ) : BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) ? (
                             <FontAwesomeIcon
                               className={`text-2xl ${
                                 isWithdrawn() ? 'text-gray-400' : 'text-gray-700 dark:text-gray-300'
@@ -655,37 +680,17 @@ const Lock: React.FC<LockProps> = ({ lockId, lockType = 1 }) => {
                         }
                       />
 
-                      {/* <Detail
-                      label={`${lockTokenData?.symbol || 'Tokens'} locked`}
-                      value={`${getFormattedAmount(lockData.balance, lockTokenData?.decimals)} (${formatUnits(
-                        lockData.balance.mul(10000).div(lockData.totalSupply),
-                        2,
-                      )}%)`}
-                    /> */}
-
                       <Detail label="Locked at" value={new Date(lockData.createdAt * 1000).toLocaleString()} />
                       <Detail
                         label={lockData.unlockTime > Date.now() / 1000 ? 'Unlocks at' : `Unlocked at`}
-                        value={new Date(lockData.unlockTime * 1000).toLocaleString()}
+                        value={
+                          isMaxUnlock()
+                            ? countdownDuration
+                              ? `${humanizeDuration(countdownDuration * 1000)} countdown - not running`
+                              : 'Countdown not running'
+                            : new Date(lockData.unlockTime * 1000).toLocaleString()
+                        }
                       />
-
-                      {/* <section className="mt-1">
-                        <span
-                          className="cursor-pointer"
-                          onClick={() => {
-                            lockContract &&
-                              setCurrentModal(
-                                <ContractDetails
-                                  address={lockContract.address}
-                                  abi={lockContract.interface.format('json') as string}
-                                />,
-                              )
-                          }}
-                        >
-                          <FontAwesomeIcon icon={faFileCode} fixedWidth />{' '}
-                          <span className="text-indigo-600 dark:text-indigo-400 ">More contract details</span>
-                        </span>
-                      </section> */}
                     </div>
 
                     <div className="flex justify-between items-center border-t dark:border-gray-700 pt-2 mt-1">
@@ -996,6 +1001,36 @@ const Lock: React.FC<LockProps> = ({ lockId, lockType = 1 }) => {
                         Transfer
                       </PrimaryButton>
                     </section>
+
+                    {lockType === 3 && (
+                      <section className="mt-4 flex items-center">
+                        <PrimaryButton
+                          disabled={collectingFees}
+                          className="w-full"
+                          onClick={async () => {
+                            if (lockContract.collect) {
+                              setCollectingFees(true)
+
+                              try {
+                                await mounted((await lockContract.collect(lockData.id)).wait())
+                              } catch (err) {
+                                console.error(err)
+                              }
+
+                              setCollectingFees(false)
+                            }
+                          }}
+                        >
+                          {collectingFees ? (
+                            <>
+                              Collecting fees <FontAwesomeIcon icon={faCircleNotch} spin={true} fixedWidth />
+                            </>
+                          ) : (
+                            'Collect fees'
+                          )}
+                        </PrimaryButton>
+                      </section>
+                    )}
                   </>
                 ) : undefined
               ) : // lockData is not ready

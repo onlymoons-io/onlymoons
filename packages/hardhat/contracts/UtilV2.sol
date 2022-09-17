@@ -72,11 +72,13 @@ library UtilV2 {
     uint256 balance0,
     uint256 balance1,
     uint128 liquidity,
-    address pool
+    address pool,
+    uint256 tokensOwed0,
+    uint256 tokensOwed1
   ) {
     INonfungiblePositionManager manager = INonfungiblePositionManager(address_);
 
-    (,,token0,token1,fee,,,liquidity,,,,) = manager.positions(
+    (,,token0,token1,fee,,,liquidity,,,tokensOwed0,tokensOwed1) = manager.positions(
       tokenId_
     );
 

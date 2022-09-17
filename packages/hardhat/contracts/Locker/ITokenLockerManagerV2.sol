@@ -40,6 +40,22 @@ interface ITokenLockerManagerV2 is ITokenLockerManagerV1, IGovernable, IPausable
     uint40 unlockTime
   );
 
+  event TokenLockerCountdownStarted(
+    uint40 id,
+    uint40 unlockTime
+  );
+
+  event TokenLockerDeposit(
+    uint40 id,
+    uint256 amountOrTokenId,
+    uint256 balanceOrTokenId,
+    uint40 unlockTime
+  );
+
+  event TokenLockerWithdrawal(
+    uint40 id
+  );
+
   function factory() external view returns (address);
 
   function setFactory(address address_) external;

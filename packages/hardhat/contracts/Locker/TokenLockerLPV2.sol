@@ -29,6 +29,11 @@ import { IERC20 } from "../library/IERC20.sol";
 abstract contract TokenLockerLPV2 is ITokenLockerLPV2, TokenLockerManagerV2, TokenLockerBaseV2 {
   function startUnlockCountdown(uint40 id_) external virtual onlyLockOwner(id_) {
     _locks[id_].unlockTime = uint40(block.timestamp) + _countdownDuration;
+
+    emit TokenLockerCountdownStarted(
+      id_,
+      _locks[id_].unlockTime
+    );
   }
   
   function _isLockOwner(uint40 id_) internal virtual override view returns (bool) {

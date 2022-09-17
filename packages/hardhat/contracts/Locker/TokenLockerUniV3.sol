@@ -125,6 +125,13 @@ contract TokenLockerUniV3 is ITokenLockerUniV3, TokenLockerLPV2, TokenLockerERC7
         tokenId_
       );
     }
+
+    emit TokenLockerDeposit(
+      id_,
+      tokenId_,
+      tokenId_,
+      _locks[id_].unlockTime
+    );
   }
 
   function withdrawById(
@@ -137,6 +144,8 @@ contract TokenLockerUniV3 is ITokenLockerUniV3, TokenLockerLPV2, TokenLockerERC7
       _locks[id_].owner,
       _locks[id_].amountOrTokenId
     );
+
+    emit TokenLockerWithdrawal(id_);
   }
 
   function getLpData(

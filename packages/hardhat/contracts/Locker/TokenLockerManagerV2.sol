@@ -45,7 +45,7 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
   }
 
   uint40 internal _countdownDuration = 1 weeks;
-  uint40 constant UNLOCK_MAX = type(uint40).max;
+  uint40 public constant UNLOCK_MAX = type(uint40).max;
 
   ITokenLockerFactoryV2 internal _factory;
 

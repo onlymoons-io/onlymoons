@@ -10,6 +10,8 @@ export interface ITokenLockerManagerContractContext {
   contract?: Contract
   address?: string
   tokenLockerCount: number
+  unlockMax?: number
+  countdownDuration?: number
 
   updateTokenLockerCount?: () => Promise<void>
   createTokenLocker?: (tokenAddress: string, amount: BigNumber, unlockTime: number) => Promise<number>
@@ -46,6 +48,8 @@ const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerCont
   const [tokenLockerCount, setTokenLockerCount] = useState<number>(0)
   const { chainId } = useWeb3React()
   const { chainId: chainIdConstant } = useContext(getWeb3ReactContext('constant') as React.Context<any>)
+  const [unlockMax, setUnlockMax] = useState<number>(1099511627775)
+  const [countdownDuration, setCountdownDuration] = useState<number>()
 
   const eitherChainId = typeof chainId !== 'undefined' ? chainId : chainIdConstant
 
@@ -136,6 +140,42 @@ const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerCont
     }
   }, [mounted, contract])
 
+  const updateCountdownDuration = useCallback(async () => {
+    if (!contract?.countdownDuration) {
+      setCountdownDuration(undefined)
+      return
+    }
+
+    try {
+      setCountdownDuration(await mounted(contract.countdownDuration()))
+    } catch (err) {
+      console.error(err)
+      setCountdownDuration(undefined)
+    }
+  }, [mounted, contract])
+
+  useEffect(() => {
+    updateCountdownDuration()
+  }, [updateCountdownDuration])
+
+  // const updateUnlockMax = useCallback(async () => {
+  //   if (!contract?.UNLOCK_MAX) {
+  //     setUnlockMax(1099511627775)
+  //     return
+  //   }
+
+  //   try {
+  //     setUnlockMax(await mounted(contract.UNLOCK_MAX()))
+  //   } catch (err) {
+  //     console.error(err)
+  //     setUnlockMax(1099511627775)
+  //   }
+  // }, [mounted, contract])
+
+  // useEffect(() => {
+  //   updateUnlockMax()
+  // }, [updateUnlockMax])
+
   const getLockContract = useCallback(() => {
     switch (lockType) {
       case 1:
@@ -153,6 +193,7 @@ const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerCont
   }, [updateTokenLockerCount])
 
   useEffect(() => {
+    setTokenLockerCount(0)
     setContract(undefined)
     if (!eitherChainId) return
     mounted(getContract(getLockContract()))
@@ -183,6 +224,8 @@ const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerCont
         contract,
         address: contract?.address,
         tokenLockerCount,
+        unlockMax,
+        countdownDuration,
         updateTokenLockerCount,
         createTokenLocker,
         getTokenLockersForAddress,

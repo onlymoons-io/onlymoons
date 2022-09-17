@@ -2,43 +2,43 @@
   "Math": {
     "networks": {
       "4": {
-        "rinkeby": "0x7dEC4FEA9fB24a71a2D56AFBfF5C22b91804CCc1"
+        "0": "0x7dEC4FEA9fB24a71a2D56AFBfF5C22b91804CCc1"
       },
       "25": {
-        "cro": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+        "0": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
       },
       "97": {
-        "bsctest": "0x340D6a68d9115a7c6D599acE1C4220213E6BF41e"
+        "0": "0x340D6a68d9115a7c6D599acE1C4220213E6BF41e"
       },
       "123": {
-        "fusetest": "0x8DEE2F1768ed500FA9e0598378C6e8F18DAB07D6"
+        "0": "0x8DEE2F1768ed500FA9e0598378C6e8F18DAB07D6"
       },
       "137": {
-        "polygon": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+        "0": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
       },
       "588": {
-        "metistest": "0xB024E25eC9B2d132CEEB358E9aCBb0e40C9ba9Fe"
+        "0": "0xB024E25eC9B2d132CEEB358E9aCBb0e40C9ba9Fe"
       },
       "592": {
-        "astar": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+        "0": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
       },
       "2000": {
-        "dogechain": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+        "0": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
       },
       "2001": {
-        "milkomeda": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+        "0": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
       },
       "7700": {
-        "canto": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+        "0": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
       },
       "43114": {
-        "avax": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+        "0": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
       },
       "80001": {
-        "mumbai": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+        "0": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
       },
       "420666": {
-        "kektest": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+        "0": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
       }
     },
     "abi": []
@@ -46,43 +46,43 @@
   "SafeERC20": {
     "networks": {
       "4": {
-        "rinkeby": "0x7CFa21F4CdDD2eCF8FcE3A2934327735a8Ae8De5"
+        "0": "0x7CFa21F4CdDD2eCF8FcE3A2934327735a8Ae8De5"
       },
       "25": {
-        "cro": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+        "0": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
       },
       "97": {
-        "bsctest": "0xf952F106449281dF133C8D01a2b313CEd2c58E74"
+        "0": "0xf952F106449281dF133C8D01a2b313CEd2c58E74"
       },
       "123": {
-        "fusetest": "0x92586B715c85b644a1fCe5186Bf51f759ECD3597"
+        "0": "0x92586B715c85b644a1fCe5186Bf51f759ECD3597"
       },
       "137": {
-        "polygon": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+        "0": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
       },
       "588": {
-        "metistest": "0x5C4e25abac5e6B0a5da6493Cf6Ae3Ee1f62Afd3f"
+        "0": "0x5C4e25abac5e6B0a5da6493Cf6Ae3Ee1f62Afd3f"
       },
       "592": {
-        "astar": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+        "0": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
       },
       "2000": {
-        "dogechain": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+        "0": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
       },
       "2001": {
-        "milkomeda": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+        "0": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
       },
       "7700": {
-        "canto": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+        "0": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       },
       "43114": {
-        "avax": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+        "0": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
       },
       "80001": {
-        "mumbai": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+        "0": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
       },
       "420666": {
-        "kektest": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+        "0": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       }
     },
     "abi": []
@@ -90,52 +90,52 @@
   "TokenLockerManagerV1": {
     "networks": {
       "4": {
-        "rinkeby": "0xfe34847eF7bD06c0c67454344C571eD68CFf63f9"
+        "0": "0xfe34847eF7bD06c0c67454344C571eD68CFf63f9"
       },
       "25": {
-        "cro": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
+        "0": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
       },
       "56": {
-        "bsc": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
+        "0": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
       },
       "97": {
-        "bsctest": "0x67f5b7f5Ed623De0F57AE53B6801812Ad73b5d66"
+        "0": "0x67f5b7f5Ed623De0F57AE53B6801812Ad73b5d66"
       },
       "122": {
-        "fuse": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+        "0": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       },
       "123": {
-        "fusetest": "0x695C4825C25dd354eCC393eDF092Ac61d50E5B61"
+        "0": "0x695C4825C25dd354eCC393eDF092Ac61d50E5B61"
       },
       "137": {
-        "polygon": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
+        "0": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
       },
       "588": {
-        "metistest": "0x8DEE2F1768ed500FA9e0598378C6e8F18DAB07D6"
+        "0": "0x8DEE2F1768ed500FA9e0598378C6e8F18DAB07D6"
       },
       "592": {
-        "astar": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
+        "0": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
       },
       "1088": {
-        "metis": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+        "0": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       },
       "2000": {
-        "dogechain": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
+        "0": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
       },
       "2001": {
-        "milkomeda": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
+        "0": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
       },
       "7700": {
-        "canto": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
+        "0": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
       },
       "43114": {
-        "avax": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
+        "0": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
       },
       "80001": {
-        "mumbai": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
+        "0": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
       },
       "420666": {
-        "kektest": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
+        "0": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
       }
     },
     "abi": [
@@ -489,52 +489,52 @@
   "TokenLockerV1": {
     "networks": {
       "4": {
-        "rinkeby": "0xd959928113ad399075F9A32c8F69121D86Be2FA7"
+        "0": "0xd959928113ad399075F9A32c8F69121D86Be2FA7"
       },
       "25": {
-        "cro": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
+        "0": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
       },
       "56": {
-        "bsc": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
+        "0": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
       },
       "97": {
-        "bsctest": "0x02922138D7980B8C68f0a35395c81cf677eeAe24"
+        "0": "0x02922138D7980B8C68f0a35395c81cf677eeAe24"
       },
       "122": {
-        "fuse": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
+        "0": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
       },
       "123": {
-        "fusetest": "0x096F3f7D5b656BdBc0acBcC0B43D07F9e5ecDa2f"
+        "0": "0x096F3f7D5b656BdBc0acBcC0B43D07F9e5ecDa2f"
       },
       "137": {
-        "polygon": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
+        "0": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
       },
       "588": {
-        "metistest": "0x92586B715c85b644a1fCe5186Bf51f759ECD3597"
+        "0": "0x92586B715c85b644a1fCe5186Bf51f759ECD3597"
       },
       "592": {
-        "astar": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
+        "0": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
       },
       "1088": {
-        "metis": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
+        "0": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
       },
       "2000": {
-        "dogechain": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
+        "0": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
       },
       "2001": {
-        "milkomeda": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
+        "0": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
       },
       "7700": {
-        "canto": "0x15b7Bd005EfFd43d7C9A05D73beBeBb84e38aFf0"
+        "0": "0x15b7Bd005EfFd43d7C9A05D73beBeBb84e38aFf0"
       },
       "43114": {
-        "avax": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
+        "0": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
       },
       "80001": {
-        "mumbai": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
+        "0": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
       },
       "420666": {
-        "kektest": "0x15b7Bd005EfFd43d7C9A05D73beBeBb84e38aFf0"
+        "0": "0x15b7Bd005EfFd43d7C9A05D73beBeBb84e38aFf0"
       }
     },
     "abi": [
@@ -819,52 +819,52 @@
   "Util": {
     "networks": {
       "4": {
-        "rinkeby": "0xC6d6ef837cBc41293C0b32a322EDE83749817C05"
+        "0": "0xC6d6ef837cBc41293C0b32a322EDE83749817C05"
       },
       "25": {
-        "cro": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+        "0": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       },
       "56": {
-        "bsc": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+        "0": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
       },
       "97": {
-        "bsctest": "0x82CD31c0a0de621b52ee80f8f14d55Ffd5cb734A"
+        "0": "0x82CD31c0a0de621b52ee80f8f14d55Ffd5cb734A"
       },
       "122": {
-        "fuse": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+        "0": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
       },
       "123": {
-        "fusetest": "0x58E77ae66F74dEe08F0A73E29996856ffc7b5B80"
+        "0": "0x58E77ae66F74dEe08F0A73E29996856ffc7b5B80"
       },
       "137": {
-        "polygon": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+        "0": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       },
       "588": {
-        "metistest": "0x67be50aCd00883C9E85539b88aABE7697d607576"
+        "0": "0x67be50aCd00883C9E85539b88aABE7697d607576"
       },
       "592": {
-        "astar": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+        "0": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       },
       "1088": {
-        "metis": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+        "0": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
       },
       "2000": {
-        "dogechain": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+        "0": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       },
       "2001": {
-        "milkomeda": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+        "0": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       },
       "7700": {
-        "canto": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
+        "0": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
       },
       "43114": {
-        "avax": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+        "0": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       },
       "80001": {
-        "mumbai": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+        "0": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       },
       "420666": {
-        "kektest": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
+        "0": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
       }
     },
     "abi": [
@@ -975,7 +975,7 @@
   "Faucet": {
     "networks": {
       "97": {
-        "bsctest": "0x5eE93793ceb2803f1A1Bddd8823Cf2110eF142e4"
+        "0": "0x5eE93793ceb2803f1A1Bddd8823Cf2110eF142e4"
       }
     },
     "abi": [
@@ -1158,7 +1158,7 @@
   "Fees": {
     "networks": {
       "97": {
-        "bsctest": "0x70dCF027ba5D2bb490C39a6F9054CE25f8208bD1"
+        "0": "0x70dCF027ba5D2bb490C39a6F9054CE25f8208bD1"
       }
     },
     "abi": [
@@ -1488,7 +1488,7 @@
   "Fundraising": {
     "networks": {
       "97": {
-        "bsctest": "0xF2eC961ab100574a0E96a8d89fa99E8cE2013934"
+        "0": "0xF2eC961ab100574a0E96a8d89fa99E8cE2013934"
       }
     },
     "abi": [
@@ -1747,7 +1747,7 @@
   "FundraisingManager": {
     "networks": {
       "97": {
-        "bsctest": "0xCC85501D5b29292cD1FE21809643EA47E497a4C0"
+        "0": "0xCC85501D5b29292cD1FE21809643EA47E497a4C0"
       }
     },
     "abi": [
@@ -2053,7 +2053,7 @@
   "SplitStakingV1": {
     "networks": {
       "97": {
-        "bsctest": "0xDaa71C54207234992AfA865ed756dECdB1A0EEf4"
+        "0": "0xDaa71C54207234992AfA865ed756dECdB1A0EEf4"
       }
     },
     "abi": [
@@ -2592,7 +2592,7 @@
   "StakingFactoryV1": {
     "networks": {
       "97": {
-        "bsctest": "0x4257d31aB9974F60a4cd4bE8c4aE6622e138e7Fc"
+        "0": "0x4257d31aB9974F60a4cd4bE8c4aE6622e138e7Fc"
       }
     },
     "abi": [
@@ -2767,7 +2767,7 @@
   "StakingManagerV1": {
     "networks": {
       "97": {
-        "bsctest": "0xf3e118e0156072346c28072EcC50d2Fb07d61CF4"
+        "0": "0xf3e118e0156072346c28072EcC50d2Fb07d61CF4"
       }
     },
     "abi": [
@@ -3235,7 +3235,7 @@
   "StakingTokenV1": {
     "networks": {
       "97": {
-        "bsctest": "0x94a27Ab17e70a3ED43B58CFC5795BfCe39D9e659"
+        "0": "0x94a27Ab17e70a3ED43B58CFC5795BfCe39D9e659"
       }
     },
     "abi": [
@@ -3865,7 +3865,7 @@
   "StakingV1": {
     "networks": {
       "97": {
-        "bsctest": "0x2c1aC9a47260a82ef0a4CD70915d0b9a31a32f8B"
+        "0": "0x2c1aC9a47260a82ef0a4CD70915d0b9a31a32f8B"
       }
     },
     "abi": [
@@ -4470,10 +4470,10 @@
   "TokenLockerUniV2": {
     "networks": {
       "97": {
-        "bsctest": "0x674bDc67aD1655D9Cf7A8A79F0938427Fcfef020"
+        "0": "0x674bDc67aD1655D9Cf7A8A79F0938427Fcfef020"
       },
       "80001": {
-        "mumbai": "0x40A686d0273e5BC69Af582e07078F1d37C2C4A99"
+        "0": "0xec6C2ff574DBa1EDB7fad15B9Bdb56b92957d2Bc"
       }
     },
     "abi": [
@@ -5173,7 +5173,7 @@
   "TokenLockerUniV3": {
     "networks": {
       "80001": {
-        "mumbai": "0x998aF1f1b511B5402316dBA98FBb3D08fa48Cf03"
+        "0": "0xfe34847eF7bD06c0c67454344C571eD68CFf63f9"
       }
     },
     "abi": [
@@ -5344,6 +5344,19 @@
         ],
         "name": "Withdrew",
         "type": "event"
+      },
+      {
+        "inputs": [],
+        "name": "UNLOCK_MAX",
+        "outputs": [
+          {
+            "internalType": "uint40",
+            "name": "",
+            "type": "uint40"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
       },
       {
         "inputs": [
@@ -6042,7 +6055,7 @@
   "UtilV2": {
     "networks": {
       "80001": {
-        "mumbai": "0x88AcAf0B4bC08b9Bf8383f8fF1Fe2f09982bb82C"
+        "0": "0x88AcAf0B4bC08b9Bf8383f8fF1Fe2f09982bb82C"
       }
     },
     "abi": [

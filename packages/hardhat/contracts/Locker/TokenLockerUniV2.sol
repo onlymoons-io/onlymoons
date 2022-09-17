@@ -118,6 +118,13 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2, TokenLockerERC2
     // typically this would mean there was tax or something,
     // which shouldn't happen on LP tokens, but check anyway.
     require(amount_ == amountSent, "BORKED_TRANSFER");
+
+    emit TokenLockerDeposit(
+      id_,
+      amount_,
+      _locks[id_].amountOrTokenId,
+      _locks[id_].unlockTime
+    );
   }
 
   function withdrawById(
@@ -141,6 +148,8 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2, TokenLockerERC2
     // typically this would mean there was tax or something,
     // which shouldn't happen on LP tokens, but check anyway.
     require(amount == amountSent, "BORKED_TRANSFER");
+
+    emit TokenLockerWithdrawal(id_);
   }
 
   function getLpData(
