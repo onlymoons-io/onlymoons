@@ -418,7 +418,7 @@ export const networks: Record<number, NetworkData> = {
     supportedLiquidityPairTokens: [
       // Kek
       {
-        address: '0x54Bd9D8d758AC3717B37b7DC726877a23afF1B89',
+        address: '0xA888a7A2dc73efdb5705106a216f068e939A2693',
         // pair w/  on
         stablePair: '',
       },
