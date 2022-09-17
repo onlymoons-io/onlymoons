@@ -1,6 +1,6 @@
 {
   "name": "@onlymoons-io/onlymoons",
-  "version": "0.0.15",
+  "version": "0.0.17",
   "keywords": [
     "ethereum",
     "react",
@@ -45,6 +45,7 @@
     "deploy:ropsten": "yarn deploy --network ropsten",
     "deploy:kovan": "yarn deploy --network kovan",
     "deploy:dogechain": "yarn deploy --network dogechain",
+    "deploy:kektest": "yarn deploy --network kektest",
     "watch": "yarn workspace @onlymoons-io/hardhat watch",
     "accounts": "yarn workspace @onlymoons-io/hardhat accounts",
     "balance": "yarn workspace @onlymoons-io/hardhat balance",
