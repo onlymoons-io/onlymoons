@@ -374,6 +374,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  420420 : {
+    chainId: 420420,
+    name: 'KekChain',
+    shortName: 'KekChain',
+    urlName: 'kekchain',
+    nativeCurrency: {
+      address: '0x54Bd9D8d758AC3717B37b7DC726877a23afF1B89',
+      name: 'Kek',
+      symbol: 'Kek',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://testnet-explorer.kekchain.com/',
+    rpcURL: 'mainnet.kekchain.com',
+    icon: '/kekchain.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // Kek
+      {
+        address: '0x54Bd9D8d758AC3717B37b7DC726877a23afF1B89',
+        // pair w/  on 
+        stablePair: '',
+      },
+    ],
+  },
 }
 
 export default function getNetworkDataByChainId(chainId: number): NetworkData | undefined {
