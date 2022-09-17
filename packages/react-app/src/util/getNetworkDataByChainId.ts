@@ -376,18 +376,18 @@ export const networks: Record<number, NetworkData> = {
   },
   420420: {
     chainId: 420420,
-    name: 'KekChain',
+    name: 'KeKchain',
     shortName: 'KekChain',
     urlName: 'kekchain',
     nativeCurrency: {
       address: '0x54Bd9D8d758AC3717B37b7DC726877a23afF1B89',
-      name: 'Kek',
-      symbol: 'Kek',
+      name: 'KeK',
+      symbol: 'KEK',
       decimals: 18,
       balance: BigNumber.from(0),
     },
-    explorerURL: 'https://testnet-explorer.kekchain.com/',
-    rpcURL: 'mainnet.kekchain.com',
+    explorerURL: 'https://explorer.kekchain.com/',
+    rpcURL: 'https://mainnet.kekchain.com',
     icon: '/kekchain.png',
     isTestNet: false,
     supportedLiquidityPairTokens: [
@@ -406,15 +406,15 @@ export const networks: Record<number, NetworkData> = {
     urlName: 'kektest',
     nativeCurrency: {
       address: '0xA888a7A2dc73efdb5705106a216f068e939A2693',
-      name: 'KEK',
+      name: 'KeK',
       symbol: 'KEK',
       decimals: 18,
       balance: BigNumber.from(0),
     },
     explorerURL: 'https://testnet-explorer.kekchain.com/',
-    rpcURL: 'mainnet.kekchain.com',
+    rpcURL: 'https://testnet.kekchain.com',
     icon: '/kekchain.png',
-    isTestNet: false,
+    isTestNet: true,
     supportedLiquidityPairTokens: [
       // Kek
       {

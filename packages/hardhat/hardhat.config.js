@@ -144,8 +144,9 @@ module.exports = {
     },
 
     kekchain: {
-      url: "mainnet.kekchain.com",
-
+      url: "https://mainnet.kekchain.com",
+      gasPrice: 1100000000,
+      chainId: 420420,
       accounts: {
         mnemonic: mnemonic(),
       },
