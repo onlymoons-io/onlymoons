@@ -21,5 +21,5 @@ pragma solidity ^0.8.0;
 import { ITokenLockerBaseV2 } from "./ITokenLockerBaseV2.sol";
 
 interface ITokenLockerERC20V2 is ITokenLockerBaseV2 {
-  // function splitLock() external;
+  function splitLock(uint40 id_, uint256 amount_, address newOwner_) external payable returns (uint40 id);
 }

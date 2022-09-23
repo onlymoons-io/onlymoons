@@ -29,10 +29,12 @@ interface ITokenLockerUniV3 is ITokenLockerLPV2, ITokenLockerERC721V2 {
     uint256 balance0,
     uint256 balance1,
     uint128 liquidity,
-    address pool
+    address pool,
+    uint256 tokensOwed0,
+    uint256 tokensOwed1
   );
 
-  function collect(uint40 id_) external returns (
+  function collectUniV3Fees(uint40 id_) external returns (
     uint256 amount0,
     uint256 amount1
   );

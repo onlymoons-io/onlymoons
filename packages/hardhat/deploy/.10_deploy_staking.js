@@ -4,31 +4,12 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy, get, execute } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  const [erc20, mathLibrary, safeERC20Library] = await Promise.all([
+  const [erc20, mathLibrary, safeERC20Library, fees] = await Promise.all([
     get("ERC20"),
     get("Math"),
     get("SafeERC20"),
+    get("Fees"),
   ]);
-
-  const splitStakingV1 = await deploy("SplitStakingV1", {
-    from: deployer,
-    log: true,
-    // args: [],
-    libraries: {
-      Math: mathLibrary.address,
-    },
-  });
-
-  const fees = await deploy("Fees", {
-    from: deployer,
-    log: true,
-    args: [
-      // address payable treasuryFeeAddress_
-      deployer,
-      // address payable stakingFeeAddress_
-      splitStakingV1.address,
-    ],
-  });
 
   const stakingFactoryV1 = await deploy("StakingFactoryV1", {
     from: deployer,
@@ -63,7 +44,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     true
   );
 
-  const stakingV1 = await deploy("StakingV1", {
+  /* const stakingV1 = */ await deploy("StakingV1", {
     from: deployer,
     log: true,
     args: [
@@ -80,7 +61,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     },
   });
 
-  const stakingTokenV1 = await deploy("StakingTokenV1", {
+  /* const stakingTokenV1 = */ await deploy("StakingTokenV1", {
     from: deployer,
     log: true,
     args: [
@@ -100,4 +81,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   });
 };
 
-module.exports.tags = ["OnlyMoons", "Staking", "Fees"];
+module.exports.tags = ["OnlyMoons", "Staking"];

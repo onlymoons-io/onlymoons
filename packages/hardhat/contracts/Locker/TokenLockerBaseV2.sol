@@ -19,9 +19,10 @@
 pragma solidity ^0.8.0;
 
 import { ITokenLockerBaseV2 } from "./ITokenLockerBaseV2.sol";
+import { FeeCollector } from "../Fees/FeeCollector.sol";
 import { ReentrancyGuard } from "../library/ReentrancyGuard.sol";
 
-abstract contract TokenLockerBaseV2 is ITokenLockerBaseV2, ReentrancyGuard {
+abstract contract TokenLockerBaseV2 is ITokenLockerBaseV2, FeeCollector, ReentrancyGuard {
   /** @dev id => siteKey => url */
   mapping(uint40 => mapping(string => string)) internal _socials;
 

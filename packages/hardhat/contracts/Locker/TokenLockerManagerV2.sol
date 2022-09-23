@@ -23,10 +23,9 @@ import { Governable } from "../Governance/Governable.sol";
 import { Pausable } from "../Control/Pausable.sol";
 import { IDCounter } from "../IDCounter.sol";
 import { ITokenLockerBaseV2 } from "./ITokenLockerBaseV2.sol";
-import { ITokenLockerFactoryV2 } from "./ITokenLockerFactoryV2.sol";
 import { IERC20 } from "../library/IERC20.sol";
 import { ReentrancyGuard } from "../library/ReentrancyGuard.sol";
-// import { INonfungiblePositionManager } from "../library/uniswap-v3/INonfungiblePositionManager.sol";
+import { FeeCollector } from "../Fees/FeeCollector.sol";
 
 struct LockData {
   address tokenAddress;
@@ -39,15 +38,13 @@ struct LockData {
   bool useUnlockCountdown;
 }
 
-contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, IDCounter, ReentrancyGuard {
-  constructor(address factoryAddress_) Governable(_msgSender(), _msgSender()) {
-    _setFactory(factoryAddress_);
+contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, IDCounter, FeeCollector, ReentrancyGuard {
+  constructor(address feesAddress_) Governable(_msgSender(), _msgSender()) {
+    _setFeesContract(feesAddress_);
   }
 
   uint40 internal _countdownDuration = 1 weeks;
   uint40 public constant UNLOCK_MAX = type(uint40).max;
-
-  ITokenLockerFactoryV2 internal _factory;
 
   mapping(uint40 => address) internal _lockAddresses;
 
@@ -62,18 +59,6 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
    */
   mapping(address => uint40[]) internal _tokenLockersForAddress;
   mapping(address => mapping(uint40 => bool)) internal _tokenLockersForAddressLookup;
-
-  function factory() external virtual override view returns (address) {
-    return address(_factory);
-  }
-
-  function _setFactory(address address_) internal virtual {
-    _factory = ITokenLockerFactoryV2(address_);
-  }
-
-  function setFactory(address address_) external virtual override onlyOwner {
-    _setFactory(address_);
-  }
 
   function countdownDuration() external virtual override view returns (uint40) {
     return _countdownDuration;
@@ -117,19 +102,22 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
     uint40 id
   ) {}
 
+  /**
+   * must use createTokenLockerV2 instead
+   */
   function createTokenLocker(
-    address tokenAddress_,
-    uint256 amount_,
-    uint40 unlockTime_
-  ) external virtual override onlyNotPaused nonReentrant {
-    _createTokenLocker(tokenAddress_, amount_, unlockTime_);
+    address /* tokenAddress_ */,
+    uint256 /* amount_ */,
+    uint40 /* unlockTime_ */
+  ) external virtual override {
+    revert("NOT_IMPLEMENTED");
   }
 
   function createTokenLockerV2(
     address tokenAddress_,
     uint256 amountOrTokenId_,
     uint40 unlockTime_
-  ) external virtual override onlyNotPaused nonReentrant returns (
+  ) external payable virtual override onlyNotPaused nonReentrant returns (
     uint40 id,
     address lockAddress
   ) {
@@ -162,6 +150,7 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
 
   }
 
+  // note this only works with univ2 lp, univ3 needs override
   function getLpData(uint40 id_) external virtual override view returns (
     bool hasLpData,
     uint40 id,
@@ -172,7 +161,17 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
     uint256 price0,
     uint256 price1
   ) {
+    // id = id_;
+    // hasLpData = Util.isLpToken(_locks[id_].tokenAddress);
 
+    // (
+    //   token0,
+    //   token1,
+    //   balance0,
+    //   balance1,
+    //   price0,
+    //   price1
+    // ) = Util.getLpData(_locks[id_].tokenAddress);
   }
 
   function getTokenLockersForAddress(

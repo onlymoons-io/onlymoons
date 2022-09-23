@@ -143,6 +143,15 @@ module.exports = {
       },
     },
 
+    kekchain: {
+      url: "https://mainnet.kekchain.com",
+      gasPrice: 1100000000,
+      chainId: 420420,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
+
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/cfeb072b8469447e889da944481d5874", // <---- YOUR INFURA ID! (or it won't work)
 

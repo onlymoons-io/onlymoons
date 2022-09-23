@@ -19,8 +19,9 @@
 pragma solidity ^0.8.0;
 
 import { IOwnableV2 } from "../Control/IOwnableV2.sol";
+import { IFeeCollector } from "../Fees/IFeeCollector.sol";
 
-interface ITokenLockerBaseV2 is IOwnableV2 {
+interface ITokenLockerBaseV2 is IOwnableV2, IFeeCollector {
   function setSocials(
     uint40 id_,
     string[] calldata keys_,

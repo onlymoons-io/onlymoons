@@ -22,8 +22,9 @@ import { ITokenLockerManagerV1 } from "../ITokenLockerManagerV1.sol";
 import { IGovernable } from "../Governance/IGovernable.sol";
 import { IPausable } from "../Control/IPausable.sol";
 import { IIDCounter } from "../IIDCounter.sol";
+import { IFeeCollector } from "../Fees/IFeeCollector.sol";
 
-interface ITokenLockerManagerV2 is ITokenLockerManagerV1, IGovernable, IPausable, IIDCounter {
+interface ITokenLockerManagerV2 is ITokenLockerManagerV1, IGovernable, IPausable, IIDCounter, IFeeCollector {
   /**
    * @dev this should have been in ITokenLockerManagerV1,
    * but it wound up in TokenLockerManagerV1. define it here instead.
@@ -56,10 +57,6 @@ interface ITokenLockerManagerV2 is ITokenLockerManagerV1, IGovernable, IPausable
     uint40 id
   );
 
-  function factory() external view returns (address);
-
-  function setFactory(address address_) external;
-
   function countdownDuration() external view returns (uint40);
   function setCountdownDuration(uint40 countdownDuration_) external;
 
@@ -67,7 +64,7 @@ interface ITokenLockerManagerV2 is ITokenLockerManagerV1, IGovernable, IPausable
     address tokenAddress_,
     uint256 amountOrTokenId_,
     uint40 unlockTime_
-  ) external returns (
+  ) external payable returns (
     uint40 id,
     address lockAddress
   );

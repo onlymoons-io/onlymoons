@@ -26,7 +26,12 @@ import { Pausable } from "../Control/Pausable.sol";
 contract Fees is IFees, Governable, Pausable {
   using Address for address payable;
 
-  constructor(address payable treasuryFeeAddress_, address payable stakingFeeAddress_) Governable(_msgSender(), _msgSender()) {
+  constructor(
+    uint256 feeAmountBase_,
+    address payable treasuryFeeAddress_,
+    address payable stakingFeeAddress_
+  ) Governable(_msgSender(), _msgSender()) {
+    _feeAmountBase = feeAmountBase_;
     _treasuryFeeAddress = treasuryFeeAddress_;
     _stakingFeeAddress = stakingFeeAddress_;
     _exemptFromFees[_msgSender()] = true;
@@ -34,20 +39,11 @@ contract Fees is IFees, Governable, Pausable {
     // !!! setup some fee type presets
 
     // note this covers all staking contracts.
-    _feeTypeAmountMap["DeployStaking"] = 5 * 10 ** 17; // 0.5eth
-    // note nothing fancy - a standard token
-    _feeTypeAmountMap["DeployStandardToken"] = 2 * 10 ** 17; // 0.2eth
-    // note reflects tokens back to holders.
-    _feeTypeAmountMap["DeployReflectionToken"] = 3 * 10 ** 17; // 0.3eth
-    // note sells for eth OR token, distributes rewards to holders automatically.
-    _feeTypeAmountMap["DeployDividendToken"] = 3 * 10 ** 17; // 0.3eth
-    // note sells for eth, sends all eth to a "marketing wallet"
-    _feeTypeAmountMap["DeployMarketingToken"] = 3 * 10 ** 17; // 0.3eth
-    // note that CreateTokenLock fee only applies to regular tokens,
-    // not LP tokens. LP tokens are always free.
-    // this fee should allow you to deploy as many locks
-    // for the project as needed.
-    _feeTypeAmountMap["CreateTokenLock"] = 2 * 10 ** 17; // 0.2eth
+    _feeTypeAmountMap["DeployStaking"] = 500;
+    _feeTypeAmountMap["DeployToken"] = 200;
+    _feeTypeAmountMap["CreateTokenLock"] = 200;
+    _feeTypeAmountMap["CreateInfiniteLock"] = 100;
+    _feeTypeAmountMap["SplitLock"] = 100;
   }
 
   address payable internal _treasuryFeeAddress;
@@ -60,12 +56,13 @@ contract Fees is IFees, Governable, Pausable {
   uint256 internal _treasuryFeesDistributed;
   uint256 internal _stakingFeesDistributed;
 
+  uint256 internal _feeAmountBase;
+
   mapping(address => bool) internal _exemptFromFees;
   mapping(string => uint256) internal _feeTypeAmountMap;
 
   /**
    * @return 0 if the msg sender is exempt from fees.
-   * this may not be desired when checking current fee values.
    */
   function getFeeAmountForType(string memory feeType) external view override returns (uint256) {
     return _exemptFromFees[_msgSender()] ? 0 : _feeTypeAmountMap[feeType];

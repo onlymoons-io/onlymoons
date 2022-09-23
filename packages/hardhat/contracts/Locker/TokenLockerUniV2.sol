@@ -30,8 +30,7 @@ import { Util } from "../Util.sol";
 contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2, TokenLockerERC20V2 {
   using SafeERC20 for IERC20;
 
-  /** @dev initialize TokenLockerManagerV2 without a valid factory, because we don't need one */
-  constructor() TokenLockerManagerV2(address(0)) {}
+  constructor() TokenLockerManagerV2() {}
 
   function _createTokenLocker(
     address tokenAddress_,
@@ -61,6 +60,7 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2, TokenLockerERC2
     // we use unlock countdown instead of unlock time.
     // this value cannot be updated after creation.
     if (unlockTime_ == 0) {
+      _takeFee("CreateInfiniteLock");
       _locks[id].useUnlockCountdown = true;
     }
 
@@ -245,5 +245,53 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2, TokenLockerERC2
       oldPair.token1()
     );
     _locks[id_].amountOrTokenId = newTokenAmount;
+  }
+
+  function splitLock(
+    uint40 id_,
+    uint256 amount_,
+    address newOwner_
+  ) external payable virtual override onlyLockOwner(id_) takeFee("SplitLock") returns (
+    uint40 id
+  ) {
+    require(amount_ <= _locks[id_].amountOrTokenId, "INSUFFICIENT_TOKENS");
+
+    // this should throw an error if it's not a valid pair,
+    // which is what we want to happen as early as possible.
+    IUniswapV2Pair pair = IUniswapV2Pair(_locks[id_].tokenAddress);
+    address token0 = pair.token0();
+    address token1 = pair.token1();
+
+    id = uint40(_next());
+
+    _locks[id].tokenAddress = _locks[id_].tokenAddress;
+    _locks[id].createdAt = uint40(block.timestamp);
+    _locks[id].extendedAt = _locks[id].createdAt;
+    _locks[id].createdBy = newOwner_;
+    _locks[id].owner = newOwner_;
+    // if the previous lock was an infinite lock, don't make them pay the fee again
+    _locks[id].useUnlockCountdown = _locks[id_].useUnlockCountdown;
+    _locks[id].unlockTime = _locks[id_].unlockTime;
+
+    // add amount to new lock
+    _locks[id].amountOrTokenId = amount_;
+    // subtract amount from old lock
+    _locks[id_].amountOrTokenId -= amount_;
+
+    // build search index
+    _tokenLockersForAddress[newOwner_].push(id);
+    _tokenLockersForAddress[_locks[id].tokenAddress].push(id);
+    _tokenLockersForAddress[token0].push(id);
+    _tokenLockersForAddress[token1].push(id);
+
+    emit TokenLockerCreated(
+      id,
+      _locks[id].tokenAddress,
+      token0,
+      token1,
+      newOwner_,
+      amount_,
+      _locks[id].unlockTime
+    );
   }
 }

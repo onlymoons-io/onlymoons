@@ -31,8 +31,7 @@ import { UtilV2 } from "../UtilV2.sol";
 contract TokenLockerUniV3 is ITokenLockerUniV3, TokenLockerLPV2, TokenLockerERC721V2 {
   using SafeERC20 for IERC20;
 
-  /** @dev initialize TokenLockerManagerV2 without a valid factory, because we don't need one */
-  constructor() TokenLockerManagerV2(address(0)) {}
+  constructor() TokenLockerManagerV2() {}
 
   function _createTokenLocker(
     address tokenAddress_,
@@ -65,6 +64,7 @@ contract TokenLockerUniV3 is ITokenLockerUniV3, TokenLockerLPV2, TokenLockerERC7
     // we use unlock countdown instead of unlock time.
     // this value cannot be updated after creation.
     if (unlockTime_ == 0) {
+      _takeFee("CreateInfiniteLock");
       _locks[id].useUnlockCountdown = true;
     }
 
@@ -164,11 +164,21 @@ contract TokenLockerUniV3 is ITokenLockerUniV3, TokenLockerLPV2, TokenLockerERC7
     // pass-through, don't like this, but w/e
     id = id_;
 
+    // address token0,
+    // address token1,
+    // uint24 fee,
+    // uint256 balance0,
+    // uint256 balance1,
+    // uint128 liquidity,
+    // address pool,
+    // uint256 tokensOwed0,
+    // uint256 tokensOwed1
+
     (
       token0,
       token1,,
       balance0,
-      balance1,,
+      balance1,,,,
     ) = UtilV2.getUniV3LpData(
       _locks[id_].tokenAddress,
       _locks[id_].amountOrTokenId
@@ -186,7 +196,9 @@ contract TokenLockerUniV3 is ITokenLockerUniV3, TokenLockerLPV2, TokenLockerERC7
     uint256 balance0,
     uint256 balance1,
     uint128 liquidity,
-    address pool
+    address pool,
+    uint256 tokensOwed0,
+    uint256 tokensOwed1
   ) {
     return UtilV2.getUniV3LpData(
       _locks[id_].tokenAddress,
@@ -194,7 +206,7 @@ contract TokenLockerUniV3 is ITokenLockerUniV3, TokenLockerLPV2, TokenLockerERC7
     );
   }
 
-  function _collect(uint40 id_) internal virtual returns (uint256 amount0, uint256 amount1) {
+  function _collectUniV3Fees(uint40 id_) internal virtual returns (uint256 amount0, uint256 amount1) {
     return INonfungiblePositionManager(
       _locks[id_].tokenAddress
     ).collect(
@@ -211,24 +223,10 @@ contract TokenLockerUniV3 is ITokenLockerUniV3, TokenLockerLPV2, TokenLockerERC7
     );
   }
 
-  function collect(uint40 id_) external virtual override onlyLockOwner(id_) returns (
+  function collectUniV3Fees(uint40 id_) external virtual override onlyLockOwner(id_) returns (
     uint256 /* amount0 */,
     uint256 /* amount1 */
   ){
-    return _collect(id_);
-  }
-
-  /**
-   * @dev did not find a way to implement uniswap v3 migration.
-   * running into stack too deep errors, could not find solution.
-   * migrate MUST finish in 1 transaction, and it seems it just can't do it.
-   * oh well, we just won't support v3 migration :'(
-   */
-  function migrate(
-    uint40 /* id_ */,
-    address /* oldRouterAddress_ */,
-    address /* newRouterAddress_ */
-  ) external virtual override {
-    revert("NOT_IMPLEMENTED");
+    return _collectUniV3Fees(id_);
   }
 }

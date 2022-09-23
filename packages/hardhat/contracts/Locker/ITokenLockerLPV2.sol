@@ -20,9 +20,10 @@ pragma solidity ^0.8.0;
 
 import { ITokenLockerManagerV2 } from "./ITokenLockerManagerV2.sol";
 import { ITokenLockerBaseV2 } from "./ITokenLockerBaseV2.sol";
+// import { ITokenLockerERC20V2 } from "./ITokenLockerERC20V2.sol";
 
 
-interface ITokenLockerLPV2 is ITokenLockerManagerV2, ITokenLockerBaseV2 {
+interface ITokenLockerLPV2 is ITokenLockerManagerV2, ITokenLockerBaseV2 /* ITokenLockerERC20V2 */ {
   event Extended(uint40 id, uint40 newUnlockTime);
   event Deposited(uint40 id, uint256 amountOrTokenId);
   event Withdrew(uint40 id);
@@ -38,21 +39,4 @@ interface ITokenLockerLPV2 is ITokenLockerManagerV2, ITokenLockerBaseV2 {
   function withdrawById(
     uint40 id_
   ) external;
-  function migrate(
-    uint40 id_,
-    address oldRouterAddress_,
-    address newRouterAddress_
-  ) external;
-  // function getLockData() external returns (
-  //   bool isLpToken,
-  //   uint40 id,
-  //   address contractAddress,
-  //   address lockOwner,
-  //   address token,
-  //   address createdBy,
-  //   uint40 createdAt,
-  //   uint40 unlockTime,
-  //   uint256 balance,
-  //   uint256 totalSupply
-  // );
 }

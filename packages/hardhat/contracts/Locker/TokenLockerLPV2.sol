@@ -44,22 +44,6 @@ abstract contract TokenLockerLPV2 is ITokenLockerLPV2, TokenLockerManagerV2, Tok
     revert("NOT_IMPLEMENTED");
   }
 
-  function factory() external virtual override(
-    ITokenLockerManagerV2,
-    TokenLockerManagerV2
-  ) pure returns (address) {
-    return address(0);
-  }
-
-  function setFactory(
-    address /* address_ */
-  ) external virtual override(
-    ITokenLockerManagerV2,
-    TokenLockerManagerV2
-  ) onlyOwner {
-    revert("NOT_IMPLEMENTED");
-  }
-
   function notifyLockerOwnerChange(
     uint40 /* id_ */,
     address /* newOwner_ */,
@@ -128,19 +112,4 @@ abstract contract TokenLockerLPV2 is ITokenLockerLPV2, TokenLockerManagerV2, Tok
     balance = _locks[id_].amountOrTokenId;
     totalSupply = IERC20(token).totalSupply();
   }
-
-  // function getLockData() external virtual override returns (
-  //   bool isLpToken,
-  //   uint40 id,
-  //   address contractAddress,
-  //   address lockOwner,
-  //   address token,
-  //   address createdBy,
-  //   uint40 createdAt,
-  //   uint40 unlockTime,
-  //   uint256 balance,
-  //   uint256 totalSupply
-  // ) {
-    
-  // }
 }
