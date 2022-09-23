@@ -264,7 +264,8 @@ export const networks: Record<number, NetworkData> = {
       balance: BigNumber.from(0),
     },
     explorerURL: 'https://explorer.dogechain.dog/',
-    rpcURL: 'https://rpc01-sg.dogechain.dog',
+    // rpcURL: 'https://rpc.dogechain.dog',
+    rpcURL: 'https://dogechain.ankr.com',
     icon: '/dogechain.png',
     isTestNet: false,
     supportedLiquidityPairTokens: [
