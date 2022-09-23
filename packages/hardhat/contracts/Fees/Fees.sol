@@ -50,8 +50,9 @@ contract Fees is IFees, Governable, Pausable {
   address payable internal _stakingFeeAddress;
 
   /** 0-10000 - 2 decimals of precision. all fees should add up to 10000 (100%) */
-  uint16 internal _treasuryFee = 2000;
-  uint16 internal _stakingFee = 8000;
+  // send all to treasury by default, since staking will be implemented later
+  uint16 internal _treasuryFee = 10000;
+  uint16 internal _stakingFee = 0;
 
   uint256 internal _treasuryFeesDistributed;
   uint256 internal _stakingFeesDistributed;
@@ -61,14 +62,22 @@ contract Fees is IFees, Governable, Pausable {
   mapping(address => bool) internal _exemptFromFees;
   mapping(string => uint256) internal _feeTypeAmountMap;
 
+  function feeAmountBase() external virtual override view returns (uint256) {
+    return _feeAmountBase;
+  }
+
+  function setFeeAmountBase(uint256 value) external virtual override onlyGovernor {
+    _feeAmountBase = value;
+  }
+
   /**
    * @return 0 if the msg sender is exempt from fees.
    */
-  function getFeeAmountForType(string memory feeType) external view override returns (uint256) {
-    return _exemptFromFees[_msgSender()] ? 0 : _feeTypeAmountMap[feeType];
+  function getFeeAmountForType(string calldata feeType) external view override returns (uint256) {
+    return _exemptFromFees[_msgSender()] ? 0 : _feeAmountBase * _feeTypeAmountMap[feeType];
   }
 
-  function setFeeAmountForType(string memory feeType, uint256 amount) external override onlyGovernor {
+  function setFeeAmountForType(string calldata feeType, uint256 amount) external override onlyGovernor {
     _feeTypeAmountMap[feeType] = amount;
   }
 

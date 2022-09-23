@@ -60,7 +60,11 @@ const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerCont
         throw new Error('Token locker contract is not loaded')
       }
 
-      const tx = await contract.createTokenLocker(tokenAddress, amount, unlockTime)
+      const tx = await contract[!lockType || lockType === 1 ? 'createTokenLocker' : 'createTokenLockerV2'](
+        tokenAddress,
+        amount,
+        unlockTime,
+      )
 
       const result = await tx.wait()
 
@@ -68,7 +72,7 @@ const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerCont
 
       return lockerCreatedEvent?.args?.id || 0
     },
-    [contract],
+    [contract, lockType],
   )
 
   const getTokenLockersForAddress = useCallback(

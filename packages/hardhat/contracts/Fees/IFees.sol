@@ -22,6 +22,8 @@ import { IGovernable } from "../Governance/IGovernable.sol";
 import { IPausable } from "../Control/IPausable.sol";
 
 interface IFees is IGovernable, IPausable {
+  function feeAmountBase() external view returns (uint256);
+  function setFeeAmountBase(uint256 value) external;
   function getFeeAmountForType(string memory feeType) external view returns (uint256);
   function setFeeAmountForType(string memory feeType, uint256 amount) external;
   function setAddressExemptFromFees(address account, bool value) external;

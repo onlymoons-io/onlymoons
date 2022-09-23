@@ -1,16 +1,10 @@
 // const { ethers } = require("hardhat");
 
 module.exports = async ({ getNamedAccounts, deployments }) => {
-  const { deploy, get, execute } = deployments;
+  const { deploy, get } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  const [
-    // erc20,
-    utilLibrary,
-    utilV2Library,
-    fees,
-  ] = await Promise.all([
-    // get("ERC20"),
+  const [utilLibrary, utilV2Library, fees] = await Promise.all([
     get("Util"),
     get("UtilV2"),
     get("Fees"),
@@ -18,45 +12,21 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
   await deploy("TokenLockerUniV2", {
     from: deployer,
-    // args: [],
+    args: [fees.address],
     log: true,
     libraries: {
       Util: utilLibrary.address,
     },
   });
 
-  await execute(
-    // contract name
-    "TokenLockerUniV2",
-    // TxOptions
-    {
-      from: deployer,
-      log: true,
-    },
-    "setFeesAddress",
-    fees.address
-  );
-
   await deploy("TokenLockerUniV3", {
     from: deployer,
-    // args: [],
+    args: [fees.address],
     log: true,
     libraries: {
       UtilV2: utilV2Library.address,
     },
   });
-
-  await execute(
-    // contract name
-    "TokenLockerUniV3",
-    // TxOptions
-    {
-      from: deployer,
-      log: true,
-    },
-    "setFeesAddress",
-    fees.address
-  );
 };
 
 module.exports.tags = ["OnlyMoons", "LP Locker", "Uniswap V2"];

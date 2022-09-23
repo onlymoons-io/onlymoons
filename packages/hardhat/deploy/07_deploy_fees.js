@@ -8,6 +8,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     from: deployer,
     log: true,
     args: [
+      // uint256 feeAmountBase_,
+      10 ** 15,
       // address payable treasuryFeeAddress_
       deployer,
       // address payable stakingFeeAddress_
