@@ -387,7 +387,7 @@ export const networks: Record<number, NetworkData> = {
       decimals: 18,
       balance: BigNumber.from(0),
     },
-    explorerURL: 'https://explorer.kekchain.com/',
+    explorerURL: 'https://mainnet-explorer.kekchain.com/',
     rpcURL: 'https://mainnet.kekchain.com',
     icon: '/kekchain.png',
     isTestNet: false,
