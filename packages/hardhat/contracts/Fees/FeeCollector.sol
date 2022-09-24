@@ -28,17 +28,14 @@ abstract contract FeeCollector is IFeeCollector, OwnableV2 {
 
   IFees internal _fees;
 
-  uint256 internal _feePercentDenominator = 10 ** 18;
-
   modifier takeFee(string memory feeType) {
     _takeFee(feeType);
     _;
   }
 
   function _takeFee(string memory feeType) internal {
-    bool exempt = _fees.isAddressExemptFromFees(_msgSender());
     require(_fees.getFeeAmountForType(feeType) == msg.value, "Incorrect fee");
-    if (!exempt)
+    if (!_fees.isAddressExemptFromFees(_msgSender()))
       payable(address(_fees)).sendValue(msg.value);
   }
 
