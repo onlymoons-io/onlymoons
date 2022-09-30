@@ -332,8 +332,8 @@ export const networks: Record<number, NetworkData> = {
     urlName: 'ethw',
     nativeCurrency: {
       address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-      name: 'Ethereum',
-      symbol: 'ETH',
+      name: 'ETHW-mainnet',
+      symbol: 'ETHW',
       decimals: 18,
       balance: BigNumber.from(0),
     },
@@ -342,7 +342,7 @@ export const networks: Record<number, NetworkData> = {
     icon: '/ethw.png',
     isTestNet: false,
     supportedLiquidityPairTokens: [
-      // ETH
+      // ETHW
       {
         address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
         // pair w/ 0 on 0
