@@ -325,6 +325,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  10001 : {
+    chainId: 10001,
+    name: 'EthereumPoW',
+    shortName: 'EthW',
+    urlName: 'ethw',
+    nativeCurrency: {
+      address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://www.oklink.com/en/ethw/',
+    rpcURL: 'https://mainnet.ethereumpow.org',
+    icon: '/ethw.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // ETH
+      {
+        address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+        // pair w/ 0 on 0
+        stablePair: '',
+      },
+    ],
+  },
   43114: {
     chainId: 43114,
     name: 'Avalanche',

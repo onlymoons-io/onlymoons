@@ -36,6 +36,7 @@
     "deploy:avax": "yarn deploy --network avax",
     "deploy:canto": "yarn deploy --network canto",
     "deploy:fuse": "yarn deploy --network fuse",
+    "deploy:ethw": "yarn deploy --network ethw",
     "deploy:fusetest": "yarn deploy --network fusetest",
     "deploy:polygon": "yarn deploy --network polygon",
     "deploy:mumbai": "yarn deploy --network mumbai",
