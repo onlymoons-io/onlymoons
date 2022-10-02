@@ -1,6 +1,6 @@
 {
   "name": "@onlymoons-io/onlymoons",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "keywords": [
     "ethereum",
     "react",
@@ -36,6 +36,7 @@
     "deploy:avax": "yarn deploy --network avax",
     "deploy:canto": "yarn deploy --network canto",
     "deploy:fuse": "yarn deploy --network fuse",
+    "deploy:ethw": "yarn deploy --network ethw",
     "deploy:fusetest": "yarn deploy --network fusetest",
     "deploy:polygon": "yarn deploy --network polygon",
     "deploy:mumbai": "yarn deploy --network mumbai",
