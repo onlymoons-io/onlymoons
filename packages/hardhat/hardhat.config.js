@@ -152,6 +152,14 @@ module.exports = {
       },
     },
 
+    ethw: {
+      url: "https://mainnet.ethereumpow.org",
+      gasPrice: 1500000007,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
+
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/cfeb072b8469447e889da944481d5874", // <---- YOUR INFURA ID! (or it won't work)
 
@@ -225,12 +233,12 @@ module.exports = {
       },
     },
     arbitrum: {
-			url: "https://arb1.arbitrum.io/rpc",
-			// gasPrice: 1000000000,
-			accounts: {
-				mnemonic: mnemonic(),
-			},
-		},
+      url: "https://arb1.arbitrum.io/rpc",
+      // gasPrice: 1000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
     metistest: {
       url: "https://stardust.metis.io/?owner=588",
       accounts: {
