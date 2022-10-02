@@ -3,8 +3,6 @@ import { Link, LinkProps } from 'react-router-dom'
 
 export interface LinkOrAnchorProps {
   children?: ReactNode
-  target?: string
-  rel?: string
 }
 
 const LinkOrAnchor: React.FC<
