@@ -326,7 +326,7 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
-  42161 : {
+  42161: {
     chainId: 42161,
     name: 'Arbitrum',
     shortName: 'Arbitrum',
@@ -346,8 +346,8 @@ export const networks: Record<number, NetworkData> = {
       // ETH
       {
         address: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
-        // pair w/ USDC on https://uniswap.org/
-        stablePair: '0xC31E54c7a869B9FcBEcc14363CF510d1c41fa443',
+        // pair w/ USDT on https://app.sushi.com/
+        stablePair: '0xCB0E5bFa72bBb4d16AB5aA0c60601c438F04b4ad',
       },
     ],
   },
