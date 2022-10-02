@@ -224,6 +224,13 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    arbitrum: {
+			url: "https://arb1.arbitrum.io/rpc",
+			// gasPrice: 1000000000,
+			accounts: {
+				mnemonic: mnemonic(),
+			},
+		},
     metistest: {
       url: "https://stardust.metis.io/?owner=588",
       accounts: {
