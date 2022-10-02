@@ -43,6 +43,7 @@ const NetworkSelect: React.FC<NetworkSelectProps> = ({ className = '', style = {
             icon={faWrench}
           />
         )} */}
+        <span className="hidden lg:inline font-bold">{networkData?.shortName}</span>
         <span className="hidden md:inline">{networkData?.nativeCurrency.symbol || '???'}</span>
         {nativeCoinPrice ? (
           <span className="ml-1 opacity-60">

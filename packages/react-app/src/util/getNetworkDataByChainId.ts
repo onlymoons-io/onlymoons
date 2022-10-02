@@ -326,7 +326,32 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
-  10001 : {
+  42161: {
+    chainId: 42161,
+    name: 'Arbitrum',
+    shortName: 'Arbitrum',
+    urlName: 'arbitrum',
+    nativeCurrency: {
+      address: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://arbiscan.io/',
+    rpcURL: 'https://arb1.arbitrum.io/rpc',
+    icon: '/arbitrum.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // ETH
+      {
+        address: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+        // pair w/ USDT on https://app.sushi.com/
+        stablePair: '0xCB0E5bFa72bBb4d16AB5aA0c60601c438F04b4ad',
+      },
+    ],
+  },
+  10001: {
     chainId: 10001,
     name: 'EthereumPoW',
     shortName: 'EthW',
