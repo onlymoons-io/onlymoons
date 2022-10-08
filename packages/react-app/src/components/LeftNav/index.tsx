@@ -1,10 +1,12 @@
-import React, { CSSProperties, useState, useEffect, ReactNode } from 'react'
+import React, { CSSProperties, useState, useEffect, ReactNode, AnchorHTMLAttributes } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import tw from 'tailwind-styled-components'
 import styled from 'styled-components'
-import { Link, useLocation } from 'react-router-dom'
+import { LinkProps, useLocation } from 'react-router-dom'
+import LinkOrAnchor from '../LinkOrAnchor'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  faBook,
   faChartLine,
   faExchangeAlt,
   faFaucet,
@@ -33,7 +35,7 @@ const Inner = tw.div`
   flex-col
 `
 
-const ItemCSS = styled(Link)``
+const ItemCSS = styled(LinkOrAnchor)``
 
 const Item = tw(ItemCSS)`
   h-14
@@ -57,32 +59,50 @@ const ItemLabel = tw(ItemLabelCSS)`
   ml-2
 `
 
+const Separator = tw.hr`
+  mx-auto
+  my-2
+  border-gray-300
+  dark:border-gray-800
+  w-3/4
+`
+
 interface NavItemProps {
-  to: string
   icon?: ReactNode
   label?: string
   className?: string
   style?: CSSProperties
 }
 
-const NavItem: React.FC<NavItemProps> = ({ to, icon = '', label = 'TEST', className = '', style = {} }) => {
+const NavItem: React.FC<NavItemProps & Partial<LinkProps> & AnchorHTMLAttributes<HTMLAnchorElement>> = ({
+  to,
+  icon = '',
+  label = 'TEST',
+  className = '',
+  style = {},
+  ...rest
+}) => {
   const { pathname } = useLocation()
   const { isSmall, leftNavExpanded, setLeftNavExpanded } = useAppNavState()
   const [active, setActive] = useState<boolean>(false)
 
-  useEffect(() => setActive(`/${pathname.split('/')[1]}`.startsWith(to) ?? false), [pathname, to])
+  useEffect(
+    () => setActive(typeof to === 'string' ? `/${pathname.split('/')[1]}`.startsWith(to) : false),
+    [pathname, to],
+  )
 
   return (
     <>
       <Item
         data-tip={!leftNavExpanded}
-        data-for={`tooltip-${to.replace('/', '')}`}
+        data-for={`tooltip-${typeof to === 'string' ? to.replace('/', '') : ''}`}
         to={to}
         className={`${className} ${leftNavExpanded ? 'justify-start px-5' : 'justify-center'} ${
           active ? 'bg-gray-100 dark:bg-gray-800 border-indigo-500' : ''
         }`}
         style={style}
         onClick={() => isSmall && setLeftNavExpanded(false)}
+        {...rest}
       >
         <span className={`${active ? 'opacity-100' : 'opacity-40'}`}>{icon}</span>
         {leftNavExpanded && <ItemLabel>{label}</ItemLabel>}
@@ -101,7 +121,7 @@ const LeftNav: React.FC = () => {
     <Outer className={`${leftNavExpanded ? 'border-r' : 'border-r-0'}`}>
       <Inner>
         <NavItem to="/launches" icon={<FontAwesomeIcon icon={faRocket} fixedWidth />} label="Launches" />
-        <hr className="mx-auto my-2 border-gray-300 dark:border-gray-800 w-3/4" />
+        <Separator />
         <NavItem to="/locker/2" icon={<FontAwesomeIcon icon={faLock} fixedWidth />} label="Locker" />
         <NavItem to="/bridge" icon={<FontAwesomeIcon icon={faExchangeAlt} fixedWidth />} label="Bridge" />
         <NavItem to="/staking" icon={<FontAwesomeIcon icon={faPiggyBank} fixedWidth />} label="Staking" />
@@ -111,8 +131,13 @@ const LeftNav: React.FC = () => {
         {chainId === 97 && (
           <NavItem to="/faucet" icon={<FontAwesomeIcon icon={faFaucet} fixedWidth />} label="Faucet" />
         )}
-        <hr className="mx-auto my-2 border-gray-300 dark:border-gray-800 w-3/4" />
+        <Separator />
         <NavItem to="/stats" icon={<FontAwesomeIcon icon={faChartLine} fixedWidth />} label="Stats" />
+        <NavItem
+          href="https://onlymoons.gitbook.io/"
+          icon={<FontAwesomeIcon icon={faBook} fixedWidth />}
+          label="Documentation"
+        />
       </Inner>
     </Outer>
   )

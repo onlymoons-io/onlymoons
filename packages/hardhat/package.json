@@ -1,6 +1,6 @@
 {
   "name": "@onlymoons-io/hardhat",
-  "version": "0.0.19",
+  "version": "0.0.24",
   "main": "index.js",
   "license": "GPL-3.0+",
   "author": "OnlyMoons <admin@onlymoons.io>",
