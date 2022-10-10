@@ -19,7 +19,7 @@
 pragma solidity ^0.8.0;
 
 import { ITokenLockerUniV2 } from "./ITokenLockerUniV2.sol";
-import { TokenLockerManagerV2, LockData } from "./TokenLockerManagerV2.sol";
+import { TokenLockerManagerV2 } from "./TokenLockerManagerV2.sol";
 import { TokenLockerLPV2 } from "./TokenLockerLPV2.sol";
 import { TokenLockerERC20V2 } from "./TokenLockerERC20V2.sol";
 import { IERC20 } from "../library/IERC20.sol";
@@ -166,6 +166,7 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2, TokenLockerERC2
   ) {
     // hardcode this to true to remain compatibility with v1
     hasLpData = true;
+    // pass-through, don't like this, but w/e
     id = id_;
     (
       token0,
@@ -173,7 +174,9 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2, TokenLockerERC2
       balance0,
       balance1,,
     ) = Util.getLpData(_locks[id_].tokenAddress);
+
     // price0 and price1 are deprecated and not used.
+    // maintain interface compatibility
     price0 = 0;
     price1 = 0;
   }
@@ -182,7 +185,7 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2, TokenLockerERC2
     uint40 id_,
     address oldRouterAddress_,
     address newRouterAddress_
-  ) external virtual override onlyLockOwner(id_) nonReentrant {
+  ) external virtual override onlyLockOwner(id_) takeFee("MigrateLock") nonReentrant {
     require(_allowedRouters[newRouterAddress_], "INVALID_ROUTER");
 
     IUniswapV2Pair oldPair = IUniswapV2Pair(_locks[id_].tokenAddress);
@@ -245,6 +248,12 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2, TokenLockerERC2
       oldPair.token1()
     );
     _locks[id_].amountOrTokenId = newTokenAmount;
+
+    emit MigratedDex(
+      id_,
+      oldRouterAddress_,
+      newRouterAddress_
+    );
   }
 
   function splitLock(

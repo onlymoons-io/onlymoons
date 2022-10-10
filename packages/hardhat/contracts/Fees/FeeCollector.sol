@@ -33,10 +33,26 @@ abstract contract FeeCollector is IFeeCollector, OwnableV2 {
     _;
   }
 
+  modifier takeFees(string[] memory feeTypes) {
+    _takeFees(feeTypes);
+    _;
+  }
+
   function _takeFee(string memory feeType) internal {
-    require(_fees.getFeeAmountForType(feeType) == msg.value, "Incorrect fee");
+    require(_fees.getFeeAmountForType(feeType) == msg.value, "INCORRECT_FEE");
     if (!_fees.isAddressExemptFromFees(_msgSender()))
       payable(address(_fees)).sendValue(msg.value);
+  }
+
+  function _takeFees(string[] memory feeTypes) internal {
+    uint256 totalFees = 0;
+    for (uint256 i = 0; i < feeTypes.length; i++) {
+      totalFees += _fees.getFeeAmountForType(feeTypes[i]);
+    }
+    require(totalFees == msg.value, "INCORRECT_FEE");
+    if (!_fees.isAddressExemptFromFees(_msgSender())) {
+      payable(address(_fees)).sendValue(msg.value);
+    }
   }
 
   function feesContract() external view override returns (address) {

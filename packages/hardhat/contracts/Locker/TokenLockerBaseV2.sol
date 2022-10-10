@@ -32,7 +32,9 @@ abstract contract TokenLockerBaseV2 is ITokenLockerBaseV2, FeeCollector, Reentra
   }
 
   /** @dev override this */
-  function _isLockOwner(uint40 id_) internal virtual view returns (bool) {}
+  function _isLockOwner(uint40 /* id_ */) internal virtual view returns (bool) {
+    return false;
+  }
 
   function _setSocials(
     uint40 id_,
@@ -57,7 +59,7 @@ abstract contract TokenLockerBaseV2 is ITokenLockerBaseV2, FeeCollector, Reentra
   function getUrlForSocialKey(
     uint40 id_,
     string calldata key_
-  ) external virtual override onlyLockOwner(id_) view returns (
+  ) external virtual override view returns (
     string memory
   ){
     return _socials[id_][key_];
@@ -75,5 +77,27 @@ abstract contract TokenLockerBaseV2 is ITokenLockerBaseV2, FeeCollector, Reentra
     uint40 newUnlockTime_
   ) external virtual override onlyLockOwner(id_) nonReentrant {
     _deposit(id_, amountOrTokenId_, newUnlockTime_);
+  }
+
+  /** @dev override this */
+  function _startUnlockCountdown(uint40 id_) internal virtual {}
+
+  function startUnlockCountdown(
+    uint40 id_
+  ) external virtual override onlyLockOwner(id_) {
+    _startUnlockCountdown(id_);
+  }
+
+  /** @dev override this */
+  function _transferLockOwnership(
+    uint40 id_,
+    address newOwner_
+  ) internal virtual {}
+
+  function transferLockOwnership(
+    uint40 id_,
+    address newOwner_
+  ) external virtual override onlyLockOwner(id_) {
+    _transferLockOwnership(id_, newOwner_);
   }
 }

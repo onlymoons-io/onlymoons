@@ -39,11 +39,12 @@ contract Fees is IFees, Governable, Pausable {
     // !!! setup some fee type presets
 
     // note this covers all staking contracts.
-    _feeTypeAmountMap["DeployStaking"] = 500;
+    _feeTypeAmountMap["DeployStaking"] = 300;
     _feeTypeAmountMap["DeployToken"] = 200;
     _feeTypeAmountMap["CreateTokenLock"] = 200;
     _feeTypeAmountMap["CreateInfiniteLock"] = 100;
     _feeTypeAmountMap["SplitLock"] = 100;
+    _feeTypeAmountMap["MigrateLock"] = 100;
   }
 
   address payable internal _treasuryFeeAddress;

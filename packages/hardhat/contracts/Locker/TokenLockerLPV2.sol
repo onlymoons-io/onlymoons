@@ -27,7 +27,9 @@ import { IERC20 } from "../library/IERC20.sol";
 
 
 abstract contract TokenLockerLPV2 is ITokenLockerLPV2, TokenLockerManagerV2, TokenLockerBaseV2 {
-  function startUnlockCountdown(uint40 id_) external virtual onlyLockOwner(id_) {
+  function _startUnlockCountdown(uint40 id_) internal virtual override {
+    require(_locks[id_].useUnlockCountdown, "NOT_INFINITE_LOCK");
+
     _locks[id_].unlockTime = uint40(block.timestamp) + _countdownDuration;
 
     emit TokenLockerCountdownStarted(
@@ -40,26 +42,10 @@ abstract contract TokenLockerLPV2 is ITokenLockerLPV2, TokenLockerManagerV2, Tok
     return _locks[id_].owner == _msgSender();
   }
 
-  function withdraw() external virtual override {
-    revert("NOT_IMPLEMENTED");
-  }
-
-  function notifyLockerOwnerChange(
-    uint40 /* id_ */,
-    address /* newOwner_ */,
-    address /* previousOwner_ */,
-    address /* createdBy_ */
-  ) external virtual override(
-    ITokenLockerManagerV1,
-    TokenLockerManagerV2
-  ){
-    revert("NOT_IMPLEMENTED");
-  }
-
   function _transferLockOwnership(
     uint40 id_,
     address newOwner_
-  ) internal virtual {
+  ) internal virtual override {
     address oldOwner = _locks[id_].owner;
     _locks[id_].owner = newOwner_;
 
@@ -75,16 +61,6 @@ abstract contract TokenLockerLPV2 is ITokenLockerLPV2, TokenLockerManagerV2, Tok
       oldOwner,
       newOwner_
     );
-  }
-
-  function transferLockOwnership(
-    uint40 id_,
-    address newOwner_
-  ) external virtual override(
-    ITokenLockerManagerV2,
-    TokenLockerManagerV2
-  ){
-    _transferLockOwnership(id_, newOwner_);
   }
 
   function getTokenLockData(
@@ -111,5 +87,23 @@ abstract contract TokenLockerLPV2 is ITokenLockerLPV2, TokenLockerManagerV2, Tok
     unlockTime = _locks[id_].unlockTime;
     balance = _locks[id_].amountOrTokenId;
     totalSupply = IERC20(token).totalSupply();
+  }
+
+  /** @dev required to maintain compatibility with v1 interfaces. use `withdrawById` instead */
+  function withdraw() external virtual override {
+    revert("NOT_IMPLEMENTED");
+  }
+
+  /** @dev required to maintain compatibility with v1 interfaces */
+  function notifyLockerOwnerChange(
+    uint40 /* id_ */,
+    address /* newOwner_ */,
+    address /* previousOwner_ */,
+    address /* createdBy_ */
+  ) external virtual override(
+    ITokenLockerManagerV1,
+    TokenLockerManagerV2
+  ){
+    revert("NOT_IMPLEMENTED");
   }
 }

@@ -19,7 +19,7 @@
 pragma solidity ^0.8.0;
 
 import { ITokenLockerUniV3 } from "./ITokenLockerUniV3.sol";
-import { TokenLockerManagerV2, LockData } from "./TokenLockerManagerV2.sol";
+import { TokenLockerManagerV2 } from "./TokenLockerManagerV2.sol";
 import { TokenLockerLPV2 } from "./TokenLockerLPV2.sol";
 import { TokenLockerERC721V2 } from "./TokenLockerERC721V2.sol";
 import { IERC20 } from "../library/IERC20.sol";
@@ -160,19 +160,10 @@ contract TokenLockerUniV3 is ITokenLockerUniV3, TokenLockerLPV2, TokenLockerERC7
     uint256 price0,
     uint256 price1
   ) {
+    // hardcode this to true to remain compatibility with v1
     hasLpData = true;
     // pass-through, don't like this, but w/e
     id = id_;
-
-    // address token0,
-    // address token1,
-    // uint24 fee,
-    // uint256 balance0,
-    // uint256 balance1,
-    // uint128 liquidity,
-    // address pool,
-    // uint256 tokensOwed0,
-    // uint256 tokensOwed1
 
     (
       token0,
@@ -184,7 +175,8 @@ contract TokenLockerUniV3 is ITokenLockerUniV3, TokenLockerLPV2, TokenLockerERC7
       _locks[id_].amountOrTokenId
     );
 
-    // deprecated, but here to maintain interface compatibility
+    // price0 and price1 are deprecated and not used.
+    // maintain interface compatibility
     price0 = 0;
     price1 = 0;
   }
@@ -211,13 +203,9 @@ contract TokenLockerUniV3 is ITokenLockerUniV3, TokenLockerLPV2, TokenLockerERC7
       _locks[id_].tokenAddress
     ).collect(
       INonfungiblePositionManager.CollectParams({
-        // uint256 tokenId;
         tokenId: _locks[id_].amountOrTokenId,
-        // address recipient;
         recipient: _locks[id_].owner,
-        // uint128 amount0Max;
         amount0Max: type(uint128).max,
-        // uint128 amount1Max;
         amount1Max: type(uint128).max
       })
     );

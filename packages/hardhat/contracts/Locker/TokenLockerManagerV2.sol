@@ -135,45 +135,6 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
     return _getTokenLockAddress(id_);
   }
 
-  function getTokenLockData(uint40 id_) external virtual override view returns (
-    bool isLpToken,
-    uint40 id,
-    address contractAddress,
-    address lockOwner,
-    address token,
-    address createdBy,
-    uint40 createdAt,
-    uint40 unlockTime,
-    uint256 balance,
-    uint256 totalSupply
-  ) {
-
-  }
-
-  // note this only works with univ2 lp, univ3 needs override
-  function getLpData(uint40 id_) external virtual override view returns (
-    bool hasLpData,
-    uint40 id,
-    address token0,
-    address token1,
-    uint256 balance0,
-    uint256 balance1,
-    uint256 price0,
-    uint256 price1
-  ) {
-    // id = id_;
-    // hasLpData = Util.isLpToken(_locks[id_].tokenAddress);
-
-    // (
-    //   token0,
-    //   token1,
-    //   balance0,
-    //   balance1,
-    //   price0,
-    //   price1
-    // ) = Util.getLpData(_locks[id_].tokenAddress);
-  }
-
   function getTokenLockersForAddress(
     address address_
   ) external virtual override view returns (
@@ -182,24 +143,50 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
     return _tokenLockersForAddress[address_];
   }
 
-  function notifyLockerOwnerChange(
-    uint40 id_,
-    address newOwner_,
-    address previousOwner_,
-    address createdBy_
-  ) external virtual override {
-
-  }
-
-  /** @dev for overriding */
-  function transferLockOwnership(uint40 id_, address newOwner_) external virtual {
-    //
-  }
-
   function setAllowedRouterAddress(
     address routerAddress_,
     bool allowed_
   ) external virtual override onlyGovernor {
     _allowedRouters[routerAddress_] = allowed_;
+  }
+
+  /** @dev override this if needed */
+  function getTokenLockData(uint40 /* id_ */) external virtual override view returns (
+    bool /* isLpToken */,
+    uint40 /* id */,
+    address /* contractAddress */,
+    address /* lockOwner */,
+    address /* token */,
+    address /* createdBy */,
+    uint40 /* createdAt */,
+    uint40 /* unlockTime */,
+    uint256 /* balance */,
+    uint256 /* totalSupply */
+  ) {
+    revert("NOT_IMPLEMENTED");
+  }
+
+  /** @dev override this if needed */
+  function getLpData(uint40 /* id_ */) external virtual override view returns (
+    bool /* hasLpData */,
+    uint40 /* id */,
+    address /* token0 */,
+    address /* token1 */,
+    uint256 /* balance0 */,
+    uint256 /* balance1 */,
+    uint256 /* price0 */,
+    uint256 /* price1 */
+  ) {
+    revert("NOT_IMPLEMENTED");
+  }
+
+  /** @dev override this if needed */
+  function notifyLockerOwnerChange(
+    uint40 /* id_ */,
+    address /* newOwner_ */,
+    address /* previousOwner_ */,
+    address /* createdBy_ */
+  ) external virtual override {
+    revert("NOT_IMPLEMENTED");
   }
 }
