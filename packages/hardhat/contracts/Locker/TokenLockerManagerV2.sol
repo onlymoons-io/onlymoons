@@ -48,8 +48,6 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
 
   mapping(uint40 => address) internal _lockAddresses;
 
-  mapping(address => bool) internal _allowedRouters;
-
   /** @dev id => lock data */
   mapping(uint40 => LockData) internal _locks;
 
@@ -141,13 +139,6 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
     uint40[] memory
   ) {
     return _tokenLockersForAddress[address_];
-  }
-
-  function setAllowedRouterAddress(
-    address routerAddress_,
-    bool allowed_
-  ) external virtual override onlyGovernor {
-    _allowedRouters[routerAddress_] = allowed_;
   }
 
   /** @dev override this if needed */

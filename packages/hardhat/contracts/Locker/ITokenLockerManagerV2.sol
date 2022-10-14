@@ -65,9 +65,4 @@ interface ITokenLockerManagerV2 is ITokenLockerManagerV1, IGovernable, IPausable
     uint40 id,
     address lockAddress
   );
-
-  function setAllowedRouterAddress(
-    address routerAddress_,
-    bool allowed_
-  ) external;
 }

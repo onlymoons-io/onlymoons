@@ -25,9 +25,10 @@ import { TokenLockerERC20V2 } from "./TokenLockerERC20V2.sol";
 import { IERC20 } from "../library/IERC20.sol";
 import { IUniswapV2Pair, IUniswapV2Router02, IUniswapV2Factory } from "../library/Dex.sol";
 import { SafeERC20 } from "../library/SafeERC20.sol";
+import { AllowedDexes } from "../common/AllowedDexes.sol";
 import { Util } from "../Util.sol";
 
-contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2, TokenLockerERC20V2 {
+contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2, TokenLockerERC20V2, AllowedDexes {
   using SafeERC20 for IERC20;
 
   constructor(address feesAddress_) TokenLockerManagerV2(feesAddress_) {}
@@ -186,7 +187,10 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2, TokenLockerERC2
     address oldRouterAddress_,
     address newRouterAddress_
   ) external virtual override onlyLockOwner(id_) takeFee("MigrateLock") nonReentrant {
-    require(_allowedRouters[newRouterAddress_], "INVALID_ROUTER");
+    require(
+      _allowedDexes[_allowedDexesByRouter[newRouterAddress_]].allowed,
+      "INVALID_ROUTER"
+    );
 
     IUniswapV2Pair oldPair = IUniswapV2Pair(_locks[id_].tokenAddress);
 
@@ -302,5 +306,13 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2, TokenLockerERC2
       amount_,
       _locks[id].unlockTime
     );
+  }
+
+  function updateAllowedDex(
+    address router_,
+    string calldata name_,
+    bool allowed_
+  ) external virtual override onlyGovernor {
+    _updateAllowedDex(router_, name_, allowed_);
   }
 }

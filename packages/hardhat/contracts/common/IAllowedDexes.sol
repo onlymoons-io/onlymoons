@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: GPL-3.0+
 
 /**
   /$$$$$$            /$$           /$$      /$$                                        
@@ -18,20 +18,25 @@
 
 pragma solidity ^0.8.0;
 
-import { ITokenLockerLPV2 } from "./ITokenLockerLPV2.sol";
-import { ITokenLockerERC20V2 } from "./ITokenLockerERC20V2.sol";
-import { IAllowedDexes } from "../common/IAllowedDexes.sol";
+interface IAllowedDexes {
+  /** @dev implementations need to implement this */
+  function updateAllowedDex(
+    address router_,
+    string calldata name_,
+    bool allowed_
+  ) external;
 
-interface ITokenLockerUniV2 is ITokenLockerLPV2, ITokenLockerERC20V2, IAllowedDexes {
-  event MigratedDex(
-    uint40 indexed id,
-    address indexed oldRouter,
-    address indexed newRouter
+  function allowedDexCount() external view returns (uint16);
+
+  function getDexDataById(
+    uint16 id_
+  ) external view returns (
+    address router,
+    bool allowed,
+    string memory name
   );
 
-  function migrate(
-    uint40 id_,
-    address oldRouterAddress_,
-    address newRouterAddress_
-  ) external;
+  function getDexIdByRouter(
+    address router_
+  ) external view returns (uint16);
 }

@@ -74,51 +74,51 @@ contract Fees is IFees, Governable, Pausable {
   /**
    * @return 0 if the msg sender is exempt from fees.
    */
-  function getFeeAmountForType(string calldata feeType) external view override returns (uint256) {
+  function getFeeAmountForType(string calldata feeType) external virtual override view returns (uint256) {
     return _exemptFromFees[_msgSender()] ? 0 : _feeAmountBase * _feeTypeAmountMap[feeType];
   }
 
-  function setFeeAmountForType(string calldata feeType, uint256 amount) external override onlyGovernor {
+  function setFeeAmountForType(string calldata feeType, uint256 amount) external virtual override onlyGovernor {
     _feeTypeAmountMap[feeType] = amount;
   }
 
-  function setAddressExemptFromFees(address account, bool value) external override onlyOwner {
+  function setAddressExemptFromFees(address account, bool value) external virtual override onlyOwner {
     _exemptFromFees[account] = value;
   }
 
-  function isAddressExemptFromFees(address account) external view override returns (bool) {
+  function isAddressExemptFromFees(address account) external virtual override view returns (bool) {
     return _exemptFromFees[account];
   }
 
-  function feesDistributed() external view override returns (uint256 total, uint256 treasury, uint256 staking) {
+  function feesDistributed() external virtual override view returns (uint256 total, uint256 treasury, uint256 staking) {
     treasury = _treasuryFeesDistributed;
     staking = _stakingFeesDistributed;
     total = _treasuryFeesDistributed + _stakingFeesDistributed;
   }
 
-  function treasuryFeeAddress() external view override returns (address) {
+  function treasuryFeeAddress() external virtual override view returns (address) {
     return _treasuryFeeAddress;
   }
 
-  function setTreasuryFeeAddress(address payable value) external override onlyOwner {
+  function setTreasuryFeeAddress(address payable value) external virtual override onlyOwner {
     _treasuryFeeAddress = value;
   }
 
-  function stakingFeeAddress() external view override returns (address) {
+  function stakingFeeAddress() external virtual override view returns (address) {
     return _stakingFeeAddress;
   }
 
-  function setStakingFeeAddress(address payable value) external override onlyOwner {
+  function setStakingFeeAddress(address payable value) external virtual override onlyOwner {
     _stakingFeeAddress = value;
   }
 
-  function getFees() external view override returns (uint16 treasury, uint16 staking) {
+  function getFees() external virtual override view returns (uint16 treasury, uint16 staking) {
     treasury = _treasuryFee;
     staking = _stakingFee;
   }
 
   /** 0-10000 - 2 decimals of precision. all fees should add up to 10000 (100.00%) */
-  function setFees(uint16 treasury, uint16 staking) external override onlyGovernor {
+  function setFees(uint16 treasury, uint16 staking) external virtual override onlyGovernor {
     require(treasury + staking == 10000, "Total fees must equal 10000");
 
     _treasuryFee = treasury;

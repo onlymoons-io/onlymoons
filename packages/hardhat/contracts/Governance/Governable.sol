@@ -34,11 +34,11 @@ abstract contract Governable is IGovernable, OwnableV2 {
 
   address internal _governor_;
 
-  function _governor() internal view returns (address) {
+  function _governor() internal virtual view returns (address) {
     return _governor_;
   }
 
-  function governor() external view override returns (address) {
+  function governor() external virtual override view returns (address) {
     return _governor();
   }
 
@@ -57,14 +57,14 @@ abstract contract Governable is IGovernable, OwnableV2 {
     // keep track of old owner for event
     address oldGovernor = _governor();
 
-    // set the new owner
+    // set the new governor
     _governor_ = newGovernor;
 
     // emit event about ownership change
     emit GovernorshipTransferred(oldGovernor, _governor());
   }
 
-  function transferGovernorship(address newGovernor) external override onlyOwner {
+  function transferGovernorship(address newGovernor) external virtual override onlyOwner {
     _transferGovernorship(newGovernor);
   }
 }
