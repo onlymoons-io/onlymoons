@@ -47,11 +47,10 @@ abstract contract Governable is IGovernable, OwnableV2 {
     _;
   }
 
-  // not currently used - but here it is in case we want this
-  // modifier onlyOwnerOrGovernor() {
-  //   require(_owner() == _msgSender() || _governor() == _msgSender(), "Only the owner or governor can execute this function");
-  //   _;
-  // }
+  modifier onlyOwnerOrGovernor() {
+    require(_owner() == _msgSender() || _governor() == _msgSender(), "Only the owner or governor can execute this function");
+    _;
+  }
 
   function _transferGovernorship(address newGovernor) internal virtual {
     // keep track of old owner for event

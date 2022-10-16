@@ -28,13 +28,11 @@ abstract contract FeeCollector is IFeeCollector, OwnableV2 {
 
   IFees internal _fees;
 
+  /**
+   * convenience method for taking a single fee
+   */
   modifier takeFee(string memory feeType) {
     _takeFee(feeType);
-    _;
-  }
-
-  modifier takeFees(string[] memory feeTypes) {
-    _takeFees(feeTypes);
     _;
   }
 

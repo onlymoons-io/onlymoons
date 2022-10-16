@@ -264,7 +264,7 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2, TokenLockerERC2
     uint40 id_,
     uint256 amount_,
     address newOwner_
-  ) external payable virtual override onlyLockOwner(id_) takeFee("SplitLock") returns (
+  ) external payable virtual override onlyLockOwner(id_) takeFee("SplitLock") nonReentrant returns (
     uint40 id
   ) {
     require(amount_ <= _locks[id_].amountOrTokenId, "INSUFFICIENT_TOKENS");
@@ -312,7 +312,7 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2, TokenLockerERC2
     address router_,
     string calldata name_,
     bool allowed_
-  ) external virtual override onlyGovernor {
+  ) external virtual override onlyOwnerOrGovernor {
     _updateAllowedDex(router_, name_, allowed_);
   }
 }
