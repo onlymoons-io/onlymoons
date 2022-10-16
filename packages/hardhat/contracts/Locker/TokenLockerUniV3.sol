@@ -99,7 +99,7 @@ contract TokenLockerUniV3 is ITokenLockerUniV3, TokenLockerLPV2, TokenLockerERC7
     );
 
     if (_locks[id_].useUnlockCountdown) {
-      _locks[id_].unlockTime = UNLOCK_MAX;
+      _locks[id_].unlockTime = type(uint40).max;
     } else {
       require(
         newUnlockTime_ >= _locks[id_].unlockTime && newUnlockTime_ > uint40(block.timestamp),

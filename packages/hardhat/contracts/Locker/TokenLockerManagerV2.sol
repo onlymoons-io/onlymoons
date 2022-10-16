@@ -44,7 +44,6 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
   }
 
   uint40 internal _countdownDuration = 1 weeks;
-  uint40 public constant UNLOCK_MAX = type(uint40).max;
 
   mapping(uint40 => address) internal _lockAddresses;
 

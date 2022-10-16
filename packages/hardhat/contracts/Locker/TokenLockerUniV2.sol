@@ -92,7 +92,7 @@ contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2, TokenLockerERC2
   ) internal virtual override {
     if (_locks[id_].useUnlockCountdown) {
       // reset countdown on deposit
-      _locks[id_].unlockTime = UNLOCK_MAX;
+      _locks[id_].unlockTime = type(uint40).max;
     } else {
       require(
         newUnlockTime_ >= _locks[id_].unlockTime && newUnlockTime_ > uint40(block.timestamp),
