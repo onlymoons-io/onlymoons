@@ -87,7 +87,7 @@ describe("TokenLockerV1.sol", () => {
   });
 
   it("Should deposit and extend lock duration", async () => {
-    const newUnlockTime = parseInt(Date.now() / 1000 + 60 * 60);
+    const newUnlockTime = parseInt(Date.now() / 1000 + 60 * 60, 10);
 
     await erc20.approve(tokenLockerV1Contract.address, 1);
     await tokenLockerV1Contract.deposit(1, newUnlockTime);

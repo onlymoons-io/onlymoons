@@ -8,7 +8,7 @@ use(solidity);
 describe("FundraisingManager.sol", () => {
   let fundraisingManagerContract;
   let fundraisingFactoryContract;
-  let endsAtTime = BigNumber.from(Math.floor(Date.now() / 1000 + 20));
+  const endsAtTime = BigNumber.from(Math.floor(Date.now() / 1000 + 20));
 
   it("Should deploy FundraisingManager", async () => {
     const FundraisingManagerContract = await ethers.getContractFactory(
