@@ -75,6 +75,10 @@ contract Fees is IFees, Governable, Pausable {
    * @return 0 if the msg sender is exempt from fees.
    */
   function getFeeAmountForType(string calldata feeType) external virtual override view returns (uint256) {
+    return _exemptFromFees[_msgSender()] ? 0 : _feeTypeAmountMap[feeType];
+  }
+
+  function getAdjustedFeeAmountForType(string calldata feeType) external virtual override view returns (uint256) {
     return _exemptFromFees[_msgSender()] ? 0 : _feeAmountBase * _feeTypeAmountMap[feeType];
   }
 

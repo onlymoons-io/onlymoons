@@ -42,6 +42,9 @@ abstract contract TokenLockerLPV2 is ITokenLockerLPV2, TokenLockerManagerV2, Tok
     return _locks[id_].owner == _msgSender();
   }
 
+  /**
+   * overrides function from TokenLockerBaseV2
+   */
   function _transferLockOwnership(
     uint40 id_,
     address newOwner_

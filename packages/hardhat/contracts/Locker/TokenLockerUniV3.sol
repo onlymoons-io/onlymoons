@@ -73,6 +73,7 @@ contract TokenLockerUniV3 is ITokenLockerUniV3, TokenLockerLPV2, TokenLockerERC7
 
     // build search index
     _tokenLockersForAddress[_msgSender()].push(id);
+    _tokenLockersForAddressLookup[_msgSender()][id] = true;
     _tokenLockersForAddress[tokenAddress_].push(id);
     _tokenLockersForAddress[token0].push(id);
     _tokenLockersForAddress[token1].push(id);
