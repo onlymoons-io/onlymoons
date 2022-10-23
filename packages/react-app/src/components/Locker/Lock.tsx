@@ -680,6 +680,30 @@ const Lock: React.FC<LockProps> = ({ lockId, lockType = 1 }) => {
                         }
                       />
 
+                      {/* {lockType === 3 && (
+                        <Detail
+                          label="Unclaimed fees"
+                          value={
+                            <>
+                              <div>
+                                {formatUnits(
+                                  lpLockData?.tokensOwed0 ?? BigNumber.from(0),
+                                  lpToken0Data?.decimals ?? 18,
+                                )}{' '}
+                                {lpToken0Data?.symbol}
+                              </div>
+                              <div>
+                                {formatUnits(
+                                  lpLockData?.tokensOwed1 ?? BigNumber.from(0),
+                                  lpToken1Data?.decimals ?? 18,
+                                )}{' '}
+                                {lpToken1Data?.symbol}
+                              </div>
+                            </>
+                          }
+                        />
+                      )} */}
+
                       <Detail label="Locked at" value={new Date(lockData.createdAt * 1000).toLocaleString()} />
                       <Detail
                         label={lockData.unlockTime > Date.now() / 1000 ? 'Unlocks at' : `Unlocked at`}
@@ -965,6 +989,38 @@ const Lock: React.FC<LockProps> = ({ lockId, lockType = 1 }) => {
                         </section>
                       ))}
 
+                    {lockType === 3 && (
+                      <section className="mt-4 flex items-center">
+                        <PrimaryButton
+                          disabled={collectingFees}
+                          className="w-full"
+                          onClick={async () => {
+                            if (lockContract.collectUniV3Fees) {
+                              setCollectingFees(true)
+
+                              try {
+                                await mounted((await lockContract.collectUniV3Fees(lockData.id)).wait())
+                              } catch (err) {
+                                console.error(err)
+                              }
+
+                              setCollectingFees(false)
+                            } else {
+                              console.error('collectUniV3Fees does not exist')
+                            }
+                          }}
+                        >
+                          {collectingFees ? (
+                            <>
+                              Collecting fees <FontAwesomeIcon icon={faCircleNotch} spin={true} fixedWidth />
+                            </>
+                          ) : (
+                            'Collect fees'
+                          )}
+                        </PrimaryButton>
+                      </section>
+                    )}
+
                     <section className="mt-4 flex items-center">
                       <Input
                         className="flex-grow rounded-r-none"
@@ -1001,36 +1057,6 @@ const Lock: React.FC<LockProps> = ({ lockId, lockType = 1 }) => {
                         Transfer
                       </PrimaryButton>
                     </section>
-
-                    {lockType === 3 && (
-                      <section className="mt-4 flex items-center">
-                        <PrimaryButton
-                          disabled={collectingFees}
-                          className="w-full"
-                          onClick={async () => {
-                            if (lockContract.collect) {
-                              setCollectingFees(true)
-
-                              try {
-                                await mounted((await lockContract.collect(lockData.id)).wait())
-                              } catch (err) {
-                                console.error(err)
-                              }
-
-                              setCollectingFees(false)
-                            }
-                          }}
-                        >
-                          {collectingFees ? (
-                            <>
-                              Collecting fees <FontAwesomeIcon icon={faCircleNotch} spin={true} fixedWidth />
-                            </>
-                          ) : (
-                            'Collect fees'
-                          )}
-                        </PrimaryButton>
-                      </section>
-                    )}
                   </>
                 ) : undefined
               ) : // lockData is not ready

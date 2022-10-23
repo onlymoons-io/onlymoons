@@ -56,6 +56,94 @@ const AddressInput = tw(AddressInputCSS)`
   text-center
 `
 
+interface TokenIdInfoOptions {
+  active?: boolean
+  tokenId: BigNumber
+  contract?: Contract
+  onClick?: () => void
+}
+
+const TokenIdInfo: React.FC<TokenIdInfoOptions> = ({ active = false, tokenId, contract, onClick }) => {
+  const mounted = usePromise()
+  const { getTokenData } = useUtilContract()
+  const [token0, setToken0] = useState<string>()
+  const [token1, setToken1] = useState<string>()
+  const [token0Data, setToken0Data] = useState<TokenData>()
+  const [token1Data, setToken1Data] = useState<TokenData>()
+
+  useEffect(() => {
+    if (!contract || !tokenId) {
+      setToken0(undefined)
+      setToken1(undefined)
+      return
+    }
+
+    mounted<{ token0: string; token1: string }>(contract.positions(tokenId))
+      .then((position) => {
+        setToken0(position.token0)
+        setToken1(position.token1)
+      })
+      .catch((err) => {
+        console.error(err)
+        setToken0(undefined)
+        setToken1(undefined)
+      })
+  }, [mounted, contract, tokenId])
+
+  useEffect(() => {
+    if (!token0 || !getTokenData) {
+      setToken0Data(undefined)
+      return
+    }
+
+    mounted(getTokenData(token0))
+      .then(setToken0Data)
+      .catch((err) => {
+        console.error(err)
+        setToken0Data(undefined)
+      })
+  }, [mounted, token0, getTokenData])
+
+  useEffect(() => {
+    if (!token1 || !getTokenData) {
+      setToken1Data(undefined)
+      return
+    }
+
+    mounted(getTokenData(token1))
+      .then(setToken1Data)
+      .catch((err) => {
+        console.error(err)
+        setToken1Data(undefined)
+      })
+  }, [mounted, token1, getTokenData])
+
+  return (
+    <button
+      className={`w-full p-2 border-2 rounded bg-indigo-500 bg-opacity-10 ${
+        active ? 'border-indigo-500' : 'border-transparent'
+      }`}
+      type="button"
+      onClick={onClick}
+    >
+      {token0Data && token1Data ? (
+        <>
+          <div className="flex items-center justify-center gap-1">
+            <span className="text-xl">{token0Data.symbol}</span>
+            <FontAwesomeIcon className="opacity-30" icon={faExchangeAlt} fixedWidth />
+            <span className="text-xl">{token1Data.symbol}</span>
+          </div>
+        </>
+      ) : (
+        <>
+          <FontAwesomeIcon icon={faCircleNotch} spin={true} fixedWidth />
+        </>
+      )}
+      <div className="italic">#{tokenId.toString()}</div>
+    </button>
+  )
+}
+
 const Create: React.FC = () => {
   const mounted = usePromise()
   const navigate = useNavigate()
@@ -66,8 +154,8 @@ const Create: React.FC = () => {
   const [tokenId, setTokenId] = useState<string>()
   const [loadingTokenData, setLoadingTokenData] = useState<boolean>(false)
   const [tokenData, setTokenData] = useState<TokenData>()
-  const [loadingPositionData, setLoadingPositionData] = useState<boolean>(false)
-  const [amount, setAmount] = useState<string>()
+  // const [loadingPositionData, setLoadingPositionData] = useState<boolean>(false)
+  // const [amount, setAmount] = useState<string>()
   // lock for 90 days by default
   // const [unlockTime, setUnlockTime] = useState<number>(Math.ceil((Date.now() + 1000 * 60 * 60 * 24 * 90) / 1000))
   const [unlockTime, setUnlockTime] = useState<number>()
@@ -75,6 +163,7 @@ const Create: React.FC = () => {
   const [contract, setContract] = useState<Contract>()
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [canSubmit, setCanSubmit] = useState<boolean>(true)
+  const [tokenIds, setTokenIds] = useState<Array<BigNumber>>()
   // const [lpToken, setLpToken] = useState<boolean>(false)
   // const [lpLockData, setLpLockData] = useState<LPLockData>()
   // const [lpToken0Data, setLpToken0Data] = useState<TokenData>()
@@ -83,6 +172,27 @@ const Create: React.FC = () => {
   const isUnlockTimeValid = useCallback(() => {
     return unlockTime ? unlockTime * 1000 > Date.now() : false
   }, [unlockTime])
+
+  const getTokenIds = useCallback(async () => {
+    if (!account || !contract) {
+      setTokenIds(undefined)
+      return
+    }
+
+    const balance = await mounted<BigNumber>(contract.balanceOf(account))
+    const numTokens = balance.toNumber()
+
+    setTokenIds(
+      await Promise.all(
+        new Array(numTokens).fill(null).map((_, index) =>
+          mounted<BigNumber>(
+            //
+            contract.tokenOfOwnerByIndex(account, BigNumber.from(index)),
+          ),
+        ),
+      ),
+    )
+  }, [mounted, account, contract])
 
   const onInputAddress = useCallback((e: React.FormEvent<HTMLInputElement>) => {
     //
@@ -180,6 +290,7 @@ const Create: React.FC = () => {
       setTokenId(undefined)
       setLoadingTokenData(false)
       setTokenData(undefined)
+      setTokenIds(undefined)
       return
     }
 
@@ -196,23 +307,9 @@ const Create: React.FC = () => {
         decimals: 0,
         balance: BigNumber.from(0),
       })
+      getTokenIds()
     })
-  }, [contract])
-
-  useEffect(() => {
-    if (!contract || !tokenId) {
-      setLoadingPositionData(false)
-      return
-    }
-
-    setLoadingPositionData(true)
-
-    Promise.all([contract.positions(tokenId)]).then(([positions]) => {
-      setLoadingPositionData(false)
-      console.log(positions)
-      console.log(formatUnits(positions.liquidity, 18))
-    })
-  }, [contract, tokenId])
+  }, [contract, getTokenIds])
 
   const checkApproval = useCallback(() => {
     //
@@ -351,19 +448,22 @@ const Create: React.FC = () => {
                       <div>({tokenData.symbol})</div>
                     </div>
 
-                    <div>
-                      <Input
-                        type="text"
-                        className="w-full"
-                        name="tokenId"
-                        placeholder="Token ID"
-                        onInput={(e) => {
-                          setTokenId(e.currentTarget.value || undefined)
-                        }}
-                      />
+                    <div className="flex flex-col gap-4 justify-center items-center w-full">
+                      {tokenIds &&
+                        tokenIds.map((_tokenId) => (
+                          <TokenIdInfo
+                            active={tokenId === _tokenId.toString()}
+                            contract={contract}
+                            tokenId={_tokenId}
+                            key={_tokenId.toNumber()}
+                            onClick={() => {
+                              setTokenId(_tokenId.toString())
+                            }}
+                          />
+                        ))}
                     </div>
 
-                    {tokenId && !loadingPositionData && (
+                    {tokenId && (
                       <>
                         <div className="flex bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded items-center">
                           <div className="p-3 shrink-0">Unlock time</div>

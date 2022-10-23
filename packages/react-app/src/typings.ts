@@ -30,10 +30,21 @@ export interface LPData {
   readonly price1?: BigNumber
 }
 
+// address token0,
+//     address token1,
+//     uint24 fee,
+//     uint256 balance0,
+//     uint256 balance1,
+//     uint128 liquidity,
+//     address pool,
+//     uint256 tokensOwed0,
+//     uint256 tokensOwed1
 export interface UniV3LPData extends LPData {
   readonly fee?: number
   readonly liquidity?: BigNumber
   readonly pool?: string
+  readonly tokensOwed0?: BigNumber
+  readonly tokensOwed1?: BigNumber
 }
 
 export interface LPLockData extends UniV3LPData {
