@@ -8,18 +8,18 @@ import { BigNumber, Contract, utils, providers } from 'ethers'
 import { useWeb3React } from '@web3-react/core'
 import { Primary as PrimaryButton } from '../Button'
 import Input from '../Input'
-import { TokenData, LPLockData } from '../../typings'
+import { TokenData /* LPLockData */ } from '../../typings'
 import { useTokenLockerManagerContract } from '../contracts/TokenLockerManager'
 import { useUtilContract } from '../contracts/Util'
 import { NonfungiblePositionManagerABI } from '../../contracts/external_contracts'
 import { timestampToDateTimeLocal, getNetworkDataByChainId } from '../../util'
 import Header from './Header'
-import TokenInput from '../TokenInput'
+// import TokenInput from '../TokenInput'
 import { Outer, MidSection, SectionInner } from '../Layout'
 import { usePromise } from 'react-use'
 
 const { Web3Provider } = providers
-const { isAddress, formatUnits, getAddress } = utils
+const { isAddress /* formatUnits, getAddress */ } = utils
 
 // const Outer = tw.div``
 
@@ -452,7 +452,7 @@ const Create: React.FC = () => {
                       {tokenIds &&
                         tokenIds.map((_tokenId) => (
                           <TokenIdInfo
-                            active={tokenId === _tokenId.toString()}
+                            active={tokenIds.length === 1 || tokenId === _tokenId.toString()}
                             contract={contract}
                             tokenId={_tokenId}
                             key={_tokenId.toNumber()}
