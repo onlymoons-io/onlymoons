@@ -12,14 +12,16 @@ import { TokenData /* LPLockData */ } from '../../typings'
 import { useTokenLockerManagerContract } from '../contracts/TokenLockerManager'
 import { useUtilContract } from '../contracts/Util'
 import { NonfungiblePositionManagerABI } from '../../contracts/external_contracts'
-import { timestampToDateTimeLocal, getNetworkDataByChainId } from '../../util'
+import { timestampToDateTimeLocal, getNetworkDataByChainId, getNativeCoin } from '../../util'
 import Header from './Header'
 // import TokenInput from '../TokenInput'
 import { Outer, MidSection, SectionInner } from '../Layout'
 import { usePromise } from 'react-use'
+import StyledSwitch from '../StyledSwitch'
+import { useFeesContract } from '../contracts/Fees'
 
 const { Web3Provider } = providers
-const { isAddress /* formatUnits, getAddress */ } = utils
+const { isAddress, formatEther /* formatUnits, getAddress */ } = utils
 
 // const Outer = tw.div``
 
@@ -149,6 +151,7 @@ const Create: React.FC = () => {
   const navigate = useNavigate()
   const { account, chainId, connector } = useWeb3React()
   const { address: lockerManagerAddress, createTokenLocker } = useTokenLockerManagerContract()
+  const { getAdjustedFeeAmountForType } = useFeesContract()
   // const { getTokenData, isLpToken, getLpData } = useUtilContract()
   const [positionAddress, setPositionAddress] = useState<string>()
   const [tokenId, setTokenId] = useState<string>()
@@ -164,14 +167,16 @@ const Create: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [canSubmit, setCanSubmit] = useState<boolean>(true)
   const [tokenIds, setTokenIds] = useState<Array<BigNumber>>()
+  const [infiniteLock, setInfiniteLock] = useState<boolean>(false)
+  const [totalFees, setTotalFees] = useState<BigNumber>()
   // const [lpToken, setLpToken] = useState<boolean>(false)
   // const [lpLockData, setLpLockData] = useState<LPLockData>()
   // const [lpToken0Data, setLpToken0Data] = useState<TokenData>()
   // const [lpToken1Data, setLpToken1Data] = useState<TokenData>()
 
   const isUnlockTimeValid = useCallback(() => {
-    return unlockTime ? unlockTime * 1000 > Date.now() : false
-  }, [unlockTime])
+    return infiniteLock ? true : unlockTime ? unlockTime * 1000 > Date.now() : false
+  }, [unlockTime, infiniteLock])
 
   const getTokenIds = useCallback(async () => {
     if (!account || !contract) {
@@ -193,6 +198,12 @@ const Create: React.FC = () => {
       ),
     )
   }, [mounted, account, contract])
+
+  useEffect(() => {
+    if (tokenIds?.length === 1) {
+      setTokenId(tokenIds[0].toString())
+    }
+  }, [tokenIds])
 
   const onInputAddress = useCallback((e: React.FormEvent<HTMLInputElement>) => {
     //
@@ -337,10 +348,15 @@ const Create: React.FC = () => {
       !tokenId ||
       !tokenData ||
       !createTokenLocker ||
-      !unlockTime ||
       !isUnlockTimeValid()
     ) {
       return console.log('not ready') // not ready
+    }
+
+    const _unlockTime = infiniteLock ? 0 : unlockTime ? unlockTime : undefined
+
+    if (typeof _unlockTime === 'undefined') {
+      return console.log('not ready')
     }
 
     setIsSubmitting(true)
@@ -348,7 +364,7 @@ const Create: React.FC = () => {
 
     if (approved) {
       // already approved. make the request
-      mounted(createTokenLocker(tokenData.address, BigNumber.from(tokenId), unlockTime))
+      mounted(createTokenLocker(tokenData.address, BigNumber.from(tokenId), _unlockTime, totalFees))
         .then((id: number) => {
           setCanSubmit(true)
           setIsSubmitting(false)
@@ -388,6 +404,8 @@ const Create: React.FC = () => {
     createTokenLocker,
     navigate,
     isUnlockTimeValid,
+    infiniteLock,
+    totalFees,
   ])
 
   // useEffect(() => {
@@ -403,16 +421,37 @@ const Create: React.FC = () => {
       return 'Select a tokenId'
     }
 
-    if (!unlockTime) {
+    if (!isUnlockTimeValid()) {
       return 'Select an unlock time'
     }
 
-    if (unlockTime * 1000 < Date.now()) {
+    if (unlockTime && unlockTime * 1000 < Date.now()) {
       return 'Unlock time must be in the future'
     }
 
     return approved ? 'Create lock' : 'Approve'
   }
+
+  useEffect(() => {
+    if (!getAdjustedFeeAmountForType) {
+      setTotalFees(BigNumber.from(0))
+      return
+    }
+
+    if (!infiniteLock) {
+      setTotalFees(BigNumber.from(0))
+      return
+    }
+
+    setTotalFees(undefined)
+
+    mounted(getAdjustedFeeAmountForType('CreateInfiniteLock'))
+      .then(setTotalFees)
+      .catch((err) => {
+        console.error(err)
+        setTotalFees(BigNumber.from(0))
+      })
+  }, [mounted, infiniteLock, getAdjustedFeeAmountForType])
 
   return (
     <Outer className="text-gray-800 dark:text-gray-200">
@@ -452,7 +491,7 @@ const Create: React.FC = () => {
                       {tokenIds &&
                         tokenIds.map((_tokenId) => (
                           <TokenIdInfo
-                            active={tokenIds.length === 1 || tokenId === _tokenId.toString()}
+                            active={tokenId === _tokenId.toString()}
                             contract={contract}
                             tokenId={_tokenId}
                             key={_tokenId.toNumber()}
@@ -465,14 +504,44 @@ const Create: React.FC = () => {
 
                     {tokenId && (
                       <>
-                        <div className="flex bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded items-center">
-                          <div className="p-3 shrink-0">Unlock time</div>
-                          <input
-                            type="datetime-local"
-                            className="flex-grow p-3 outline-none bg-white dark:bg-gray-700 rounded-r"
-                            defaultValue={unlockTime ? timestampToDateTimeLocal(unlockTime) : undefined}
-                            onInput={(e) => setUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))}
-                          />
+                        <div className="flex gap-4 items-center justify-center">
+                          <div className="flex flex-col">
+                            <div>Infinite</div>
+                            <StyledSwitch
+                              defaultChecked={infiniteLock}
+                              onCheckedChange={(value) => {
+                                setInfiniteLock(value)
+                              }}
+                            ></StyledSwitch>
+                          </div>
+
+                          <div
+                            className={`grow flex bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded items-center ${
+                              infiniteLock ? 'opacity-40' : ''
+                            }`}
+                          >
+                            <div className="p-3 shrink-0">Unlock time</div>
+                            <input
+                              type="datetime-local"
+                              className="flex-grow p-3 outline-none bg-white dark:bg-gray-700 rounded-r"
+                              defaultValue={unlockTime ? timestampToDateTimeLocal(unlockTime) : undefined}
+                              disabled={infiniteLock}
+                              onInput={(e) =>
+                                setUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))
+                              }
+                            />
+                          </div>
+                        </div>
+
+                        <hr className="border-gray-500 border-opacity-20" />
+
+                        <div>
+                          Fee:{' '}
+                          {totalFees ? (
+                            `${formatEther(totalFees)} ${getNativeCoin(chainId || 0).symbol}`
+                          ) : (
+                            <FontAwesomeIcon icon={faCircleNotch} spin fixedWidth />
+                          )}{' '}
                         </div>
 
                         <PrimaryButton

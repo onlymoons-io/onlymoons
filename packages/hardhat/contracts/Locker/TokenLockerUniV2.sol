@@ -31,7 +31,7 @@ import { Util } from "../Util.sol";
 contract TokenLockerUniV2 is ITokenLockerUniV2, TokenLockerLPV2, TokenLockerERC20V2, AllowedDexes {
   using SafeERC20 for IERC20;
 
-  constructor(address feesAddress_) TokenLockerManagerV2(feesAddress_) {}
+  constructor() TokenLockerManagerV2() {}
 
   function _createTokenLocker(
     address tokenAddress_,

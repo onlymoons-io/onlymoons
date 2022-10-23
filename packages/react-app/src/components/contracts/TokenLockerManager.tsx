@@ -14,7 +14,7 @@ export interface ITokenLockerManagerContractContext {
   countdownDuration?: number
 
   updateTokenLockerCount?: () => Promise<void>
-  createTokenLocker?: (tokenAddress: string, amount: BigNumber, unlockTime: number) => Promise<number>
+  createTokenLocker?: (tokenAddress: string, amount: BigNumber, unlockTime: number, fee?: BigNumber) => Promise<number>
   getTokenLockersForAddress?: (address: string) => Promise<Array<number>>
   getTokenLockData?: (id: number) => Promise<TokenLockData>
   getLpData?: (id: number) => Promise<LPLockData>
@@ -54,7 +54,7 @@ const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerCont
   const eitherChainId = typeof chainId !== 'undefined' ? chainId : chainIdConstant
 
   const createTokenLocker = useCallback(
-    async (tokenAddress: string, amount: BigNumber, unlockTime: number) => {
+    async (tokenAddress: string, amount: BigNumber, unlockTime: number, fee?: BigNumber) => {
       //
       if (!contract) {
         throw new Error('Token locker contract is not loaded')
@@ -64,6 +64,7 @@ const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerCont
         tokenAddress,
         amount,
         unlockTime,
+        fee ? { value: fee } : {},
       )
 
       const result = await tx.wait()

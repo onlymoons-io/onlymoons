@@ -1203,15 +1203,20 @@
   "Fees": {
     "networks": {
       "97": {
-        "0": "0x70dCF027ba5D2bb490C39a6F9054CE25f8208bD1"
+        "0": "0x10aBE61AA8E54148dDAa25429E90C8bdC40ee0f5"
       },
       "80001": {
-        "0": "0xD2904d996492Ffd89014f0b2f322F9bee8B7787c"
+        "0": "0x12205FA67f7e785b12c290Da694f91a75B920415"
       }
     },
     "abi": [
       {
         "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "feeAmountBase_",
+            "type": "uint256"
+          },
           {
             "internalType": "address payable",
             "name": "treasuryFeeAddress_",
@@ -1266,6 +1271,19 @@
       },
       {
         "inputs": [],
+        "name": "feeAmountBase",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
         "name": "feesDistributed",
         "outputs": [
           {
@@ -1281,6 +1299,25 @@
           {
             "internalType": "uint256",
             "name": "staking",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "feeType",
+            "type": "string"
+          }
+        ],
+        "name": "getAdjustedFeeAmountForType",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
             "type": "uint256"
           }
         ],
@@ -1396,6 +1433,19 @@
           }
         ],
         "name": "setAddressExemptFromFees",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "value",
+            "type": "uint256"
+          }
+        ],
+        "name": "setFeeAmountBase",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -4518,10 +4568,10 @@
   "TokenLockerUniV2": {
     "networks": {
       "97": {
-        "0": "0x674bDc67aD1655D9Cf7A8A79F0938427Fcfef020"
+        "0": "0x0CC1A5000efab057bC1f26B7321D72c8fb044A8c"
       },
       "80001": {
-        "0": "0x4Dd0D8Fd737c3974259895bd967BA4234A6E9820"
+        "0": "0x80EB4996239170F24aA90a1340cBb0B4998613ae"
       }
     },
     "abi": [
@@ -4534,7 +4584,7 @@
         "anonymous": false,
         "inputs": [
           {
-            "indexed": false,
+            "indexed": true,
             "internalType": "uint40",
             "name": "id",
             "type": "uint40"
@@ -4553,7 +4603,7 @@
         "anonymous": false,
         "inputs": [
           {
-            "indexed": false,
+            "indexed": true,
             "internalType": "uint40",
             "name": "id",
             "type": "uint40"
@@ -4591,25 +4641,50 @@
         "anonymous": false,
         "inputs": [
           {
-            "indexed": false,
+            "indexed": true,
             "internalType": "uint40",
             "name": "id",
             "type": "uint40"
           },
           {
-            "indexed": false,
+            "indexed": true,
             "internalType": "address",
             "name": "oldOwner",
             "type": "address"
           },
           {
-            "indexed": false,
+            "indexed": true,
             "internalType": "address",
             "name": "newOwner",
             "type": "address"
           }
         ],
         "name": "LockOwnershipTransfered",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint40",
+            "name": "id",
+            "type": "uint40"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "oldRouter",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "newRouter",
+            "type": "address"
+          }
+        ],
+        "name": "MigratedDex",
         "type": "event"
       },
       {
@@ -4629,6 +4704,25 @@
           }
         ],
         "name": "OwnershipTransferred",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint40",
+            "name": "id",
+            "type": "uint40"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint40",
+            "name": "unlockTime",
+            "type": "uint40"
+          }
+        ],
+        "name": "TokenLockerCountdownStarted",
         "type": "event"
       },
       {
@@ -4688,10 +4782,67 @@
             "internalType": "uint40",
             "name": "id",
             "type": "uint40"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amountOrTokenId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "balanceOrTokenId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint40",
+            "name": "unlockTime",
+            "type": "uint40"
+          }
+        ],
+        "name": "TokenLockerDeposit",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint40",
+            "name": "id",
+            "type": "uint40"
+          }
+        ],
+        "name": "TokenLockerWithdrawal",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint40",
+            "name": "id",
+            "type": "uint40"
           }
         ],
         "name": "Withdrew",
         "type": "event"
+      },
+      {
+        "inputs": [],
+        "name": "allowedDexCount",
+        "outputs": [
+          {
+            "internalType": "uint16",
+            "name": "",
+            "type": "uint16"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
       },
       {
         "inputs": [],
@@ -4707,20 +4858,33 @@
         "type": "function"
       },
       {
+        "inputs": [],
+        "name": "countdownDuration",
+        "outputs": [
+          {
+            "internalType": "uint40",
+            "name": "",
+            "type": "uint40"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "inputs": [
           {
             "internalType": "address",
-            "name": "tokenAddress_",
+            "name": "",
             "type": "address"
           },
           {
             "internalType": "uint256",
-            "name": "amount_",
+            "name": "",
             "type": "uint256"
           },
           {
             "internalType": "uint40",
-            "name": "unlockTime_",
+            "name": "",
             "type": "uint40"
           }
         ],
@@ -4760,7 +4924,7 @@
             "type": "address"
           }
         ],
-        "stateMutability": "nonpayable",
+        "stateMutability": "payable",
         "type": "function"
       },
       {
@@ -4777,8 +4941,31 @@
         "type": "function"
       },
       {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amountOrTokenId_",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint40",
+            "name": "newUnlockTime_",
+            "type": "uint40"
+          }
+        ],
+        "name": "deposit",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
         "inputs": [],
-        "name": "factory",
+        "name": "feesContract",
         "outputs": [
           {
             "internalType": "address",
@@ -4786,7 +4973,55 @@
             "type": "address"
           }
         ],
-        "stateMutability": "pure",
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint16",
+            "name": "id_",
+            "type": "uint16"
+          }
+        ],
+        "name": "getDexDataById",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "router",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "allowed",
+            "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "router_",
+            "type": "address"
+          }
+        ],
+        "name": "getDexIdByRouter",
+        "outputs": [
+          {
+            "internalType": "uint16",
+            "name": "",
+            "type": "uint16"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -5062,17 +5297,12 @@
       {
         "inputs": [
           {
-            "internalType": "address",
-            "name": "routerAddress_",
-            "type": "address"
-          },
-          {
-            "internalType": "bool",
-            "name": "allowed_",
-            "type": "bool"
+            "internalType": "uint40",
+            "name": "countdownDuration_",
+            "type": "uint40"
           }
         ],
-        "name": "setAllowedRouterAddress",
+        "name": "setCountdownDuration",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -5094,11 +5324,11 @@
         "inputs": [
           {
             "internalType": "address",
-            "name": "",
+            "name": "contractAddress",
             "type": "address"
           }
         ],
-        "name": "setFactory",
+        "name": "setFeesContract",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -5135,6 +5365,48 @@
           }
         ],
         "name": "setSocials",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount_",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "newOwner_",
+            "type": "address"
+          }
+        ],
+        "name": "splitLock",
+        "outputs": [
+          {
+            "internalType": "uint40",
+            "name": "id",
+            "type": "uint40"
+          }
+        ],
+        "stateMutability": "payable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
+          }
+        ],
+        "name": "startUnlockCountdown",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -5197,6 +5469,29 @@
         "type": "function"
       },
       {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "router_",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "name_",
+            "type": "string"
+          },
+          {
+            "internalType": "bool",
+            "name": "allowed_",
+            "type": "bool"
+          }
+        ],
+        "name": "updateAllowedDex",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "name": "withdraw",
         "outputs": [],
@@ -5218,10 +5513,13 @@
       }
     ]
   },
-  "TokenLockerUniV3": {
+  "UtilV2": {
     "networks": {
+      "97": {
+        "0": "0x7b6bb52F795475EF4FAe63D0f0F3dCb022b649B8"
+      },
       "80001": {
-        "0": "0xdC8F34f54CB12d5D865589f54A047e421D9A90e5"
+        "0": "0xF00845CdF501cAEA08B69cEb183f4c1E5B026685"
       }
     },
     "abi": [
@@ -5229,10 +5527,118 @@
         "inputs": [
           {
             "internalType": "address",
-            "name": "feesAddress_",
+            "name": "address_",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenId_",
+            "type": "uint256"
+          }
+        ],
+        "name": "getUniV3LpData",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "token0",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "token1",
+            "type": "address"
+          },
+          {
+            "internalType": "uint24",
+            "name": "fee",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance0",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance1",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint128",
+            "name": "liquidity",
+            "type": "uint128"
+          },
+          {
+            "internalType": "address",
+            "name": "pool",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokensOwed0",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokensOwed1",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "address_",
             "type": "address"
           }
         ],
+        "name": "isERC721",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "address_",
+            "type": "address"
+          }
+        ],
+        "name": "isUniV3Lp",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ]
+  },
+  "TokenLockerUniV3": {
+    "networks": {
+      "97": {
+        "0": "0x9Cca31237246e6e9E74CdA0FD13cA31d52912087"
+      },
+      "80001": {
+        "0": "0xfe60E7F8cF5416Bf09AC066A082a6a30336F7a13"
+      }
+    },
+    "abi": [
+      {
+        "inputs": [],
         "stateMutability": "nonpayable",
         "type": "constructor"
       },
@@ -5461,19 +5867,6 @@
         ],
         "name": "Withdrew",
         "type": "event"
-      },
-      {
-        "inputs": [],
-        "name": "UNLOCK_MAX",
-        "outputs": [
-          {
-            "internalType": "uint40",
-            "name": "",
-            "type": "uint40"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
       },
       {
         "inputs": [
@@ -6134,117 +6527,6 @@
         "name": "withdrawById",
         "outputs": [],
         "stateMutability": "nonpayable",
-        "type": "function"
-      }
-    ]
-  },
-  "UtilV2": {
-    "networks": {
-      "80001": {
-        "0": "0xF00845CdF501cAEA08B69cEb183f4c1E5B026685"
-      }
-    },
-    "abi": [
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "address_",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokenId_",
-            "type": "uint256"
-          }
-        ],
-        "name": "getUniV3LpData",
-        "outputs": [
-          {
-            "internalType": "address",
-            "name": "token0",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "token1",
-            "type": "address"
-          },
-          {
-            "internalType": "uint24",
-            "name": "fee",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint256",
-            "name": "balance0",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "balance1",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint128",
-            "name": "liquidity",
-            "type": "uint128"
-          },
-          {
-            "internalType": "address",
-            "name": "pool",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokensOwed0",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokensOwed1",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "address_",
-            "type": "address"
-          }
-        ],
-        "name": "isERC721",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "address_",
-            "type": "address"
-          }
-        ],
-        "name": "isUniV3Lp",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
         "type": "function"
       }
     ]

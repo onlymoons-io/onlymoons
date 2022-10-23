@@ -45,7 +45,7 @@ const Create: React.FC = () => {
   const mounted = usePromise()
   const navigate = useNavigate()
   const { account, chainId } = useWeb3React()
-  const { createStaking, getFeeAmountForType } = useStakingManagerV1Contract()
+  const { createStaking, getAdjustedFeeAmountForType } = useStakingManagerV1Contract()
   const { push: pushNotification } = useNotifications()
   const { getTokenData, getLpData } = useUtilContract()
   const [loadingTokenData, setLoadingTokenData] = useState<boolean>(false)
@@ -188,15 +188,15 @@ const Create: React.FC = () => {
   useEffect(() => {
     setFeeAmount(undefined)
 
-    if (!chainId || !account || !getFeeAmountForType) return
+    if (!chainId || !account || !getAdjustedFeeAmountForType) return
 
-    mounted(getFeeAmountForType('DeployStaking'))
+    mounted(getAdjustedFeeAmountForType('DeployStaking'))
       .then(setFeeAmount)
       .catch((err: Error) => {
         console.error(err)
         setFeeAmount(undefined)
       })
-  }, [mounted, chainId, account, stakingType, getFeeAmountForType])
+  }, [mounted, chainId, account, stakingType, getAdjustedFeeAmountForType])
 
   useEffect(() => {
     setRewardsRate(BigNumber.from(0))

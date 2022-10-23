@@ -31,9 +31,8 @@ contract StakingManagerV1 is IStakingManagerV1, Governable, Pausable, IDCounter,
   using Address for address payable;
 
   /** @dev set the deployer as both owner and governor initially */
-  constructor(address factoryAddress, address feesAddress) Governable(_msgSender(), _msgSender()) {
-    _factory = IStakingFactoryV1(factoryAddress);
-    _setFeesContract(feesAddress);
+  constructor() Governable(_msgSender(), _msgSender()) {
+    //
   }
 
   IStakingFactoryV1 internal _factory;

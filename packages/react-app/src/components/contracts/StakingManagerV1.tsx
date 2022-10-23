@@ -13,7 +13,7 @@ export interface IStakingManagerV1ContractContext {
   globalStakingData?: GlobalStakingData
 
   stakingEnabledOnNetwork?: (chainId?: number) => boolean
-  getFeeAmountForType?: (feeType: string) => Promise<BigNumber>
+  getAdjustedFeeAmountForType?: (feeType: string) => Promise<BigNumber>
   createStaking?: (
     stakingType: number,
     tokenAddress: string,
@@ -46,7 +46,7 @@ const StakingManagerV1ContractContextProvider: React.FC<StakingManagerV1Contract
   children,
 }) => {
   const mounted = usePromise()
-  const { getFeeAmountForType } = useFeesContract()
+  const { getAdjustedFeeAmountForType } = useFeesContract()
   const { getContract } = useContractCache()
   const [contract, setContract] = useState<Contract>()
   const [count, setCount] = useState<number>(0)
@@ -63,14 +63,14 @@ const StakingManagerV1ContractContextProvider: React.FC<StakingManagerV1Contract
 
   const createStaking = useCallback(
     async (stakingType: number, tokenAddress: string, lockDurationDays: number = 0, data: BigNumber[] = []) => {
-      if (!getFeeAmountForType) {
-        throw new Error('getFeeAmountForType is not defined')
+      if (!getAdjustedFeeAmountForType) {
+        throw new Error('getAdjustedFeeAmountForType is not defined')
       }
 
       const result = await mounted<any>(
         (
           await contract?.createStaking(stakingType, tokenAddress, lockDurationDays, data, {
-            value: await getFeeAmountForType('DeployStaking'),
+            value: await getAdjustedFeeAmountForType('DeployStaking'),
           })
         ).wait(),
       )
@@ -79,7 +79,7 @@ const StakingManagerV1ContractContextProvider: React.FC<StakingManagerV1Contract
 
       return createdEvent?.args?.id || 0
     },
-    [mounted, contract, getFeeAmountForType],
+    [mounted, contract, getAdjustedFeeAmountForType],
   )
 
   const getStakingDataByAddress = useCallback(
@@ -145,7 +145,7 @@ const StakingManagerV1ContractContextProvider: React.FC<StakingManagerV1Contract
               count,
               owner,
               stakingEnabledOnNetwork,
-              getFeeAmountForType,
+              getAdjustedFeeAmountForType,
               createStaking,
               getStakingDataByAddress,
               getStakingDataById,

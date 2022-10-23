@@ -8,7 +8,7 @@ export interface IFeesContractContext {
   address?: string
   owner?: string
 
-  getFeeAmountForType?: (feeType: string) => Promise<BigNumber>
+  getAdjustedFeeAmountForType?: (feeType: string) => Promise<BigNumber>
 }
 
 export const FeesContractContext = createContext<IFeesContractContext>({
@@ -31,9 +31,9 @@ const FeesContractContextProvider: React.FC<FeesContractContextProviderProps> = 
   const [contract, setContract] = useState<Contract>()
   const [owner, setOwner] = useState<string>()
 
-  const getFeeAmountForType: (feeType: string) => Promise<BigNumber> = useCallback(
+  const getAdjustedFeeAmountForType: (feeType: string) => Promise<BigNumber> = useCallback(
     async (feeType: string) => {
-      return (await contract?.getFeeAmountForType(feeType)) || BigNumber.from(0)
+      return (await contract?.getAdjustedFeeAmountForType(feeType)) || BigNumber.from(0)
     },
     [contract],
   )
@@ -71,7 +71,7 @@ const FeesContractContextProvider: React.FC<FeesContractContextProviderProps> = 
               contract,
               address: contract.address,
               owner,
-              getFeeAmountForType,
+              getAdjustedFeeAmountForType,
             }
       }
     >

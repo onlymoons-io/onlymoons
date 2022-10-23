@@ -44,6 +44,30 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     true
   );
 
+  await execute(
+    // contract name
+    "StakingManagerV1",
+    // TxOptions
+    {
+      from: deployer,
+      log: true,
+    },
+    "setFactory",
+    stakingFactoryV1.addressw
+  );
+
+  await execute(
+    // contract name
+    "StakingManagerV1",
+    // TxOptions
+    {
+      from: deployer,
+      log: true,
+    },
+    "setFeesContract",
+    fees.address
+  );
+
   /* const stakingV1 = */ await deploy("StakingV1", {
     from: deployer,
     log: true,

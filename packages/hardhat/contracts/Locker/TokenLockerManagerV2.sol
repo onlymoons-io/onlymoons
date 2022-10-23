@@ -39,8 +39,8 @@ struct LockData {
 }
 
 contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, IDCounter, FeeCollector, ReentrancyGuard {
-  constructor(address feesAddress_) Governable(_msgSender(), _msgSender()) {
-    _setFeesContract(feesAddress_);
+  constructor() Governable(_msgSender(), _msgSender()) {
+    //
   }
 
   uint40 internal _countdownDuration = 1 weeks;
