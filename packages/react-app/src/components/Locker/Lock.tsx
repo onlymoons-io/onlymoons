@@ -474,53 +474,50 @@ const Lock: React.FC<LockProps> = ({ lockId, lockType = 1 }) => {
                       </div>
                     </div>
 
-                    <div
-                      className="shrink-0 cursor-default"
-                      style={{ maxWidth: '64px' }}
-                      data-tip={true}
-                      data-for={`lock-status-${lockData.id}`}
+                    <Tooltip
+                      trigger={
+                        <div className="shrink-0 cursor-default" style={{ maxWidth: '64px' }}>
+                          <CircularProgressbar
+                            value={(() => {
+                              //
+                              const duration = lockData.unlockTime - lockData.createdAt
+                              const progress = Math.ceil(Date.now() / 1000) - lockData.createdAt
+
+                              return 100 - (progress / duration) * 100
+                            })()}
+                            styles={
+                              BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) && !isWithdrawn()
+                                ? progressStylesUnlocked
+                                : progressStyles
+                            }
+                            children={
+                              isMaxUnlock() ? (
+                                <>
+                                  <FontAwesomeIcon icon={faInfinity} fixedWidth />
+                                </>
+                              ) : BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) ? (
+                                <FontAwesomeIcon
+                                  className={`text-2xl ${
+                                    isWithdrawn() ? 'text-gray-400' : 'text-gray-700 dark:text-gray-300'
+                                  }`}
+                                  icon={isWithdrawn() ? faCheck : faExclamation}
+                                  fixedWidth
+                                />
+                              ) : (
+                                <span>
+                                  {shortEnglishHumanizer(
+                                    BigNumber.from(lockData.unlockTime)
+                                      .sub(BigNumber.from(Math.ceil(Date.now() / 1000)))
+                                      .mul(1000)
+                                      .toNumber(),
+                                  )}
+                                </span>
+                              )
+                            }
+                          />
+                        </div>
+                      }
                     >
-                      <CircularProgressbar
-                        value={(() => {
-                          //
-                          const duration = lockData.unlockTime - lockData.createdAt
-                          const progress = Math.ceil(Date.now() / 1000) - lockData.createdAt
-
-                          return 100 - (progress / duration) * 100
-                        })()}
-                        styles={
-                          BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) && !isWithdrawn()
-                            ? progressStylesUnlocked
-                            : progressStyles
-                        }
-                        children={
-                          isMaxUnlock() ? (
-                            <>
-                              <FontAwesomeIcon icon={faInfinity} fixedWidth />
-                            </>
-                          ) : BigNumber.from(Math.ceil(Date.now() / 1000)).gte(lockData.unlockTime) ? (
-                            <FontAwesomeIcon
-                              className={`text-2xl ${
-                                isWithdrawn() ? 'text-gray-400' : 'text-gray-700 dark:text-gray-300'
-                              }`}
-                              icon={isWithdrawn() ? faCheck : faExclamation}
-                              fixedWidth
-                            />
-                          ) : (
-                            <span>
-                              {shortEnglishHumanizer(
-                                BigNumber.from(lockData.unlockTime)
-                                  .sub(BigNumber.from(Math.ceil(Date.now() / 1000)))
-                                  .mul(1000)
-                                  .toNumber(),
-                              )}
-                            </span>
-                          )
-                        }
-                      />
-                    </div>
-
-                    <Tooltip id={`lock-status-${lockData.id}`}>
                       {lockData.unlockTime > Date.now() / 1000
                         ? 'Locked'
                         : lockData.balance.gt(0)
@@ -719,50 +716,46 @@ const Lock: React.FC<LockProps> = ({ lockId, lockType = 1 }) => {
 
                     <div className="flex justify-between items-center border-t dark:border-gray-700 pt-2 mt-1">
                       <div className="flex items-center gap-2">
-                        <>
-                          <Button
-                            data-tip={true}
-                            data-for={`more-contract-details-tooltip-${lockData.id}`}
-                            onClick={() => {
-                              lockContract &&
-                                setCurrentModal(
-                                  <ContractDetails
-                                    address={lockContract.address}
-                                    abi={lockContract.interface.format('json') as string}
-                                  />,
-                                )
-                            }}
-                          >
-                            <FontAwesomeIcon icon={faFileCode} fixedWidth />
-                          </Button>
+                        <Tooltip
+                          trigger={
+                            <Button
+                              onClick={() => {
+                                lockContract &&
+                                  setCurrentModal(
+                                    <ContractDetails
+                                      address={lockContract.address}
+                                      abi={lockContract.interface.format('json') as string}
+                                    />,
+                                  )
+                              }}
+                            >
+                              <FontAwesomeIcon icon={faFileCode} fixedWidth />
+                            </Button>
+                          }
+                        >
+                          More contract details
+                        </Tooltip>
 
-                          <Tooltip place="bottom" id={`more-contract-details-tooltip-${lockData.id}`}>
-                            More contract details
-                          </Tooltip>
-                        </>
-
-                        <>
-                          <Button
-                            data-tip={true}
-                            data-for={`watchlist-tooltip-${lockData.id}`}
-                            onClick={() =>
-                              lockData && isWatching && addToWatchlist && removeFromWatchlist
-                                ? isWatching(lockData.id)
-                                  ? removeFromWatchlist(lockData.id)
-                                  : addToWatchlist(lockData.id)
-                                : undefined
-                            }
-                          >
-                            <FontAwesomeIcon
-                              icon={isWatching && isWatching(lockData.id) ? faStar : faStarOutline}
-                              fixedWidth
-                            />
-                          </Button>
-
-                          <Tooltip place="bottom" id={`watchlist-tooltip-${lockData.id}`}>
-                            {isWatching && isWatching(lockData.id) ? 'Remove from ' : 'Add to '}watchlist
-                          </Tooltip>
-                        </>
+                        <Tooltip
+                          trigger={
+                            <Button
+                              onClick={() =>
+                                lockData && isWatching && addToWatchlist && removeFromWatchlist
+                                  ? isWatching(lockData.id)
+                                    ? removeFromWatchlist(lockData.id)
+                                    : addToWatchlist(lockData.id)
+                                  : undefined
+                              }
+                            >
+                              <FontAwesomeIcon
+                                icon={isWatching && isWatching(lockData.id) ? faStar : faStarOutline}
+                                fixedWidth
+                              />
+                            </Button>
+                          }
+                        >
+                          {isWatching && isWatching(lockData.id) ? 'Remove from ' : 'Add to '}watchlist
+                        </Tooltip>
                       </div>
 
                       <div className="flex items-center gap-2">

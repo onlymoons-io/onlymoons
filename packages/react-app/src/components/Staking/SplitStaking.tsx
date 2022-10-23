@@ -395,15 +395,17 @@ const SplitStakingComponent: React.FC = () => {
 
               <SplitStakingTopSection className="">
                 <SplitStakingTopSectionInner className="grid-cols-1 lg:w-96">
-                  <>
-                    <div
-                      data-tip={true}
-                      data-for="your-earnings-tooltip"
-                      className="flex justify-between items-center font-extralight w-full"
-                    >
-                      <div className="opacity-60">
-                        Your earnings <FontAwesomeIcon icon={faInfoCircle} />
-                        {/* <Button
+                  <Tooltip
+                    className="max-w-xs"
+                    trigger={
+                      <div
+                        data-tip={true}
+                        data-for="your-earnings-tooltip"
+                        className="flex justify-between items-center font-extralight w-full"
+                      >
+                        <div className="opacity-60">
+                          Your earnings <FontAwesomeIcon icon={faInfoCircle} />
+                          {/* <Button
                                     onClick={() => setDarkModeEnabled(!darkModeEnabled)}
                                     data-tip={true}
                                     data-for="dark-mode"
@@ -411,73 +413,61 @@ const SplitStakingComponent: React.FC = () => {
                                   >
                                     <FontAwesomeIcon icon={darkModeEnabled ? farSun : faSun} size="lg" opacity={0.8} />
                                   </Button> */}
-                      </div>{' '}
-                      <div className="text-xl">
-                        {account ? (
-                          <>
-                            {humanNumber(parseFloat(utils.formatEther(allRewardsAmount.claimed)), (n) =>
-                              n.toLocaleString('en', { maximumFractionDigits: 5 }),
-                            )}{' '}
-                            {getNativeCoin(chainId || 0).symbol}
-                          </>
-                        ) : (
-                          <>-</>
-                        )}
-                      </div>
-                    </div>
-
-                    <Tooltip
-                      id="your-earnings-tooltip"
-                      className="max-w-xs"
-                      place="bottom"
-                      children="Total amount of earnings with the current staking contracts."
-                    />
-                  </>
-
-                  <>
-                    <div
-                      data-tip={true}
-                      data-for="pending-rewards-tooltip"
-                      className="flex justify-between items-center font-extralight w-full"
-                    >
-                      <div className="opacity-60">
-                        Pending rewards <FontAwesomeIcon icon={faInfoCircle} />
-                      </div>{' '}
-                      <div className="text-xl">
-                        {account ? (
-                          <>
-                            ~
-                            {humanNumber(
-                              parseFloat(utils.formatEther(allRewardsAmount.pending.add(getEstimatedRewards()))),
-                              (n) => n.toLocaleString('en', { maximumFractionDigits: 5 }),
-                            )}{' '}
-                            {getNativeCoin(chainId || 0).symbol}
-                          </>
-                        ) : (
-                          <>-</>
-                        )}
-                      </div>
-                    </div>
-
-                    <Tooltip
-                      id="pending-rewards-tooltip"
-                      place="bottom"
-                      className="max-w-xs"
-                      children={
-                        <div>
-                          Your estimated pending rewards. This includes{' '}
-                          <span className="font-bold text-green-400">
-                            {utils.formatEther(allRewardsAmount.pending)} {getNativeCoin(chainId || 0).symbol}{' '}
-                          </span>
-                          confirmed rewards and{' '}
-                          <span className="font-bold text-yellow-300">
-                            ~{utils.formatEther(getEstimatedRewards())} {getNativeCoin(chainId || 0).symbol}
-                          </span>{' '}
-                          estimated rewards if you claim now.
+                        </div>{' '}
+                        <div className="text-xl">
+                          {account ? (
+                            <>
+                              {humanNumber(parseFloat(utils.formatEther(allRewardsAmount.claimed)), (n) =>
+                                n.toLocaleString('en', { maximumFractionDigits: 5 }),
+                              )}{' '}
+                              {getNativeCoin(chainId || 0).symbol}
+                            </>
+                          ) : (
+                            <>-</>
+                          )}
                         </div>
-                      }
-                    />
-                  </>
+                      </div>
+                    }
+                    children="Total amount of earnings with the current staking contracts."
+                  />
+
+                  <Tooltip
+                    className="max-w-xs"
+                    trigger={
+                      <div className="flex justify-between items-center font-extralight w-full">
+                        <div className="opacity-60">
+                          Pending rewards <FontAwesomeIcon icon={faInfoCircle} />
+                        </div>{' '}
+                        <div className="text-xl">
+                          {account ? (
+                            <>
+                              ~
+                              {humanNumber(
+                                parseFloat(utils.formatEther(allRewardsAmount.pending.add(getEstimatedRewards()))),
+                                (n) => n.toLocaleString('en', { maximumFractionDigits: 5 }),
+                              )}{' '}
+                              {getNativeCoin(chainId || 0).symbol}
+                            </>
+                          ) : (
+                            <>-</>
+                          )}
+                        </div>
+                      </div>
+                    }
+                    children={
+                      <div>
+                        Your estimated pending rewards. This includes{' '}
+                        <span className="font-bold text-green-400">
+                          {utils.formatEther(allRewardsAmount.pending)} {getNativeCoin(chainId || 0).symbol}{' '}
+                        </span>
+                        confirmed rewards and{' '}
+                        <span className="font-bold text-yellow-300">
+                          ~{utils.formatEther(getEstimatedRewards())} {getNativeCoin(chainId || 0).symbol}
+                        </span>{' '}
+                        estimated rewards if you claim now.
+                      </div>
+                    }
+                  />
 
                   <div className="flex justify-between items-center font-extralight w-full">
                     <div className="opacity-60">

@@ -42,6 +42,7 @@ import { NetworkConnector } from '@web3-react/network-connector'
 
 import { providers } from 'ethers'
 import { createBreakpoint, usePromise } from 'react-use'
+import { TooltipProvider } from './components/Tooltip'
 
 const { Web3Provider } = providers
 
@@ -395,7 +396,9 @@ const AppWeb3: React.FC = () => {
           <UtilContractContextProvider>
             <PriceTrackerContextProvider>
               <FeesContractContextProvider>
-                <AppContent />
+                <TooltipProvider>
+                  <AppContent />
+                </TooltipProvider>
               </FeesContractContextProvider>
             </PriceTrackerContextProvider>
           </UtilContractContextProvider>

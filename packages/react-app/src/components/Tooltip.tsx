@@ -1,14 +1,47 @@
-import React from 'react'
-import ReactTooltip, { TooltipProps } from 'react-tooltip'
+import React, { HTMLAttributes, ReactNode } from 'react'
+import * as RadixTooltip from '@radix-ui/react-tooltip'
+import tw from 'tailwind-styled-components'
 
-// react-tooltip seems broken now. the only way it works
-// is converting to any, and forcing typescript to allow any.
-// we should switch to using radix-ui tooltips!!!
-// tooltips no longer disappear on mouseout
-const ReactTooltipANY = ReactTooltip as any
+export const TooltipRoot = RadixTooltip.Root
+export const TooltipPortal = RadixTooltip.Portal
+export const TooltipProvider = RadixTooltip.Provider
+export const TooltipTrigger = RadixTooltip.Trigger
 
-const Tooltip: React.FC<TooltipProps> = ({ type = 'dark', effect = 'solid', ...rest }) => {
-  return <ReactTooltipANY type={type} effect={effect} {...rest} />
+export const TooltipContent = tw(RadixTooltip.Content)`
+  bg-gray-100
+  dark:bg-gray-900
+  text-gray-900
+  dark:text-gray-100
+  border
+  border-gray-500
+  border-opacity-20
+  rounded
+  p-2
+`
+
+export interface TooltipOptions extends HTMLAttributes<HTMLElement> {
+  trigger: ReactNode
+  children?: ReactNode
+  rootOptions?: RadixTooltip.TooltipProps
+  portalOptions?: RadixTooltip.PortalProps
+  contentOptions?: RadixTooltip.TooltipContentProps
+}
+
+const Tooltip: React.FC<TooltipOptions> = ({
+  trigger,
+  children,
+  rootOptions = { delayDuration: 0 },
+  portalOptions,
+  contentOptions,
+}) => {
+  return (
+    <TooltipRoot {...rootOptions}>
+      <TooltipTrigger asChild>{trigger}</TooltipTrigger>
+      <TooltipPortal {...portalOptions}>
+        <TooltipContent {...contentOptions}>{children}</TooltipContent>
+      </TooltipPortal>
+    </TooltipRoot>
+  )
 }
 
 export default Tooltip

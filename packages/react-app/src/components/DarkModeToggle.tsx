@@ -29,19 +29,18 @@ const DarkModeToggle: React.FC<DarkModeToggleProps> = ({ className = '', style =
   }, [darkModeEnabled])
 
   return (
-    <>
-      <Button
-        onClick={() => setDarkModeEnabled(!darkModeEnabled)}
-        data-tip={true}
-        data-for="dark-mode"
-        className={className}
-        style={{ ...style, border: 'none !important', outline: 'none !important' }}
-      >
-        <FontAwesomeIcon icon={darkModeEnabled ? faSun : faMoon} size="lg" opacity={0.8} />
-      </Button>
-
-      <Tooltip id="dark-mode" children={`Switch to ${darkModeEnabled ? 'light' : 'dark'} mode`} />
-    </>
+    <Tooltip
+      trigger={
+        <Button
+          onClick={() => setDarkModeEnabled(!darkModeEnabled)}
+          className={className}
+          style={{ ...style, border: 'none !important', outline: 'none !important' }}
+        >
+          <FontAwesomeIcon icon={darkModeEnabled ? faSun : faMoon} size="lg" opacity={0.8} />
+        </Button>
+      }
+      children={`Switch to ${darkModeEnabled ? 'light' : 'dark'} mode`}
+    />
   )
 }
 
