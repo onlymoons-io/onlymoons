@@ -429,6 +429,10 @@ const Create: React.FC = () => {
       return 'Unlock time must be in the future'
     }
 
+    if (!totalFees) {
+      return 'Calculating fees...'
+    }
+
     return approved ? 'Create lock' : 'Approve'
   }
 
@@ -546,7 +550,7 @@ const Create: React.FC = () => {
 
                         <PrimaryButton
                           className="py-4 text-gray-100"
-                          disabled={!canSubmit || !tokenId || !isUnlockTimeValid()}
+                          disabled={!canSubmit || !tokenId || !isUnlockTimeValid() || !totalFees}
                           onClick={onClickSubmit}
                         >
                           {getSubmitText()}
