@@ -19,6 +19,7 @@ import { Outer, MidSection, SectionInner } from '../Layout'
 import { usePromise } from 'react-use'
 import StyledSwitch from '../StyledSwitch'
 import { useFeesContract } from '../contracts/Fees'
+import Tooltip from '../Tooltip'
 
 const { Web3Provider } = providers
 const { isAddress, formatEther /* formatUnits, getAddress */ } = utils
@@ -509,15 +510,25 @@ const Create: React.FC = () => {
                     {tokenId && (
                       <>
                         <div className="flex gap-4 items-center justify-center">
-                          <div className="flex flex-col">
-                            <div>Infinite</div>
-                            <StyledSwitch
-                              defaultChecked={infiniteLock}
-                              onCheckedChange={(value) => {
-                                setInfiniteLock(value)
-                              }}
-                            ></StyledSwitch>
-                          </div>
+                          <Tooltip
+                            trigger={
+                              <div className="flex flex-col items-center">
+                                <div>Infinite</div>
+                                <StyledSwitch
+                                  defaultChecked={infiniteLock}
+                                  onCheckedChange={(value) => {
+                                    setInfiniteLock(value)
+                                  }}
+                                ></StyledSwitch>
+                              </div>
+                            }
+                          >
+                            <div className="w-64 max-w-full">
+                              "Infinite" locks remain locked until the owner starts the unlock countdown, which then
+                              sets the unlock time. The unlock countdown is a globally defined duration. When the
+                              countdown has expired, token(s) can be removed.
+                            </div>
+                          </Tooltip>
 
                           <div
                             className={`grow flex bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded items-center ${

@@ -48,7 +48,6 @@ const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerCont
   const [tokenLockerCount, setTokenLockerCount] = useState<number>(0)
   const { chainId } = useWeb3React()
   const { chainId: chainIdConstant } = useContext(getWeb3ReactContext('constant') as React.Context<any>)
-  const [unlockMax, setUnlockMax] = useState<number>(1099511627775)
   const [countdownDuration, setCountdownDuration] = useState<number>()
 
   const eitherChainId = typeof chainId !== 'undefined' ? chainId : chainIdConstant
@@ -163,24 +162,6 @@ const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerCont
     updateCountdownDuration()
   }, [updateCountdownDuration])
 
-  // const updateUnlockMax = useCallback(async () => {
-  //   if (!contract?.UNLOCK_MAX) {
-  //     setUnlockMax(1099511627775)
-  //     return
-  //   }
-
-  //   try {
-  //     setUnlockMax(await mounted(contract.UNLOCK_MAX()))
-  //   } catch (err) {
-  //     console.error(err)
-  //     setUnlockMax(1099511627775)
-  //   }
-  // }, [mounted, contract])
-
-  // useEffect(() => {
-  //   updateUnlockMax()
-  // }, [updateUnlockMax])
-
   const getLockContract = useCallback(() => {
     switch (lockType) {
       case 1:
@@ -229,7 +210,8 @@ const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerCont
         contract,
         address: contract?.address,
         tokenLockerCount,
-        unlockMax,
+        // use hard-coded value for max unlock time. it will never change.
+        unlockMax: 1099511627775,
         countdownDuration,
         updateTokenLockerCount,
         createTokenLocker,
