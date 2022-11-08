@@ -1,6 +1,6 @@
 {
   "name": "@onlymoons-io/onlymoons",
-  "version": "0.0.24",
+  "version": "0.0.25",
   "keywords": [
     "ethereum",
     "react",
@@ -26,6 +26,7 @@
     "start": "yarn workspace @onlymoons-io/react-app start",
     "compile": "yarn workspace @onlymoons-io/hardhat compile",
     "deploy": "yarn workspace @onlymoons-io/hardhat deploy",
+    "deploy:eth": "yarn deploy --network eth",
     "deploy:cro": "yarn deploy --network cro",
     "deploy:bsc": "yarn deploy --network bsc",
     "deploy:localhost": "yarn deploy --network localhost",

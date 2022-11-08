@@ -1,112 +1,9 @@
 {
-  "Math": {
-    "networks": {
-      "4": {
-        "rinkeby": "0x7dEC4FEA9fB24a71a2D56AFBfF5C22b91804CCc1"
-      },
-      "25": {
-        "cro": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
-      },
-      "97": {
-        "bsctest": "0x340D6a68d9115a7c6D599acE1C4220213E6BF41e"
-      },
-      "123": {
-        "fusetest": "0x8DEE2F1768ed500FA9e0598378C6e8F18DAB07D6"
-      },
-      "137": {
-        "polygon": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
-      },
-      "588": {
-        "metistest": "0xB024E25eC9B2d132CEEB358E9aCBb0e40C9ba9Fe"
-      },
-      "592": {
-        "astar": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
-      },
-      "2000": {
-        "dogechain": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
-      },
-      "2001": {
-        "milkomeda": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
-      },
-      "7700": {
-        "canto": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
-      },
-      "10001": {
-        "ethw": "0x8bf6fa865f15887a95d3af202ab34ed0c754a2de"
-      },
-      "42161": {
-        "arbitrum": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
-      },
-      "43114": {
-        "avax": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
-      },
-      "80001": {
-        "mumbai": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
-      },
-      "420420": {
-        "kekchain": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
-      },
-      "420666": {
-        "kektest": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
-      }
-    },
-    "abi": []
-  },
-  "SafeERC20": {
-    "networks": {
-      "4": {
-        "rinkeby": "0x7CFa21F4CdDD2eCF8FcE3A2934327735a8Ae8De5"
-      },
-      "25": {
-        "cro": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
-      },
-      "97": {
-        "bsctest": "0xf952F106449281dF133C8D01a2b313CEd2c58E74"
-      },
-      "123": {
-        "fusetest": "0x92586B715c85b644a1fCe5186Bf51f759ECD3597"
-      },
-      "137": {
-        "polygon": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
-      },
-      "588": {
-        "metistest": "0x5C4e25abac5e6B0a5da6493Cf6Ae3Ee1f62Afd3f"
-      },
-      "592": {
-        "astar": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
-      },
-      "2000": {
-        "dogechain": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
-      },
-      "2001": {
-        "milkomeda": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
-      },
-      "7700": {
-        "canto": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
-      },
-      "10001": {
-        "ethw": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
-      },
-      "42161": {
-        "arbitrum": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
-      },
-      "43114": {
-        "avax": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
-      },
-      "80001": {
-        "mumbai": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
-      },
-      "420420": {
-        "kekchain": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
-      },
-      "420666": {
-        "kektest": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
-      }
-    },
-    "abi": []
-  },
   "TokenLockerManagerV1": {
     "networks": {
+      "1": {
+        "eth": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
+      },
       "4": {
         "rinkeby": "0xfe34847eF7bD06c0c67454344C571eD68CFf63f9"
       },
@@ -515,6 +412,9 @@
   },
   "TokenLockerV1": {
     "networks": {
+      "1": {
+        "eth": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
+      },
       "4": {
         "rinkeby": "0xd959928113ad399075F9A32c8F69121D86Be2FA7"
       },
@@ -854,6 +754,9 @@
   },
   "Util": {
     "networks": {
+      "1": {
+        "eth": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+      },
       "4": {
         "rinkeby": "0xC6d6ef837cBc41293C0b32a322EDE83749817C05"
       },
@@ -1016,6 +919,112 @@
         "type": "function"
       }
     ]
+  },
+  "Math": {
+    "networks": {
+      "4": {
+        "rinkeby": "0x7dEC4FEA9fB24a71a2D56AFBfF5C22b91804CCc1"
+      },
+      "25": {
+        "cro": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+      },
+      "97": {
+        "bsctest": "0x340D6a68d9115a7c6D599acE1C4220213E6BF41e"
+      },
+      "123": {
+        "fusetest": "0x8DEE2F1768ed500FA9e0598378C6e8F18DAB07D6"
+      },
+      "137": {
+        "polygon": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+      },
+      "588": {
+        "metistest": "0xB024E25eC9B2d132CEEB358E9aCBb0e40C9ba9Fe"
+      },
+      "592": {
+        "astar": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+      },
+      "2000": {
+        "dogechain": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+      },
+      "2001": {
+        "milkomeda": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+      },
+      "7700": {
+        "canto": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+      },
+      "10001": {
+        "ethw": "0x8bf6fa865f15887a95d3af202ab34ed0c754a2de"
+      },
+      "42161": {
+        "arbitrum": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+      },
+      "43114": {
+        "avax": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+      },
+      "80001": {
+        "mumbai": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+      },
+      "420420": {
+        "kekchain": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+      },
+      "420666": {
+        "kektest": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+      }
+    },
+    "abi": []
+  },
+  "SafeERC20": {
+    "networks": {
+      "4": {
+        "rinkeby": "0x7CFa21F4CdDD2eCF8FcE3A2934327735a8Ae8De5"
+      },
+      "25": {
+        "cro": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+      },
+      "97": {
+        "bsctest": "0xf952F106449281dF133C8D01a2b313CEd2c58E74"
+      },
+      "123": {
+        "fusetest": "0x92586B715c85b644a1fCe5186Bf51f759ECD3597"
+      },
+      "137": {
+        "polygon": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+      },
+      "588": {
+        "metistest": "0x5C4e25abac5e6B0a5da6493Cf6Ae3Ee1f62Afd3f"
+      },
+      "592": {
+        "astar": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+      },
+      "2000": {
+        "dogechain": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+      },
+      "2001": {
+        "milkomeda": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+      },
+      "7700": {
+        "canto": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+      },
+      "10001": {
+        "ethw": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+      },
+      "42161": {
+        "arbitrum": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+      },
+      "43114": {
+        "avax": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+      },
+      "80001": {
+        "mumbai": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+      },
+      "420420": {
+        "kekchain": "0x8BF6Fa865f15887a95d3aF202Ab34ed0C754a2dE"
+      },
+      "420666": {
+        "kektest": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+      }
+    },
+    "abi": []
   },
   "Faucet": {
     "networks": {
@@ -1203,15 +1212,20 @@
   "Fees": {
     "networks": {
       "97": {
-        "bsctest": "0x70dCF027ba5D2bb490C39a6F9054CE25f8208bD1"
+        "bsctest": "0xC16313BABEF4A5FaA78755d2231433D5d010aD30"
       },
       "80001": {
-        "mumbai": "0xE8817F05b78E50206Ab007Af0290946110f4e8B0"
+        "mumbai": "0x671Ae0dDf39578182Bc2E1862D46132448198035"
       }
     },
     "abi": [
       {
         "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "feeAmountBase_",
+            "type": "uint256"
+          },
           {
             "internalType": "address payable",
             "name": "treasuryFeeAddress_",
@@ -1266,6 +1280,19 @@
       },
       {
         "inputs": [],
+        "name": "feeAmountBase",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
         "name": "feesDistributed",
         "outputs": [
           {
@@ -1289,6 +1316,35 @@
       },
       {
         "inputs": [
+          {
+            "internalType": "address",
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "feeType",
+            "type": "string"
+          }
+        ],
+        "name": "getAdjustedFeeAmountForType",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "sender",
+            "type": "address"
+          },
           {
             "internalType": "string",
             "name": "feeType",
@@ -1396,6 +1452,19 @@
           }
         ],
         "name": "setAddressExemptFromFees",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "value",
+            "type": "uint256"
+          }
+        ],
+        "name": "setFeeAmountBase",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -4518,10 +4587,10 @@
   "TokenLockerUniV2": {
     "networks": {
       "97": {
-        "bsctest": "0x674bDc67aD1655D9Cf7A8A79F0938427Fcfef020"
+        "bsctest": "0x36d97fED8b713691c2E2456E5E49f95daC598501"
       },
       "80001": {
-        "mumbai": "0x6f2746cC843c3707dff794351C292676ecbFB4aC"
+        "mumbai": "0xBbc6c3a25dbB605885C27D9166b4229A5D7bbc20"
       }
     },
     "abi": [
@@ -4534,7 +4603,7 @@
         "anonymous": false,
         "inputs": [
           {
-            "indexed": false,
+            "indexed": true,
             "internalType": "uint40",
             "name": "id",
             "type": "uint40"
@@ -4553,7 +4622,7 @@
         "anonymous": false,
         "inputs": [
           {
-            "indexed": false,
+            "indexed": true,
             "internalType": "uint40",
             "name": "id",
             "type": "uint40"
@@ -4591,25 +4660,50 @@
         "anonymous": false,
         "inputs": [
           {
-            "indexed": false,
+            "indexed": true,
             "internalType": "uint40",
             "name": "id",
             "type": "uint40"
           },
           {
-            "indexed": false,
+            "indexed": true,
             "internalType": "address",
             "name": "oldOwner",
             "type": "address"
           },
           {
-            "indexed": false,
+            "indexed": true,
             "internalType": "address",
             "name": "newOwner",
             "type": "address"
           }
         ],
         "name": "LockOwnershipTransfered",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint40",
+            "name": "id",
+            "type": "uint40"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "oldRouter",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "newRouter",
+            "type": "address"
+          }
+        ],
+        "name": "MigratedDex",
         "type": "event"
       },
       {
@@ -4629,6 +4723,25 @@
           }
         ],
         "name": "OwnershipTransferred",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint40",
+            "name": "id",
+            "type": "uint40"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint40",
+            "name": "unlockTime",
+            "type": "uint40"
+          }
+        ],
+        "name": "TokenLockerCountdownStarted",
         "type": "event"
       },
       {
@@ -4688,10 +4801,67 @@
             "internalType": "uint40",
             "name": "id",
             "type": "uint40"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amountOrTokenId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "balanceOrTokenId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint40",
+            "name": "unlockTime",
+            "type": "uint40"
+          }
+        ],
+        "name": "TokenLockerDeposit",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint40",
+            "name": "id",
+            "type": "uint40"
+          }
+        ],
+        "name": "TokenLockerWithdrawal",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint40",
+            "name": "id",
+            "type": "uint40"
           }
         ],
         "name": "Withdrew",
         "type": "event"
+      },
+      {
+        "inputs": [],
+        "name": "allowedDexCount",
+        "outputs": [
+          {
+            "internalType": "uint16",
+            "name": "",
+            "type": "uint16"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
       },
       {
         "inputs": [],
@@ -4707,20 +4877,33 @@
         "type": "function"
       },
       {
+        "inputs": [],
+        "name": "countdownDuration",
+        "outputs": [
+          {
+            "internalType": "uint40",
+            "name": "",
+            "type": "uint40"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "inputs": [
           {
             "internalType": "address",
-            "name": "tokenAddress_",
+            "name": "",
             "type": "address"
           },
           {
             "internalType": "uint256",
-            "name": "amount_",
+            "name": "",
             "type": "uint256"
           },
           {
             "internalType": "uint40",
-            "name": "unlockTime_",
+            "name": "",
             "type": "uint40"
           }
         ],
@@ -4760,7 +4943,7 @@
             "type": "address"
           }
         ],
-        "stateMutability": "nonpayable",
+        "stateMutability": "payable",
         "type": "function"
       },
       {
@@ -4777,8 +4960,31 @@
         "type": "function"
       },
       {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amountOrTokenId_",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint40",
+            "name": "newUnlockTime_",
+            "type": "uint40"
+          }
+        ],
+        "name": "deposit",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
         "inputs": [],
-        "name": "factory",
+        "name": "feesContract",
         "outputs": [
           {
             "internalType": "address",
@@ -4786,7 +4992,55 @@
             "type": "address"
           }
         ],
-        "stateMutability": "pure",
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint16",
+            "name": "id_",
+            "type": "uint16"
+          }
+        ],
+        "name": "getDexDataById",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "router",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "allowed",
+            "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "router_",
+            "type": "address"
+          }
+        ],
+        "name": "getDexIdByRouter",
+        "outputs": [
+          {
+            "internalType": "uint16",
+            "name": "",
+            "type": "uint16"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -4988,6 +5242,25 @@
             "internalType": "uint40",
             "name": "id_",
             "type": "uint40"
+          }
+        ],
+        "name": "isInfiniteLock",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
           },
           {
             "internalType": "address",
@@ -5062,17 +5335,12 @@
       {
         "inputs": [
           {
-            "internalType": "address",
-            "name": "routerAddress_",
-            "type": "address"
-          },
-          {
-            "internalType": "bool",
-            "name": "allowed_",
-            "type": "bool"
+            "internalType": "uint40",
+            "name": "countdownDuration_",
+            "type": "uint40"
           }
         ],
-        "name": "setAllowedRouterAddress",
+        "name": "setCountdownDuration",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -5094,11 +5362,11 @@
         "inputs": [
           {
             "internalType": "address",
-            "name": "",
+            "name": "contractAddress",
             "type": "address"
           }
         ],
-        "name": "setFactory",
+        "name": "setFeesContract",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -5135,6 +5403,48 @@
           }
         ],
         "name": "setSocials",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount_",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "newOwner_",
+            "type": "address"
+          }
+        ],
+        "name": "splitLock",
+        "outputs": [
+          {
+            "internalType": "uint40",
+            "name": "id",
+            "type": "uint40"
+          }
+        ],
+        "stateMutability": "payable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
+          }
+        ],
+        "name": "startUnlockCountdown",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -5197,6 +5507,29 @@
         "type": "function"
       },
       {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "router_",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "name_",
+            "type": "string"
+          },
+          {
+            "internalType": "bool",
+            "name": "allowed_",
+            "type": "bool"
+          }
+        ],
+        "name": "updateAllowedDex",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "name": "withdraw",
         "outputs": [],
@@ -5220,19 +5553,16 @@
   },
   "TokenLockerUniV3": {
     "networks": {
+      "97": {
+        "bsctest": "0x673985640b34753744F7649207B2385A0230A834"
+      },
       "80001": {
-        "mumbai": "0x44C46bCd1c81006F49366120CFFdc083C6bC64Fc"
+        "mumbai": "0x82D4983A9bc8a165e3011026F830064D074796bA"
       }
     },
     "abi": [
       {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "feesAddress_",
-            "type": "address"
-          }
-        ],
+        "inputs": [],
         "stateMutability": "nonpayable",
         "type": "constructor"
       },
@@ -5240,7 +5570,7 @@
         "anonymous": false,
         "inputs": [
           {
-            "indexed": false,
+            "indexed": true,
             "internalType": "uint40",
             "name": "id",
             "type": "uint40"
@@ -5259,7 +5589,7 @@
         "anonymous": false,
         "inputs": [
           {
-            "indexed": false,
+            "indexed": true,
             "internalType": "uint40",
             "name": "id",
             "type": "uint40"
@@ -5297,19 +5627,19 @@
         "anonymous": false,
         "inputs": [
           {
-            "indexed": false,
+            "indexed": true,
             "internalType": "uint40",
             "name": "id",
             "type": "uint40"
           },
           {
-            "indexed": false,
+            "indexed": true,
             "internalType": "address",
             "name": "oldOwner",
             "type": "address"
           },
           {
-            "indexed": false,
+            "indexed": true,
             "internalType": "address",
             "name": "newOwner",
             "type": "address"
@@ -5453,7 +5783,7 @@
         "anonymous": false,
         "inputs": [
           {
-            "indexed": false,
+            "indexed": true,
             "internalType": "uint40",
             "name": "id",
             "type": "uint40"
@@ -5461,19 +5791,6 @@
         ],
         "name": "Withdrew",
         "type": "event"
-      },
-      {
-        "inputs": [],
-        "name": "UNLOCK_MAX",
-        "outputs": [
-          {
-            "internalType": "uint40",
-            "name": "",
-            "type": "uint40"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
       },
       {
         "inputs": [
@@ -5887,6 +6204,25 @@
         "inputs": [
           {
             "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
+          }
+        ],
+        "name": "isInfiniteLock",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
             "name": "",
             "type": "uint40"
           },
@@ -5969,24 +6305,6 @@
           }
         ],
         "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "routerAddress_",
-            "type": "address"
-          },
-          {
-            "internalType": "bool",
-            "name": "allowed_",
-            "type": "bool"
-          }
-        ],
-        "name": "setAllowedRouterAddress",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -6158,6 +6476,9 @@
   },
   "UtilV2": {
     "networks": {
+      "97": {
+        "bsctest": "0x7b6bb52F795475EF4FAe63D0f0F3dCb022b649B8"
+      },
       "80001": {
         "mumbai": "0xF00845CdF501cAEA08B69cEb183f4c1E5B026685"
       }
