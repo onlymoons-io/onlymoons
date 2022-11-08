@@ -57,6 +57,8 @@ interface ITokenLockerManagerV2 is ITokenLockerManagerV1, IGovernable, IPausable
   function countdownDuration() external view returns (uint40);
   function setCountdownDuration(uint40 countdownDuration_) external;
 
+  function isInfiniteLock(uint40 id_) external view returns (bool);
+
   function createTokenLockerV2(
     address tokenAddress_,
     uint256 amountOrTokenId_,

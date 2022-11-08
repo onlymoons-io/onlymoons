@@ -37,7 +37,7 @@ abstract contract FeeCollector is IFeeCollector, OwnableV2 {
   }
 
   function _takeFee(string memory feeType) internal {
-    require(_fees.getAdjustedFeeAmountForType(feeType) == msg.value, "INCORRECT_FEE");
+    require(_fees.getAdjustedFeeAmountForType(_msgSender(), feeType) == msg.value, "INCORRECT_FEE");
     if (!_fees.isAddressExemptFromFees(_msgSender()))
       payable(address(_fees)).sendValue(msg.value);
   }
@@ -45,7 +45,7 @@ abstract contract FeeCollector is IFeeCollector, OwnableV2 {
   function _takeFees(string[] memory feeTypes) internal {
     uint256 totalFees = 0;
     for (uint256 i = 0; i < feeTypes.length; i++) {
-      totalFees += _fees.getAdjustedFeeAmountForType(feeTypes[i]);
+      totalFees += _fees.getAdjustedFeeAmountForType(_msgSender(), feeTypes[i]);
     }
     require(totalFees == msg.value, "INCORRECT_FEE");
     if (!_fees.isAddressExemptFromFees(_msgSender())) {

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { BigNumber, Contract } from 'ethers'
 import { useContractCache } from './ContractCache'
 import { usePromise } from 'react-use'
+import { useWeb3React } from '@web3-react/core'
 
 export interface IFeesContractContext {
   contract?: Contract
@@ -30,12 +31,13 @@ const FeesContractContextProvider: React.FC<FeesContractContextProviderProps> = 
   const { getContract } = useContractCache()
   const [contract, setContract] = useState<Contract>()
   const [owner, setOwner] = useState<string>()
+  const { account } = useWeb3React()
 
   const getAdjustedFeeAmountForType: (feeType: string) => Promise<BigNumber> = useCallback(
     async (feeType: string) => {
-      return (await contract?.getAdjustedFeeAmountForType(feeType)) || BigNumber.from(0)
+      return (await contract?.getAdjustedFeeAmountForType(account, feeType)) || BigNumber.from(0)
     },
-    [contract],
+    [account, contract],
   )
 
   useEffect(() => {

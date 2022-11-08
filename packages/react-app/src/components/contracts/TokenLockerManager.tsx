@@ -93,7 +93,12 @@ const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerCont
         throw new Error('Token locker contract is not loaded')
       }
 
-      return contract.getTokenLockData(id)
+      const lockData: TokenLockData = {
+        ...(await contract.getTokenLockData(id)),
+        isInfiniteLock: contract.isInfiniteLock ? await contract.isInfiniteLock(id) : false,
+      }
+
+      return lockData
     },
     [contract],
   )

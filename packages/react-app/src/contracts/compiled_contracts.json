@@ -1203,10 +1203,10 @@
   "Fees": {
     "networks": {
       "97": {
-        "0": "0x10aBE61AA8E54148dDAa25429E90C8bdC40ee0f5"
+        "0": "0xC16313BABEF4A5FaA78755d2231433D5d010aD30"
       },
       "80001": {
-        "0": "0x12205FA67f7e785b12c290Da694f91a75B920415"
+        "0": "0x671Ae0dDf39578182Bc2E1862D46132448198035"
       }
     },
     "abi": [
@@ -1308,6 +1308,11 @@
       {
         "inputs": [
           {
+            "internalType": "address",
+            "name": "sender",
+            "type": "address"
+          },
+          {
             "internalType": "string",
             "name": "feeType",
             "type": "string"
@@ -1326,6 +1331,11 @@
       },
       {
         "inputs": [
+          {
+            "internalType": "address",
+            "name": "sender",
+            "type": "address"
+          },
           {
             "internalType": "string",
             "name": "feeType",
@@ -4568,10 +4578,10 @@
   "TokenLockerUniV2": {
     "networks": {
       "97": {
-        "0": "0x0CC1A5000efab057bC1f26B7321D72c8fb044A8c"
+        "0": "0x36d97fED8b713691c2E2456E5E49f95daC598501"
       },
       "80001": {
-        "0": "0x80EB4996239170F24aA90a1340cBb0B4998613ae"
+        "0": "0xBbc6c3a25dbB605885C27D9166b4229A5D7bbc20"
       }
     },
     "abi": [
@@ -5223,6 +5233,25 @@
             "internalType": "uint40",
             "name": "id_",
             "type": "uint40"
+          }
+        ],
+        "name": "isInfiniteLock",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
           },
           {
             "internalType": "address",
@@ -5513,127 +5542,13 @@
       }
     ]
   },
-  "UtilV2": {
-    "networks": {
-      "97": {
-        "0": "0x7b6bb52F795475EF4FAe63D0f0F3dCb022b649B8"
-      },
-      "80001": {
-        "0": "0xF00845CdF501cAEA08B69cEb183f4c1E5B026685"
-      }
-    },
-    "abi": [
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "address_",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokenId_",
-            "type": "uint256"
-          }
-        ],
-        "name": "getUniV3LpData",
-        "outputs": [
-          {
-            "internalType": "address",
-            "name": "token0",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "token1",
-            "type": "address"
-          },
-          {
-            "internalType": "uint24",
-            "name": "fee",
-            "type": "uint24"
-          },
-          {
-            "internalType": "uint256",
-            "name": "balance0",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "balance1",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint128",
-            "name": "liquidity",
-            "type": "uint128"
-          },
-          {
-            "internalType": "address",
-            "name": "pool",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokensOwed0",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokensOwed1",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "address_",
-            "type": "address"
-          }
-        ],
-        "name": "isERC721",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "address_",
-            "type": "address"
-          }
-        ],
-        "name": "isUniV3Lp",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      }
-    ]
-  },
   "TokenLockerUniV3": {
     "networks": {
       "97": {
-        "0": "0x9Cca31237246e6e9E74CdA0FD13cA31d52912087"
+        "0": "0x673985640b34753744F7649207B2385A0230A834"
       },
       "80001": {
-        "0": "0xfe60E7F8cF5416Bf09AC066A082a6a30336F7a13"
+        "0": "0x82D4983A9bc8a165e3011026F830064D074796bA"
       }
     },
     "abi": [
@@ -6280,6 +6195,25 @@
         "inputs": [
           {
             "internalType": "uint40",
+            "name": "id_",
+            "type": "uint40"
+          }
+        ],
+        "name": "isInfiniteLock",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint40",
             "name": "",
             "type": "uint40"
           },
@@ -6527,6 +6461,120 @@
         "name": "withdrawById",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ]
+  },
+  "UtilV2": {
+    "networks": {
+      "97": {
+        "0": "0x7b6bb52F795475EF4FAe63D0f0F3dCb022b649B8"
+      },
+      "80001": {
+        "0": "0xF00845CdF501cAEA08B69cEb183f4c1E5B026685"
+      }
+    },
+    "abi": [
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "address_",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenId_",
+            "type": "uint256"
+          }
+        ],
+        "name": "getUniV3LpData",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "token0",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "token1",
+            "type": "address"
+          },
+          {
+            "internalType": "uint24",
+            "name": "fee",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance0",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance1",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint128",
+            "name": "liquidity",
+            "type": "uint128"
+          },
+          {
+            "internalType": "address",
+            "name": "pool",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokensOwed0",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokensOwed1",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "address_",
+            "type": "address"
+          }
+        ],
+        "name": "isERC721",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "address_",
+            "type": "address"
+          }
+        ],
+        "name": "isUniV3Lp",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       }
     ]

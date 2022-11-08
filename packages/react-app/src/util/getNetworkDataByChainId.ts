@@ -2,6 +2,30 @@ import { BigNumber } from 'ethers'
 import { NetworkData } from '../typings'
 
 export const networks: Record<number, NetworkData> = {
+  1: {
+    chainId: 1,
+    name: 'Ethereum',
+    shortName: 'Ethereum',
+    urlName: 'ethereum',
+    nativeCurrency: {
+      address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+      name: 'Eth',
+      symbol: 'ETH',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://etherscan.io/',
+    rpcURL: 'https://eth-mainnet.nodereal.io/v1/1659dfb40aa24bbb8153a677b98064d7',
+    icon: '/eth.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      //
+      {
+        address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+        stablePair: '0x8b0bb0d0d8b3d83ebb7c1b49d79d74df396634c6',
+      },
+    ],
+  },
   4: {
     chainId: 4,
     name: 'Ethereum Rinkeby (testnet)',

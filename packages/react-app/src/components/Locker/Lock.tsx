@@ -44,6 +44,7 @@ import Input from '../Input'
 import ContractDetails from '../ContractDetails'
 import AddressLink from '../AddressLink'
 import { LockWatchlist } from './LockWatchlist'
+import StyledSwitch from '../StyledSwitch'
 
 const { Web3Provider } = providers
 const { parseUnits, formatUnits, isAddress, getAddress, formatEther, commify } = utils
@@ -142,6 +143,7 @@ const Lock: React.FC<LockProps> = ({ lockId, lockType = 1 }) => {
   const [collectingFees, setCollectingFees] = useState<boolean>(false)
   const eitherChainId = typeof chainId !== 'undefined' ? chainId : chainIdConstant
   const eitherConnector = typeof connector !== 'undefined' ? connector : connectorConstant
+  const [beginningUnlockCountdown, setBeginningUnlockCountdown] = useState<boolean>(false)
 
   const updateLockData = useCallback(() => {
     if (typeof lockId !== 'number' || !contract || !getTokenLockData || !currentlyVisible.current || !eitherChainId) {
@@ -784,45 +786,73 @@ const Lock: React.FC<LockProps> = ({ lockId, lockType = 1 }) => {
               lockData ? (
                 lockData.lockOwner === account && lockContract && manageExpanded ? (
                   <>
-                    <section className="text-gray-100 grid grid-cols-1 sm:grid-cols-2 w-full gap-2">
-                      <PrimaryButton className="flex-grow" onClick={() => setExtendVisible(!extendVisible)}>
-                        Extend / Deposit
-                      </PrimaryButton>
-                      <PrimaryButton
-                        className="flex-grow relative flex justify-center items-center"
-                        disabled={
-                          isWithdrawing ||
-                          lockData.balance.eq(0) ||
-                          BigNumber.from(lockData.unlockTime).gt(BigNumber.from(Math.ceil(Date.now() / 1000)))
-                        }
-                        onClick={() => {
-                          //
-                          setIsWithdrawing(true)
-                          mounted(
-                            !lockType || lockType === 1
-                              ? lockContract.withdraw()
-                              : lockContract.withdrawById(lockData.id),
-                          )
-                            .then((tx: any) => mounted(tx.wait()))
-                            .then(() => {
-                              updateLockData()
-                              setIsWithdrawing(false)
-                            })
-                            .catch((err: Error) => {
-                              console.error(err)
-                              setIsWithdrawing(false)
-                            })
-                        }}
-                      >
-                        <span className={isWithdrawing ? 'invisible' : ''}>Withdraw</span>
-                        <FontAwesomeIcon
-                          className={isWithdrawing ? 'absolute' : 'hidden'}
-                          icon={faCircleNotch}
-                          fixedWidth
-                          spin
-                        />
-                      </PrimaryButton>
-                    </section>
+                    {(lockType === 2 || lockType === 3) && isMaxUnlock() ? (
+                      <section className="text-gray-100 flex w-full">
+                        <PrimaryButton
+                          className="flex-grow flex justify-center items-center gap-1"
+                          disabled={beginningUnlockCountdown}
+                          onClick={() => {
+                            setBeginningUnlockCountdown(true)
+
+                            mounted(lockContract.startUnlockCountdown(lockData.id))
+                              .then((tx: any) => mounted(tx.wait()))
+                              .then(() => {
+                                updateLockData()
+                              })
+                              .catch((err: Error) => {
+                                console.error(err)
+                              })
+                              .then(() => {
+                                setBeginningUnlockCountdown(false)
+                              })
+                          }}
+                        >
+                          <span>Begin unlock countdown</span>
+                          {beginningUnlockCountdown && <FontAwesomeIcon icon={faCircleNotch} fixedWidth spin />}
+                        </PrimaryButton>
+                      </section>
+                    ) : (
+                      <section className="text-gray-100 grid grid-cols-1 sm:grid-cols-2 w-full gap-2">
+                        <PrimaryButton className="flex-grow" onClick={() => setExtendVisible(!extendVisible)}>
+                          Extend / Deposit
+                        </PrimaryButton>
+
+                        <PrimaryButton
+                          className="flex-grow relative flex justify-center items-center"
+                          disabled={
+                            isWithdrawing ||
+                            lockData.balance.eq(0) ||
+                            BigNumber.from(lockData.unlockTime).gt(BigNumber.from(Math.ceil(Date.now() / 1000)))
+                          }
+                          onClick={() => {
+                            //
+                            setIsWithdrawing(true)
+                            mounted(
+                              !lockType || lockType === 1
+                                ? lockContract.withdraw()
+                                : lockContract.withdrawById(lockData.id),
+                            )
+                              .then((tx: any) => mounted(tx.wait()))
+                              .then(() => {
+                                updateLockData()
+                                setIsWithdrawing(false)
+                              })
+                              .catch((err: Error) => {
+                                console.error(err)
+                                setIsWithdrawing(false)
+                              })
+                          }}
+                        >
+                          <span className={isWithdrawing ? 'invisible' : ''}>Withdraw</span>
+                          <FontAwesomeIcon
+                            className={isWithdrawing ? 'absolute' : 'hidden'}
+                            icon={faCircleNotch}
+                            fixedWidth
+                            spin
+                          />
+                        </PrimaryButton>
+                      </section>
+                    )}
 
                     {extendVisible && lockContract && lockData && lockTokenData && (
                       <section className="flex flex-col gap-2 mt-4">
@@ -834,17 +864,28 @@ const Lock: React.FC<LockProps> = ({ lockId, lockType = 1 }) => {
                           />
                         )}
 
-                        <div className="flex bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded items-center">
-                          <div className="p-3 shrink-0">Unlock time</div>
-                          <input
-                            type="datetime-local"
-                            className="flex-grow p-3 outline-none bg-white dark:bg-gray-700 rounded-r"
-                            defaultValue={timestampToDateTimeLocal(lockData.unlockTime)}
-                            onInput={(e) =>
-                              setExtendedUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))
-                            }
-                          />
-                        </div>
+                        {lockData.isInfiniteLock ? (
+                          <div className="">
+                            <StyledSwitch
+                              label="Re-lock"
+                              onCheckedChange={(checked) => {
+                                setExtendedUnlockTime(checked ? unlockMax ?? 99999999999999 : 0)
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <div className="flex bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded items-center">
+                            <div className="p-3 shrink-0">Unlock time</div>
+                            <input
+                              type="datetime-local"
+                              className="flex-grow p-3 outline-none bg-white dark:bg-gray-700 rounded-r"
+                              defaultValue={timestampToDateTimeLocal(lockData.unlockTime)}
+                              onInput={(e) =>
+                                setExtendedUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))
+                              }
+                            />
+                          </div>
+                        )}
 
                         <PrimaryButton
                           disabled={!canSubmitExtend || isExtending}

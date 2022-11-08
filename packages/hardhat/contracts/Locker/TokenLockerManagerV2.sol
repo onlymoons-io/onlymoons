@@ -68,6 +68,10 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
     _countdownDuration = countdownDuration_;
   }
 
+  function isInfiniteLock(uint40 id_) external virtual override view returns (bool) {
+    return _locks[id_].useUnlockCountdown;
+  }
+
   /**
    * @dev _count is a uint256, but locker V1 used uint40, so we cast to uint40.
    * since the max value is uint40 is over a trillion, i think it will be ok.

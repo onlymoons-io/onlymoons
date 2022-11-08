@@ -19,6 +19,7 @@ export interface TokenLockData {
   readonly unlockTime: number
   readonly balance: BigNumber
   readonly totalSupply: BigNumber
+  readonly isInfiniteLock: boolean
 }
 
 export interface LPData {
