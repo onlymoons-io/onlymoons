@@ -7,27 +7,27 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  const mathLibrary = await deploy("Math", {
-    from: deployer,
-    log: true,
-  });
+  // const mathLibrary = await deploy("Math", {
+  //   from: deployer,
+  //   log: true,
+  // });
 
-  const safeERC20Library = await deploy("SafeERC20", {
-    from: deployer,
-    log: true,
-  });
+  // const safeERC20Library = await deploy("SafeERC20", {
+  //   from: deployer,
+  //   log: true,
+  // });
 
   // const safeMathLibrary = await deploy("SafeMath", {
   //   from: deployer,
   //   log: true,
   // });
 
-  const utilLibrary = await deploy("Util", {
+  /* const utilLibrary = */ await deploy("Util", {
     from: deployer,
     log: true,
   });
 
-  const testToken = await deploy("ERC20", {
+  /* const testToken = */ await deploy("ERC20", {
     from: deployer,
     args: ["My Cool Token", "COOL", 69000000],
     log: true,

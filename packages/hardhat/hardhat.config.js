@@ -32,7 +32,7 @@ const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 //
 const defaultNetwork = "bsctest";
 
-const mainnetGwei = 21;
+const mainnetGwei = 31;
 
 function mnemonic() {
   try {
@@ -178,11 +178,8 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
-    mainnet: {
-      url: "https://mainnet.infura.io/v3/adc2f4348c894e4bbb5b09ddb3ffdf07", // <---- YOUR INFURA ID! (or it won't work)
-
-      //      url: "https://speedy-nodes-nyc.moralis.io/XXXXXXXXXXXXXXXXXXXXXXXXX/eth/mainnet", // <---- YOUR MORALIS ID! (not limited to infura)
-
+    eth: {
+      url: "https://rpc.ankr.com/eth",
       gasPrice: mainnetGwei * 1000000000,
       accounts: {
         mnemonic: mnemonic(),
