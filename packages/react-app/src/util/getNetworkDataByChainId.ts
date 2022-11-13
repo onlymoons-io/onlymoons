@@ -6,23 +6,24 @@ export const networks: Record<number, NetworkData> = {
     chainId: 1,
     name: 'Ethereum',
     shortName: 'Ethereum',
-    urlName: 'ethereum',
+    urlName: 'eth',
     nativeCurrency: {
-      address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+      address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
       name: 'Eth',
       symbol: 'ETH',
       decimals: 18,
       balance: BigNumber.from(0),
     },
     explorerURL: 'https://etherscan.io/',
-    rpcURL: 'https://eth-mainnet.nodereal.io/v1/1659dfb40aa24bbb8153a677b98064d7',
+    rpcURL: 'https://rpc.ankr.com/eth',
     icon: '/eth.png',
     isTestNet: false,
     supportedLiquidityPairTokens: [
       //
       {
-        address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-        stablePair: '0x8b0bb0d0d8b3d83ebb7c1b49d79d74df396634c6',
+        address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+        // pair w/ USDC on uniswap v2
+        stablePair: '0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc',
       },
     ],
   },
