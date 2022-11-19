@@ -9,17 +9,18 @@ import {
   faTelegramPlane,
   faDiscord,
   faTwitter,
-  faTwitch,
-  faInstagram,
-  faReddit,
+  // faTwitch,
+  // faInstagram,
+  // faReddit,
 } from '@fortawesome/free-brands-svg-icons'
 
 import Anchor from '../Anchor'
 import About from './About'
 // import Contract from './Contract'
-import Roadmap from './Roadmap'
+// import Roadmap from './Roadmap'
 
 import logoSrc from '../../images/logo-white.svg'
+// import { faBook } from '@fortawesome/free-solid-svg-icons'
 
 const Outer = tw.div`
   w-full
@@ -80,8 +81,8 @@ const MainAnchor = tw(Anchor)`
 
 const SocialLinkCSS = styled(Anchor)`
   transition: all 0.1s;
-  color: #ddd !important;
-  opacity: 0.75;
+  color: #eee !important;
+  opacity: 0.9;
   &:hover {
     opacity: 1;
     transform: scale(1.2);
@@ -101,9 +102,9 @@ const SocialLink = tw(SocialLinkCSS)`
   rounded-full
 `
 
-const scrollToElem = (elem: HTMLElement | null) => {
-  window.scrollTo(0, window.scrollY + (elem?.getBoundingClientRect().top || 0))
-}
+// const scrollToElem = (elem: HTMLElement | null) => {
+//   window.scrollTo(0, window.scrollY + (elem?.getBoundingClientRect().top || 0))
+// }
 
 const Home: React.FC = () => {
   return (
@@ -112,37 +113,31 @@ const Home: React.FC = () => {
         <HeroContent>
           <HeroSection>
             <Header>
-              A community driven launchpad.
+              EVM utility suite.
               {/* <span className="font-bold">Only</span>Moons */}
             </Header>
 
             {/* <Description>A community driven launchpad.</Description> */}
 
             <Links>
-              <MainAnchor
+              {/* <MainAnchor
                 target="_blank"
                 rel="noreferrer noopener"
                 href="https://pancakeswap.finance/swap?outputCurrency=0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
               >
                 Buy
-              </MainAnchor>
+              </MainAnchor> */}
 
-              <MainAnchor
+              {/* <MainAnchor
                 target="_blank"
                 rel="noreferrer noopener"
                 href="https://www.dextools.io/app/bsc/pair-explorer/0x6882a6A51D4C8509D2b771E73545230f529C014B"
               >
                 Chart
-              </MainAnchor>
+              </MainAnchor> */}
 
-              <MainAnchor
-                href="#roadmap"
-                onClick={e => {
-                  e.preventDefault()
-                  scrollToElem(document.getElementById('roadmap'))
-                }}
-              >
-                Roadmap
+              <MainAnchor target="_blank" rel="noreferrer noopener" href="https://onlymoons.gitbook.io/">
+                Documentation
               </MainAnchor>
             </Links>
 
@@ -169,32 +164,36 @@ const Home: React.FC = () => {
                 <FontAwesomeIcon icon={faTwitter} />
               </SocialLink>
 
-              <SocialLink
+              {/* <SocialLink target="_blank" rel="noreferrer noopener" href="https://onlymoons.gitbook.io/">
+                <FontAwesomeIcon icon={faBook} />
+              </SocialLink> */}
+
+              {/* <SocialLink
                 target="_blank"
                 rel="noreferrer noopener"
                 href="https://www.twitch.tv/onlymoonsofficial"
                 title="Twitch"
               >
                 <FontAwesomeIcon icon={faTwitch} />
-              </SocialLink>
+              </SocialLink> */}
 
-              <SocialLink
+              {/* <SocialLink
                 target="_blank"
                 rel="noreferrer noopener"
                 href="https://www.instagram.com/onlymoonsteam/"
                 title="Instagram"
               >
                 <FontAwesomeIcon icon={faInstagram} />
-              </SocialLink>
+              </SocialLink> */}
 
-              <SocialLink
+              {/* <SocialLink
                 target="_blank"
                 rel="noreferrer noopener"
                 href="https://www.reddit.com/r/OnlyMoonsCommunity/"
                 title="Reddit"
               >
                 <FontAwesomeIcon icon={faReddit} />
-              </SocialLink>
+              </SocialLink> */}
             </Links>
           </HeroSection>
 
@@ -216,7 +215,7 @@ const Home: React.FC = () => {
 
       <About />
       {/* <Contract /> */}
-      <Roadmap />
+      {/* <Roadmap /> */}
     </Outer>
   )
 }

@@ -280,7 +280,7 @@ const AppWeb3: React.FC = () => {
         activate(
           new NetworkConnector({
             urls,
-            defaultChainId: parseInt(window.localStorage.getItem('OM_DEFAULT_CHAINID') ?? '56'),
+            defaultChainId: parseInt(window.localStorage.getItem('OM_DEFAULT_CHAINID') ?? '1'),
           }),
         ),
       ).then(() => setConnecting(false))
