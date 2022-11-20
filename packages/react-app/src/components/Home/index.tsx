@@ -1,26 +1,15 @@
 import React from 'react'
-// import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import tw from 'tailwind-styled-components'
 import { motion } from 'framer-motion'
-
+// import Tooltip from '../Tooltip'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faTelegramPlane,
-  faDiscord,
-  faTwitter,
-  // faTwitch,
-  // faInstagram,
-  // faReddit,
-} from '@fortawesome/free-brands-svg-icons'
+import { faTelegramPlane, faDiscord, faTwitter, faGithub } from '@fortawesome/free-brands-svg-icons'
 
 import Anchor from '../Anchor'
 import About from './About'
-// import Contract from './Contract'
-// import Roadmap from './Roadmap'
 
 import logoSrc from '../../images/logo-white.svg'
-// import { faBook } from '@fortawesome/free-solid-svg-icons'
 
 const Outer = tw.div`
   w-full
@@ -79,6 +68,11 @@ const MainAnchor = tw(Anchor)`
   text-2xl
 `
 
+MainAnchor.defaultProps = {
+  target: '_blank',
+  rel: 'noreferrer noopener',
+}
+
 const SocialLinkCSS = styled(Anchor)`
   transition: all 0.1s;
   color: #eee !important;
@@ -102,6 +96,11 @@ const SocialLink = tw(SocialLinkCSS)`
   rounded-full
 `
 
+SocialLink.defaultProps = {
+  target: '_blank',
+  rel: 'noreferrer noopener',
+}
+
 // const scrollToElem = (elem: HTMLElement | null) => {
 //   window.scrollTo(0, window.scrollY + (elem?.getBoundingClientRect().top || 0))
 // }
@@ -113,6 +112,8 @@ const Home: React.FC = () => {
         <HeroContent>
           <HeroSection>
             <Header>
+              <em className="font-bold text-indigo-500">Open source</em>
+              <br />
               EVM utility suite.
               {/* <span className="font-bold">Only</span>Moons */}
             </Header>
@@ -120,80 +121,25 @@ const Home: React.FC = () => {
             {/* <Description>A community driven launchpad.</Description> */}
 
             <Links>
-              {/* <MainAnchor
-                target="_blank"
-                rel="noreferrer noopener"
-                href="https://pancakeswap.finance/swap?outputCurrency=0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
-              >
-                Buy
-              </MainAnchor> */}
-
-              {/* <MainAnchor
-                target="_blank"
-                rel="noreferrer noopener"
-                href="https://www.dextools.io/app/bsc/pair-explorer/0x6882a6A51D4C8509D2b771E73545230f529C014B"
-              >
-                Chart
-              </MainAnchor> */}
-
-              <MainAnchor target="_blank" rel="noreferrer noopener" href="https://onlymoons.gitbook.io/">
-                Documentation
-              </MainAnchor>
+              <MainAnchor href="https://onlymoons.gitbook.io/">Documentation</MainAnchor>
             </Links>
 
             <Links>
-              <SocialLink target="_blank" rel="noreferrer noopener" href="https://t.me/OnlyMoonsTeam" title="Telegram">
+              <SocialLink href="https://t.me/OnlyMoonsTeam" title="Telegram">
                 <FontAwesomeIcon icon={faTelegramPlane} />
               </SocialLink>
 
-              <SocialLink
-                target="_blank"
-                rel="noreferrer noopener"
-                href="https://discord.gg/E8hXdpKenM"
-                title="Discord"
-              >
+              <SocialLink href="https://discord.gg/E8hXdpKenM" title="Discord">
                 <FontAwesomeIcon icon={faDiscord} />
               </SocialLink>
 
-              <SocialLink
-                target="_blank"
-                rel="noreferrer noopener"
-                href="https://twitter.com/OnlyMoonsTeam"
-                title="Twitter"
-              >
+              <SocialLink href="https://twitter.com/OnlyMoonsTeam" title="Twitter">
                 <FontAwesomeIcon icon={faTwitter} />
               </SocialLink>
 
-              {/* <SocialLink target="_blank" rel="noreferrer noopener" href="https://onlymoons.gitbook.io/">
-                <FontAwesomeIcon icon={faBook} />
-              </SocialLink> */}
-
-              {/* <SocialLink
-                target="_blank"
-                rel="noreferrer noopener"
-                href="https://www.twitch.tv/onlymoonsofficial"
-                title="Twitch"
-              >
-                <FontAwesomeIcon icon={faTwitch} />
-              </SocialLink> */}
-
-              {/* <SocialLink
-                target="_blank"
-                rel="noreferrer noopener"
-                href="https://www.instagram.com/onlymoonsteam/"
-                title="Instagram"
-              >
-                <FontAwesomeIcon icon={faInstagram} />
-              </SocialLink> */}
-
-              {/* <SocialLink
-                target="_blank"
-                rel="noreferrer noopener"
-                href="https://www.reddit.com/r/OnlyMoonsCommunity/"
-                title="Reddit"
-              >
-                <FontAwesomeIcon icon={faReddit} />
-              </SocialLink> */}
+              <SocialLink href="https://github.com/onlymoons-io/onlymoons" title="GitHub">
+                <FontAwesomeIcon icon={faGithub} />
+              </SocialLink>
             </Links>
           </HeroSection>
 
