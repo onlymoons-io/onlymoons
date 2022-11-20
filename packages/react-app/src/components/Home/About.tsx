@@ -10,6 +10,7 @@ import { useInView } from 'react-intersection-observer'
 import Anchor from '../Anchor'
 import AngledSection from '../AngledSection'
 import { motion } from 'framer-motion'
+import { faGithub, faOsi } from '@fortawesome/free-brands-svg-icons'
 
 const AboutContent = tw.div`
   flex
@@ -90,6 +91,11 @@ const AnchorCSS = styled(Anchor)`
   color: black;
 `
 
+AnchorCSS.defaultProps = {
+  target: '_blank',
+  rel: 'noreferrer noopener',
+}
+
 const AnchorTailwind = tw(AnchorCSS)`
   dark:text-indigo-300
   underline
@@ -167,6 +173,8 @@ const About: React.FC = () => {
               from PancakeSwap to Uniswap V3.
             </p>
 
+            <p className="mt-6 italic text-sm">Token address: 0x67be50aCd00883C9E85539b88aABE7697d607576</p>
+
             <p className="mt-6 italic text-sm">
               <FontAwesomeIcon icon={faInfoCircle} className="text-blue-500" /> A 1:1 airdrop took place on November
               19th, 2022. If you received tokens on Ethereum, and do not have ether for gas, please don't hesitate to
@@ -184,20 +192,33 @@ const About: React.FC = () => {
             Audits were performed by Solidity Finance and can be viewed here:
             <br />
             <br />
-            <AuditLink href="https://solidity.finance/audits/OnlyMoons/" target="_blank" rel="noopener noreferrer">
-              OnlyMoons Token
-            </AuditLink>
+            <AuditLink href="https://solidity.finance/audits/OnlyMoons/">OnlyMoons Token</AuditLink>
             <br />
-            <AuditLink
-              href="https://solidity.finance/audits/OnlyMoonsTokenLockerV1/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              OnlyMoons Token Locker
-            </AuditLink>
+            <AuditLink href="https://solidity.finance/audits/OnlyMoonsTokenLockerV1/">OnlyMoons Token Locker</AuditLink>
             <p className="mt-6 italic text-sm">
               <FontAwesomeIcon icon={faInfoCircle} className="text-blue-500" /> Audits were performed when the token
-              &amp; locker only existed on BSC. The Ethereum token and locker contracts are identical on all networks.
+              &amp; locker existed only on BSC. The Ethereum token and locker contracts are identical on all networks.
+            </p>
+          </ContractInfoSectionContent>
+        </ContractInfoSectionComponent>
+
+        <ContractInfoSectionComponent direction="right">
+          <ContractInfoSectionTitle>
+            <FontAwesomeIcon icon={faOsi} className="text-gray-500" /> Open source
+          </ContractInfoSectionTitle>
+
+          <ContractInfoSectionContent>
+            <p>
+              All code is licensed under open source licenses. Newer code uses GNU GPL v3, while some old code is
+              licensed under MIT.
+            </p>
+
+            <p className="mt-6">
+              We currently use{' '}
+              <AnchorTailwind href="https://github.com/onlymoons-io/onlymoons">
+                <FontAwesomeIcon icon={faGithub} /> GitHub
+              </AnchorTailwind>{' '}
+              to host the project repository.{' '}
             </p>
           </ContractInfoSectionContent>
         </ContractInfoSectionComponent>
