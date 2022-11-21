@@ -26,7 +26,6 @@ interface ITokenLockerV2 is ITokenLockerBaseV2 {
   event Withdrew();
 
   function deposit(uint256 amount_, uint40 newUnlockTime_) external;
-  function withdraw() external;
   function withdrawToken(address address_) external;
   function withdrawEth() external;
   receive() external payable;

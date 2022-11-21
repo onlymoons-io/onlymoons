@@ -19,7 +19,6 @@
 pragma solidity ^0.8.0;
 
 import { ITokenLockerLPV2 } from "./ITokenLockerLPV2.sol";
-import { ITokenLockerManagerV1 } from "../ITokenLockerManagerV1.sol";
 import { ITokenLockerManagerV2 } from "./ITokenLockerManagerV2.sol";
 import { TokenLockerManagerV2 } from "./TokenLockerManagerV2.sol";
 import { TokenLockerBaseV2 } from "./TokenLockerBaseV2.sol";
@@ -68,7 +67,7 @@ abstract contract TokenLockerLPV2 is ITokenLockerLPV2, TokenLockerManagerV2, Tok
 
   function getTokenLockData(
     uint40 id_
-  ) external virtual override(ITokenLockerManagerV1, TokenLockerManagerV2) view returns (
+  ) external virtual override(ITokenLockerManagerV2, TokenLockerManagerV2) view returns (
     bool isLpToken,
     uint40 id,
     address contractAddress,
@@ -90,23 +89,5 @@ abstract contract TokenLockerLPV2 is ITokenLockerLPV2, TokenLockerManagerV2, Tok
     unlockTime = _locks[id_].unlockTime;
     balance = _locks[id_].amountOrTokenId;
     totalSupply = IERC20(token).totalSupply();
-  }
-
-  /** @dev required to maintain compatibility with v1 interfaces. use `withdrawById` instead */
-  function withdraw() external virtual override {
-    revert("NOT_IMPLEMENTED");
-  }
-
-  /** @dev required to maintain compatibility with v1 interfaces */
-  function notifyLockerOwnerChange(
-    uint40 /* id_ */,
-    address /* newOwner_ */,
-    address /* previousOwner_ */,
-    address /* createdBy_ */
-  ) external virtual override(
-    ITokenLockerManagerV1,
-    TokenLockerManagerV2
-  ){
-    revert("NOT_IMPLEMENTED");
   }
 }

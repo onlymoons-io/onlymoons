@@ -59,12 +59,7 @@ const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerCont
         throw new Error('Token locker contract is not loaded')
       }
 
-      const tx = await contract[!lockType || lockType === 1 ? 'createTokenLocker' : 'createTokenLockerV2'](
-        tokenAddress,
-        amount,
-        unlockTime,
-        fee ? { value: fee } : {},
-      )
+      const tx = await contract.createTokenLocker(tokenAddress, amount, unlockTime, fee ? { value: fee } : {})
 
       const result = await tx.wait()
 
@@ -72,7 +67,7 @@ const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerCont
 
       return lockerCreatedEvent?.args?.id || 0
     },
-    [contract, lockType],
+    [contract],
   )
 
   const getTokenLockersForAddress = useCallback(
@@ -141,8 +136,20 @@ const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerCont
       return
     }
 
+    let countFn: any
+
+    if (contract.count) {
+      // v2 locker
+      countFn = contract.count
+    } else if (contract.tokenLockerCount) {
+      // v1 locker
+      countFn = contract.tokenLockerCount
+    } else {
+      throw new Error('INVALID_COUNT')
+    }
+
     try {
-      setTokenLockerCount(await mounted(contract.tokenLockerCount()))
+      setTokenLockerCount(await mounted<number>(countFn()))
     } catch (err) {
       console.error(err)
       setTokenLockerCount(0)

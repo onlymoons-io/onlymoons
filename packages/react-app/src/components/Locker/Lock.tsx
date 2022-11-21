@@ -830,7 +830,7 @@ const Lock: React.FC<LockProps> = ({ lockId, lockType = 1 }) => {
                             mounted(
                               !lockType || lockType === 1
                                 ? lockContract.withdraw()
-                                : lockContract.withdrawById(lockData.id),
+                                : lockContract.withdraw(lockData.id),
                             )
                               .then((tx: any) => mounted(tx.wait()))
                               .then(() => {

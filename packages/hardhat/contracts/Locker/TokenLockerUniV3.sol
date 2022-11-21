@@ -38,7 +38,8 @@ contract TokenLockerUniV3 is ITokenLockerUniV3, TokenLockerLPV2, TokenLockerERC7
     uint256 tokenId_,
     uint40 unlockTime_
   ) internal virtual override returns (
-    uint40 id
+    uint40 id,
+    address lockAddress
   ) {
     // check if this is a uniswap v3 lp token
     require(UtilV2.isUniV3Lp(tokenAddress_), "INVALID_TOKEN");
@@ -52,6 +53,7 @@ contract TokenLockerUniV3 is ITokenLockerUniV3, TokenLockerLPV2, TokenLockerERC7
     );
 
     id = uint40(_next());
+    lockAddress = address(this);
 
     // write to state before transfer
     _locks[id].tokenAddress = tokenAddress_;
@@ -135,7 +137,7 @@ contract TokenLockerUniV3 is ITokenLockerUniV3, TokenLockerLPV2, TokenLockerERC7
     );
   }
 
-  function withdrawById(
+  function withdraw(
     uint40 id_
   ) external virtual override onlyLockOwner(id_) nonReentrant {
     require(uint40(block.timestamp) >= _locks[id_].unlockTime, "LOCKED");
@@ -157,9 +159,7 @@ contract TokenLockerUniV3 is ITokenLockerUniV3, TokenLockerLPV2, TokenLockerERC7
     address token0,
     address token1,
     uint256 balance0,
-    uint256 balance1,
-    uint256 price0,
-    uint256 price1
+    uint256 balance1
   ) {
     // hardcode this to true to remain compatibility with v1
     hasLpData = true;
@@ -175,11 +175,6 @@ contract TokenLockerUniV3 is ITokenLockerUniV3, TokenLockerLPV2, TokenLockerERC7
       _locks[id_].tokenAddress,
       _locks[id_].amountOrTokenId
     );
-
-    // price0 and price1 are deprecated and not used.
-    // maintain interface compatibility
-    price0 = 0;
-    price1 = 0;
   }
 
   function getUniV3LpData(uint40 id_) external virtual override view returns (

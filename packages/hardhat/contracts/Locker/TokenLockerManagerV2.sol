@@ -38,7 +38,7 @@ struct LockData {
   bool useUnlockCountdown;
 }
 
-contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, IDCounter, FeeCollector, ReentrancyGuard {
+abstract contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, IDCounter, FeeCollector, ReentrancyGuard {
   constructor() Governable(_msgSender(), _msgSender()) {
     //
   }
@@ -76,23 +76,23 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
    * @dev _count is a uint256, but locker V1 used uint40, so we cast to uint40.
    * since the max value is uint40 is over a trillion, i think it will be ok.
    */
-  function tokenLockerCount() external virtual override view returns (uint40) {
-    return uint40(_count);
-  }
+  // function tokenLockerCount() external virtual override view returns (uint40) {
+  //   return uint40(_count);
+  // }
 
   /**
    * @dev maps to !_paused to maintain compatibility with locker V1
    */
-  function creationEnabled() external virtual override view returns (bool) {
-    return !_paused;
-  }
+  // function creationEnabled() external virtual override view returns (bool) {
+  //   return !_paused;
+  // }
   
   /**
    * @dev maps to _setPaused to maintain compatibility with locker V1
    */
-  function setCreationEnabled(bool value_) external virtual override onlyOwner {
-    _setPaused(value_);
-  }
+  // function setCreationEnabled(bool value_) external virtual override onlyOwner {
+  //   _setPaused(value_);
+  // }
 
   /** @dev override this */
   function _createTokenLocker(
@@ -100,21 +100,11 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
     uint256 amount_,
     uint40 unlockTime_
   ) internal virtual returns (
-    uint40 id
+    uint40 id,
+    address lockAddress
   ) {}
 
-  /**
-   * must use createTokenLockerV2 instead
-   */
   function createTokenLocker(
-    address /* tokenAddress_ */,
-    uint256 /* amount_ */,
-    uint40 /* unlockTime_ */
-  ) external virtual override {
-    revert("NOT_IMPLEMENTED");
-  }
-
-  function createTokenLockerV2(
     address tokenAddress_,
     uint256 amountOrTokenId_,
     uint40 unlockTime_
@@ -122,8 +112,7 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
     uint40 id,
     address lockAddress
   ) {
-    id = _createTokenLocker(tokenAddress_, amountOrTokenId_, unlockTime_);
-    lockAddress = address(this);
+    return _createTokenLocker(tokenAddress_, amountOrTokenId_, unlockTime_);
   }
 
   /** @dev this may need overriding on inherited contracts! */
@@ -167,9 +156,7 @@ contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pausable, ID
     address /* token0 */,
     address /* token1 */,
     uint256 /* balance0 */,
-    uint256 /* balance1 */,
-    uint256 /* price0 */,
-    uint256 /* price1 */
+    uint256 /* balance1 */
   ) {
     revert("NOT_IMPLEMENTED");
   }

@@ -39,7 +39,9 @@ interface ITokenLockerBaseV2 is IOwnableV2, IFeeCollector {
   ) external view returns (
     string memory
   );
-  function withdraw() external;
+  function withdraw(
+    uint40 id_
+  ) external;
   function deposit(
     uint40 id_,
     uint256 amountOrTokenId_,
