@@ -77,7 +77,8 @@ abstract contract TokenLockerLPV2 is ITokenLockerLPV2, TokenLockerManagerV2, Tok
     uint40 createdAt,
     uint40 unlockTime,
     uint256 balance,
-    uint256 totalSupply
+    uint256 totalSupply,
+    bool isInfiniteLock
   ){
     isLpToken = id_ < _count;
     id = id_;
@@ -89,5 +90,6 @@ abstract contract TokenLockerLPV2 is ITokenLockerLPV2, TokenLockerManagerV2, Tok
     unlockTime = _locks[id_].unlockTime;
     balance = _locks[id_].amountOrTokenId;
     totalSupply = IERC20(token).totalSupply();
+    isInfiniteLock = _locks[id_].useUnlockCountdown;
   }
 }

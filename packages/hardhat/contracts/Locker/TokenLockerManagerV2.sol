@@ -68,32 +68,6 @@ abstract contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pau
     _countdownDuration = countdownDuration_;
   }
 
-  function isInfiniteLock(uint40 id_) external virtual override view returns (bool) {
-    return _locks[id_].useUnlockCountdown;
-  }
-
-  /**
-   * @dev _count is a uint256, but locker V1 used uint40, so we cast to uint40.
-   * since the max value is uint40 is over a trillion, i think it will be ok.
-   */
-  // function tokenLockerCount() external virtual override view returns (uint40) {
-  //   return uint40(_count);
-  // }
-
-  /**
-   * @dev maps to !_paused to maintain compatibility with locker V1
-   */
-  // function creationEnabled() external virtual override view returns (bool) {
-  //   return !_paused;
-  // }
-  
-  /**
-   * @dev maps to _setPaused to maintain compatibility with locker V1
-   */
-  // function setCreationEnabled(bool value_) external virtual override onlyOwner {
-  //   _setPaused(value_);
-  // }
-
   /** @dev override this */
   function _createTokenLocker(
     address tokenAddress_,
@@ -144,7 +118,8 @@ abstract contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pau
     uint40 /* createdAt */,
     uint40 /* unlockTime */,
     uint256 /* balance */,
-    uint256 /* totalSupply */
+    uint256 /* totalSupply */,
+    bool /* isInfiniteLock */
   ) {
     revert("NOT_IMPLEMENTED");
   }
@@ -158,16 +133,6 @@ abstract contract TokenLockerManagerV2 is ITokenLockerManagerV2, Governable, Pau
     uint256 /* balance0 */,
     uint256 /* balance1 */
   ) {
-    revert("NOT_IMPLEMENTED");
-  }
-
-  /** @dev override this if needed */
-  function notifyLockerOwnerChange(
-    uint40 /* id_ */,
-    address /* newOwner_ */,
-    address /* previousOwner_ */,
-    address /* createdBy_ */
-  ) external virtual override {
     revert("NOT_IMPLEMENTED");
   }
 }

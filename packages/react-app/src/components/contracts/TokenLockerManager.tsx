@@ -83,15 +83,12 @@ const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerCont
   )
 
   const getTokenLockData = useCallback(
-    async (id: number) => {
+    async (id: number): Promise<TokenLockData> => {
       if (!contract) {
         throw new Error('Token locker contract is not loaded')
       }
 
-      const lockData: TokenLockData = {
-        ...(await contract.getTokenLockData(id)),
-        isInfiniteLock: contract.isInfiniteLock ? await contract.isInfiniteLock(id) : false,
-      }
+      const lockData: TokenLockData = await contract.getTokenLockData(id)
 
       return lockData
     },
@@ -136,25 +133,16 @@ const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerCont
       return
     }
 
-    let countFn: any
-
-    if (contract.count) {
-      // v2 locker
-      countFn = contract.count
-    } else if (contract.tokenLockerCount) {
-      // v1 locker
-      countFn = contract.tokenLockerCount
-    } else {
-      throw new Error('INVALID_COUNT')
+    switch (lockType) {
+      default:
+        setTokenLockerCount(await mounted<number>(contract.getTokenLockerCount()))
+        break
+      case 2:
+      case 3:
+        setTokenLockerCount((await mounted<BigNumber>(contract.count())).toNumber())
+        break
     }
-
-    try {
-      setTokenLockerCount(await mounted<number>(countFn()))
-    } catch (err) {
-      console.error(err)
-      setTokenLockerCount(0)
-    }
-  }, [mounted, contract])
+  }, [mounted, contract, lockType])
 
   const updateCountdownDuration = useCallback(async () => {
     if (!contract?.countdownDuration) {

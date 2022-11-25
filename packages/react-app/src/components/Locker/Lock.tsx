@@ -302,7 +302,7 @@ const Lock: React.FC<LockProps> = ({ lockId, lockType = 1 }) => {
         : getLpData(lockData.id),
     )
       .then((result: LPLockData) => {
-        console.log(result)
+        // console.log(result)
         setLpLockData(result)
       })
       .catch((err: Error) => {

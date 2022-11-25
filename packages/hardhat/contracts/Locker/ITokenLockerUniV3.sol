@@ -19,9 +19,9 @@
 pragma solidity ^0.8.0;
 
 import { ITokenLockerLPV2 } from "./ITokenLockerLPV2.sol";
-import { ITokenLockerERC721V2 } from "./ITokenLockerERC721V2.sol";
+import { IERC721Receiver } from "../library/IERC721Receiver.sol";
 
-interface ITokenLockerUniV3 is ITokenLockerLPV2, ITokenLockerERC721V2 {
+interface ITokenLockerUniV3 is ITokenLockerLPV2, IERC721Receiver {
   function getUniV3LpData(uint40 id_) external view returns (
     address token0,
     address token1,

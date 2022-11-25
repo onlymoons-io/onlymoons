@@ -53,4 +53,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   );
 };
 
-module.exports.tags = ["OnlyMoons", "LP Locker", "Uniswap V2"];
+module.exports.tags = ["OnlyMoons", "LP Locker"];

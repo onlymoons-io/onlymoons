@@ -53,8 +53,6 @@ interface ITokenLockerManagerV2 is IGovernable, IPausable, IIDCounter, IFeeColle
   function countdownDuration() external view returns (uint40);
   function setCountdownDuration(uint40 countdownDuration_) external;
 
-  function isInfiniteLock(uint40 id_) external view returns (bool);
-
   function createTokenLocker(
     address tokenAddress_,
     uint256 amountOrTokenId_,
@@ -74,7 +72,8 @@ interface ITokenLockerManagerV2 is IGovernable, IPausable, IIDCounter, IFeeColle
     uint40 createdAt,
     uint40 unlockTime,
     uint256 balance,
-    uint256 totalSupply
+    uint256 totalSupply,
+    bool isInfiniteLock
   );
   function getLpData(uint40 id_) external view returns (
     bool hasLpData,
@@ -89,10 +88,4 @@ interface ITokenLockerManagerV2 is IGovernable, IPausable, IIDCounter, IFeeColle
   ) external view returns (
     uint40[] memory
   );
-  function notifyLockerOwnerChange(
-    uint40 id_,
-    address newOwner_,
-    address previousOwner_,
-    address createdBy_
-  ) external;
 }
