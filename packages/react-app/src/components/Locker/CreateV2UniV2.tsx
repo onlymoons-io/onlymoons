@@ -12,11 +12,15 @@ import { TokenData, LPLockData } from '../../typings'
 import { useTokenLockerManagerContract } from '../contracts/TokenLockerManager'
 import { useUtilContract } from '../contracts/Util'
 import { ERC20ABI } from '../../contracts/external_contracts'
-import { timestampToDateTimeLocal, getNetworkDataByChainId } from '../../util'
+import { getNetworkDataByChainId } from '../../util'
 import Header from './Header'
 import TokenInput from '../TokenInput'
 import { Outer, MidSection, SectionInner } from '../Layout'
 import { usePromise } from 'react-use'
+// import Tooltip from '../Tooltip'
+// import StyledSwitch from '../StyledSwitch'
+import { UnlockTime } from './UnlockTime'
+import { TotalFees } from './TotalFees'
 
 const { Web3Provider } = providers
 const { isAddress } = utils
@@ -72,14 +76,16 @@ const Create: React.FC = () => {
   const [contract, setContract] = useState<Contract>()
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [canSubmit, setCanSubmit] = useState<boolean>(true)
+  const [infiniteLock, setInfiniteLock] = useState<boolean>(false)
+  const [totalFees, setTotalFees] = useState<BigNumber>()
   const [lpToken, setLpToken] = useState<boolean>(false)
   const [lpLockData, setLpLockData] = useState<LPLockData>()
   const [lpToken0Data, setLpToken0Data] = useState<TokenData>()
   const [lpToken1Data, setLpToken1Data] = useState<TokenData>()
 
   const isUnlockTimeValid = useCallback(() => {
-    return unlockTime ? unlockTime * 1000 > Date.now() : false
-  }, [unlockTime])
+    return infiniteLock ? true : unlockTime ? unlockTime * 1000 > Date.now() : false
+  }, [unlockTime, infiniteLock])
 
   const onInputAddress = useCallback(
     (e: React.FormEvent<HTMLInputElement>) => {
@@ -192,7 +198,7 @@ const Create: React.FC = () => {
       !amount ||
       !tokenData ||
       !createTokenLocker ||
-      !unlockTime ||
+      // !unlockTime ||
       !isUnlockTimeValid()
     ) {
       // console.log('account', account)
@@ -201,12 +207,20 @@ const Create: React.FC = () => {
       return console.log('not ready') // not ready
     }
 
+    const _unlockTime = infiniteLock ? 0 : unlockTime ? unlockTime : undefined
+
+    if (typeof _unlockTime === 'undefined') {
+      return console.log('not ready')
+    }
+
     setIsSubmitting(true)
     setCanSubmit(false)
 
     if (approved) {
       // already approved. make the request
-      mounted(createTokenLocker(tokenData.address, utils.parseUnits(amount, tokenData.decimals), unlockTime))
+      mounted(
+        createTokenLocker(tokenData.address, utils.parseUnits(amount, tokenData.decimals), _unlockTime, totalFees),
+      )
         .then((id: number) => {
           setCanSubmit(true)
           setIsSubmitting(false)
@@ -246,6 +260,8 @@ const Create: React.FC = () => {
     createTokenLocker,
     navigate,
     isUnlockTimeValid,
+    totalFees,
+    infiniteLock,
   ])
 
   // useEffect(() => {
@@ -261,12 +277,16 @@ const Create: React.FC = () => {
       return 'Select an amount'
     }
 
-    if (!unlockTime) {
+    if (!isUnlockTimeValid()) {
       return 'Select an unlock time'
     }
 
-    if (unlockTime * 1000 < Date.now()) {
+    if (unlockTime && unlockTime * 1000 < Date.now()) {
       return 'Unlock time must be in the future'
+    }
+
+    if (!totalFees) {
+      return 'Calculating fees...'
     }
 
     return approved ? 'Create lock' : 'Approve'
@@ -342,7 +362,7 @@ const Create: React.FC = () => {
                       </PrimaryButton>
                     </div> */}
 
-                    <div className="flex bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded items-center">
+                    {/* <div className="flex bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded items-center">
                       <div className="p-3 shrink-0">Unlock time</div>
                       <input
                         type="datetime-local"
@@ -350,7 +370,50 @@ const Create: React.FC = () => {
                         defaultValue={unlockTime ? timestampToDateTimeLocal(unlockTime) : undefined}
                         onInput={(e) => setUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))}
                       />
-                    </div>
+                    </div> */}
+
+                    {/* <div className="flex gap-4 items-center justify-center">
+                      <Tooltip
+                        trigger={
+                          <div className="flex flex-col items-center">
+                            <div>Infinite</div>
+                            <StyledSwitch
+                              defaultChecked={infiniteLock}
+                              onCheckedChange={(value) => {
+                                setInfiniteLock(value)
+                              }}
+                            ></StyledSwitch>
+                          </div>
+                        }
+                      >
+                        <div className="w-64 max-w-full">
+                          "Infinite" locks remain locked until the owner starts the unlock countdown, which then sets
+                          the unlock time. The unlock countdown is a globally defined duration. When the countdown has
+                          expired, token(s) can be removed.
+                        </div>
+                      </Tooltip>
+
+                      <div
+                        className={`grow flex bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded items-center ${
+                          infiniteLock ? 'opacity-40' : ''
+                        }`}
+                      >
+                        <div className="p-3 shrink-0">Unlock time</div>
+                        <input
+                          type="datetime-local"
+                          className="flex-grow p-3 outline-none bg-white dark:bg-gray-700 rounded-r"
+                          defaultValue={unlockTime ? timestampToDateTimeLocal(unlockTime) : undefined}
+                          disabled={infiniteLock}
+                          onInput={(e) => setUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))}
+                        />
+                      </div>
+                    </div> */}
+
+                    <UnlockTime onSetInfiniteLock={setInfiniteLock} onSetUnlockTime={setUnlockTime} />
+
+                    <hr className="border-gray-500 border-opacity-20" />
+
+                    <TotalFees onSetTotalFees={setTotalFees} infiniteLock={infiniteLock} />
 
                     <PrimaryButton
                       className="py-4 text-gray-100"
