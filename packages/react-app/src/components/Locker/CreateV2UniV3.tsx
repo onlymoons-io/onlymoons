@@ -12,35 +12,16 @@ import { TokenData /* LPLockData */ } from '../../typings'
 import { useTokenLockerManagerContract } from '../contracts/TokenLockerManager'
 import { useUtilContract } from '../contracts/Util'
 import { NonfungiblePositionManagerABI } from '../../contracts/external_contracts'
-import { timestampToDateTimeLocal, getNetworkDataByChainId, getNativeCoin } from '../../util'
+import { getNetworkDataByChainId } from '../../util'
 import Header from './Header'
-// import TokenInput from '../TokenInput'
 import { Outer, MidSection, SectionInner } from '../Layout'
 import { usePromise } from 'react-use'
-import StyledSwitch from '../StyledSwitch'
 import { useFeesContract } from '../contracts/Fees'
-import Tooltip from '../Tooltip'
+import { TotalFees } from './TotalFees'
+import { UnlockTime } from './UnlockTime'
 
 const { Web3Provider } = providers
-const { isAddress, formatEther /* formatUnits, getAddress */ } = utils
-
-// const Outer = tw.div``
-
-// const MidSection = tw.section`
-//   bg-blue-500
-//   dark:bg-blue-900
-//   py-10
-//   px-5
-//   md:px-5
-// `
-
-// const SectionInner = tw.div`
-//   container
-//   m-auto
-//   md:flex
-//   justify-between
-//   items-center
-// `
+const { isAddress /* formatEther, formatUnits, getAddress */ } = utils
 
 const FormOuter = tw.div`
   bg-gray-100
@@ -170,10 +151,6 @@ const Create: React.FC = () => {
   const [tokenIds, setTokenIds] = useState<Array<BigNumber>>()
   const [infiniteLock, setInfiniteLock] = useState<boolean>(false)
   const [totalFees, setTotalFees] = useState<BigNumber>()
-  // const [lpToken, setLpToken] = useState<boolean>(false)
-  // const [lpLockData, setLpLockData] = useState<LPLockData>()
-  // const [lpToken0Data, setLpToken0Data] = useState<TokenData>()
-  // const [lpToken1Data, setLpToken1Data] = useState<TokenData>()
 
   const isUnlockTimeValid = useCallback(() => {
     return infiniteLock ? true : unlockTime ? unlockTime * 1000 > Date.now() : false
@@ -240,40 +217,6 @@ const Create: React.FC = () => {
       setPositionAddress(undefined)
     }
   }, [])
-
-  // useEffect(() => {
-  //   if (!lpToken || !tokenData || !getLpData) {
-  //     setLpLockData(undefined)
-  //     return
-  //   }
-
-  //   mounted(getLpData<LPLockData>(tokenData.address))
-  //     .then((lpData) => setLpLockData(lpData))
-  //     .catch((err) => {
-  //       console.error(err)
-  //       setLpLockData(undefined)
-  //     })
-  // }, [mounted, lpToken, tokenData, getLpData])
-
-  // useEffect(() => {
-  //   if (!lpLockData || !getTokenData) {
-  //     setLpToken0Data(undefined)
-  //     setLpToken1Data(undefined)
-  //     return
-  //   }
-
-  //   //
-  //   mounted(Promise.all([getTokenData(lpLockData.token0), getTokenData(lpLockData.token1)]))
-  //     .then(([token0Data, token1Data]) => {
-  //       setLpToken0Data(token0Data)
-  //       setLpToken1Data(token1Data)
-  //     })
-  //     .catch((err) => {
-  //       console.error(err)
-  //       setLpToken0Data(undefined)
-  //       setLpToken1Data(undefined)
-  //     })
-  // }, [mounted, lpLockData, getTokenData])
 
   useEffect(() => {
     if (!positionAddress || !connector) {
@@ -509,55 +452,11 @@ const Create: React.FC = () => {
 
                     {tokenId && (
                       <>
-                        <div className="flex gap-4 items-center justify-center">
-                          <Tooltip
-                            trigger={
-                              <div className="flex flex-col items-center">
-                                <div>Infinite</div>
-                                <StyledSwitch
-                                  defaultChecked={infiniteLock}
-                                  onCheckedChange={(value) => {
-                                    setInfiniteLock(value)
-                                  }}
-                                ></StyledSwitch>
-                              </div>
-                            }
-                          >
-                            <div className="w-64 max-w-full">
-                              "Infinite" locks remain locked until the owner starts the unlock countdown, which then
-                              sets the unlock time. The unlock countdown is a globally defined duration. When the
-                              countdown has expired, token(s) can be removed.
-                            </div>
-                          </Tooltip>
-
-                          <div
-                            className={`grow flex bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded items-center ${
-                              infiniteLock ? 'opacity-40' : ''
-                            }`}
-                          >
-                            <div className="p-3 shrink-0">Unlock time</div>
-                            <input
-                              type="datetime-local"
-                              className="flex-grow p-3 outline-none bg-white dark:bg-gray-700 rounded-r"
-                              defaultValue={unlockTime ? timestampToDateTimeLocal(unlockTime) : undefined}
-                              disabled={infiniteLock}
-                              onInput={(e) =>
-                                setUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))
-                              }
-                            />
-                          </div>
-                        </div>
+                        <UnlockTime onSetInfiniteLock={setInfiniteLock} onSetUnlockTime={setUnlockTime} />
 
                         <hr className="border-gray-500 border-opacity-20" />
 
-                        <div>
-                          Fee:{' '}
-                          {totalFees ? (
-                            `${formatEther(totalFees)} ${getNativeCoin(chainId || 0).symbol}`
-                          ) : (
-                            <FontAwesomeIcon icon={faCircleNotch} spin fixedWidth />
-                          )}{' '}
-                        </div>
+                        <TotalFees onSetTotalFees={setTotalFees} infiniteLock={infiniteLock} />
 
                         <PrimaryButton
                           className="py-4 text-gray-100"

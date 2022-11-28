@@ -17,31 +17,11 @@ import Header from './Header'
 import TokenInput from '../TokenInput'
 import { Outer, MidSection, SectionInner } from '../Layout'
 import { usePromise } from 'react-use'
-// import Tooltip from '../Tooltip'
-// import StyledSwitch from '../StyledSwitch'
 import { UnlockTime } from './UnlockTime'
 import { TotalFees } from './TotalFees'
 
 const { Web3Provider } = providers
 const { isAddress } = utils
-
-// const Outer = tw.div``
-
-// const MidSection = tw.section`
-//   bg-blue-500
-//   dark:bg-blue-900
-//   py-10
-//   px-5
-//   md:px-5
-// `
-
-// const SectionInner = tw.div`
-//   container
-//   m-auto
-//   md:flex
-//   justify-between
-//   items-center
-// `
 
 const FormOuter = tw.div`
   bg-gray-100
@@ -339,75 +319,6 @@ const Create: React.FC = () => {
                     </div>
 
                     <TokenInput tokenData={tokenData} onChange={(value) => setAmount(value)} />
-
-                    {/* <div className="flex gap-2 bg-white rounded">
-                      <input
-                        type="text"
-                        className="flex-grow text-right bg-transparent text-gray-800 p-3 rounded text-xl outline-none"
-                        ref={amountInputRef}
-                        onInput={e => setAmount(e.currentTarget.value)}
-                      />
-
-                      <PrimaryButton
-                        className="rounded-l-none text-gray-100"
-                        onClick={() => {
-                          //
-                          if (amountInputRef.current) {
-                            amountInputRef.current.value = utils.formatUnits(tokenData.balance, tokenData.decimals)
-                            setAmount(amountInputRef.current.value)
-                          }
-                        }}
-                      >
-                        MAX
-                      </PrimaryButton>
-                    </div> */}
-
-                    {/* <div className="flex bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded items-center">
-                      <div className="p-3 shrink-0">Unlock time</div>
-                      <input
-                        type="datetime-local"
-                        className="flex-grow p-3 outline-none bg-white dark:bg-gray-700 rounded-r"
-                        defaultValue={unlockTime ? timestampToDateTimeLocal(unlockTime) : undefined}
-                        onInput={(e) => setUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))}
-                      />
-                    </div> */}
-
-                    {/* <div className="flex gap-4 items-center justify-center">
-                      <Tooltip
-                        trigger={
-                          <div className="flex flex-col items-center">
-                            <div>Infinite</div>
-                            <StyledSwitch
-                              defaultChecked={infiniteLock}
-                              onCheckedChange={(value) => {
-                                setInfiniteLock(value)
-                              }}
-                            ></StyledSwitch>
-                          </div>
-                        }
-                      >
-                        <div className="w-64 max-w-full">
-                          "Infinite" locks remain locked until the owner starts the unlock countdown, which then sets
-                          the unlock time. The unlock countdown is a globally defined duration. When the countdown has
-                          expired, token(s) can be removed.
-                        </div>
-                      </Tooltip>
-
-                      <div
-                        className={`grow flex bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded items-center ${
-                          infiniteLock ? 'opacity-40' : ''
-                        }`}
-                      >
-                        <div className="p-3 shrink-0">Unlock time</div>
-                        <input
-                          type="datetime-local"
-                          className="flex-grow p-3 outline-none bg-white dark:bg-gray-700 rounded-r"
-                          defaultValue={unlockTime ? timestampToDateTimeLocal(unlockTime) : undefined}
-                          disabled={infiniteLock}
-                          onInput={(e) => setUnlockTime(Math.ceil(new Date(e.currentTarget.value).getTime() / 1000))}
-                        />
-                      </div>
-                    </div> */}
 
                     <UnlockTime onSetInfiniteLock={setInfiniteLock} onSetUnlockTime={setUnlockTime} />
 
