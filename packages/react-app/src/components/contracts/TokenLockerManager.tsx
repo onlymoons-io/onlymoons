@@ -135,7 +135,7 @@ const TokenLockerManagerContractContextProvider: React.FC<TokenLockerManagerCont
 
     switch (lockType) {
       default:
-        setTokenLockerCount(await mounted<number>(contract.getTokenLockerCount()))
+        setTokenLockerCount(await mounted<number>(contract.tokenLockerCount()))
         break
       case 2:
       case 3:
