@@ -500,6 +500,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  20202021 : {
+    chainId: 20202021,
+    name: 'Poochain',
+    shortName: 'Poop',
+    urlName: 'poochain',
+    nativeCurrency: {
+      address: '0x28e8E40abD4C51817a2Fae589257fA48F115Bc36',
+      name: 'Poochain',
+      symbol: 'POOP',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://www.pooscan.co/',
+    rpcURL: 'https://mainnet.poochain.co/rpc',
+    icon: '/poochain.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // POOP
+      {
+        address: '0x28e8E40abD4C51817a2Fae589257fA48F115Bc36',
+        // pair w/ 0 on https://pooswap.finance/swap
+        stablePair: '0',
+      },
+    ],
+  },
 }
 
 export default function getNetworkDataByChainId(chainId: number): NetworkData | undefined {
