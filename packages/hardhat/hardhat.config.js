@@ -151,6 +151,15 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    
+    fren: {
+			url: "https://rpc-02.frenscan.io",
+			// gasPrice: 1000000000,
+			accounts: {
+				mnemonic: mnemonic(),
+			},
+		},
+
 
     ethw: {
       url: "https://mainnet.ethereumpow.org",

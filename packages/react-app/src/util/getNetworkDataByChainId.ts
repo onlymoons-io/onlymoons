@@ -326,6 +326,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  4444 : {
+    chainId: 4444,
+    name: 'FrenChain',
+    shortName: 'Fren',
+    urlName: 'fren',
+    nativeCurrency: {
+      address: '0x6AEc6F96fa199063919334103275F8624823945C',
+      name: 'FrenChain',
+      symbol: 'FREN',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://frenscan.io',
+    rpcURL: 'https://rpc-02.frenscan.io',
+    icon: '/fren.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // FREN
+      {
+        address: '0x6AEc6F96fa199063919334103275F8624823945C',
+        // pair w/ 0 on 0
+        stablePair: '',
+      },
+    ],
+  },
   7700: {
     chainId: 7700,
     name: 'Canto',

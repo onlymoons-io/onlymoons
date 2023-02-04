@@ -43,6 +43,7 @@
     "deploy:polygon": "yarn deploy --network polygon",
     "deploy:mumbai": "yarn deploy --network mumbai",
     "deploy:kekchain": "yarn deploy --network kekchain",
+    "deploy:fren": "yarn deploy --network fren",
     "deploy:astar": "yarn deploy --network astar",
     "deploy:rinkeby": "yarn deploy --network rinkeby",
     "deploy:ropsten": "yarn deploy --network ropsten",
