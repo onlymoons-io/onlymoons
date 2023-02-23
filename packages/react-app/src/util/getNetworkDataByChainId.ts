@@ -233,6 +233,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  1030 : {
+    chainId: 1030,
+    name: 'Conflux',
+    shortName: 'Conflux',
+    urlName: 'cfx',
+    nativeCurrency: {
+      address: '0x14b2D3bC65e74DAE1030EAFd8ac30c533c976A9b',
+      name: 'Conflux',
+      symbol: 'conflux',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://www.confluxscan.io/',
+    rpcURL: 'https://evm.confluxrpc.com',
+    icon: '/conflux.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // CFX
+      {
+        address: '0x14b2D3bC65e74DAE1030EAFd8ac30c533c976A9b',
+        // pair w/ USDC on https://swappi.io/
+        stablePair: '0x6963EfED0aB40F6C3d7BdA44A05dcf1437C44372',
+      },
+    ],
+  },
   1088: {
     chainId: 1088,
     name: 'Metis Andromeda',
