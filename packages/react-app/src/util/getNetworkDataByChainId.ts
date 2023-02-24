@@ -233,15 +233,15 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
-  1030 : {
+  1030: {
     chainId: 1030,
     name: 'Conflux',
     shortName: 'Conflux',
-    urlName: 'cfx',
+    urlName: 'conflux',
     nativeCurrency: {
       address: '0x14b2D3bC65e74DAE1030EAFd8ac30c533c976A9b',
       name: 'Conflux',
-      symbol: 'conflux',
+      symbol: 'CFX',
       decimals: 18,
       balance: BigNumber.from(0),
     },
@@ -253,8 +253,8 @@ export const networks: Record<number, NetworkData> = {
       // CFX
       {
         address: '0x14b2D3bC65e74DAE1030EAFd8ac30c533c976A9b',
-        // pair w/ USDC on https://swappi.io/
-        stablePair: '0x6963EfED0aB40F6C3d7BdA44A05dcf1437C44372',
+        // pair w/ USDT on https://swappi.io/
+        stablePair: '0x8fcf9c586d45ce7fcf6d714cb8b6b21a13111e0b',
       },
     ],
   },
@@ -525,7 +525,7 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
-  20202021 : {
+  20202021: {
     chainId: 20202021,
     name: 'Poochain',
     shortName: 'Poop',
