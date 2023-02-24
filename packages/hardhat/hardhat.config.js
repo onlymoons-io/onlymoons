@@ -301,6 +301,13 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    conflux: {
+			url: "https://evm.confluxrpc.com",
+			// gasPrice: 1000000000,
+			accounts: {
+				mnemonic: mnemonic(),
+			},
+		},
     rinkebyArbitrum: {
       url: "https://rinkeby.arbitrum.io/rpc",
       gasPrice: 0,

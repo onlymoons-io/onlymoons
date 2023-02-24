@@ -233,6 +233,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  1030: {
+    chainId: 1030,
+    name: 'Conflux',
+    shortName: 'Conflux',
+    urlName: 'conflux',
+    nativeCurrency: {
+      address: '0x14b2D3bC65e74DAE1030EAFd8ac30c533c976A9b',
+      name: 'Conflux',
+      symbol: 'CFX',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://www.confluxscan.io/',
+    rpcURL: 'https://evm.confluxrpc.com',
+    icon: '/conflux.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // CFX
+      {
+        address: '0x14b2D3bC65e74DAE1030EAFd8ac30c533c976A9b',
+        // pair w/ USDT on https://swappi.io/
+        stablePair: '0x8fcf9c586d45ce7fcf6d714cb8b6b21a13111e0b',
+      },
+    ],
+  },
   1088: {
     chainId: 1088,
     name: 'Metis Andromeda',
@@ -500,7 +525,7 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
-  20202021 : {
+  20202021: {
     chainId: 20202021,
     name: 'Poochain',
     shortName: 'Poop',
