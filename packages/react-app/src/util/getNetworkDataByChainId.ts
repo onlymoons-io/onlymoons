@@ -233,6 +233,32 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  917 : {
+    chainId: 917,
+    name: 'Puppy Net',
+    shortName: 'Puppy Net',
+    urlName: 'puppynet',
+    nativeCurrency: {
+      address: '0',
+      name: 'bone',
+      symbol: 'bone',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://puppyscan.shib.io',
+    rpcURL: 'https://puppynet.shibrpc.com',
+    icon: '0',
+    isTestNet: true,
+    supportedLiquidityPairTokens: [
+      // bone
+      {
+        address: '0',
+        // pair w/ 0 on 0
+        stablePair: '0',
+      },
+    ],
+  },
+  
   1030: {
     chainId: 1030,
     name: 'Conflux',

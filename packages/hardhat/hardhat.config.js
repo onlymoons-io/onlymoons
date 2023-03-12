@@ -284,7 +284,13 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
-
+    puppynet: {
+			url: "https://puppynet.shibrpc.com",
+			// gasPrice: 1000000000,
+			accounts: {
+				mnemonic: mnemonic(),
+			},
+		},
     matic: {
       // url: "https://rpc-mainnet.maticvigil.com/",
       url: "https://polygon-rpc.com/",
