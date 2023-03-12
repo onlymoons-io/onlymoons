@@ -314,8 +314,11 @@ export const networks: Record<number, NetworkData> = {
       balance: BigNumber.from(0),
     },
     explorerURL: 'https://explorer.dogechain.dog/',
+    // official dogechain rpc is comically slow.
+    // here it is, but tbh don't bother with it.
     // rpcURL: 'https://rpc.dogechain.dog',
-    rpcURL: 'https://dogechain.ankr.com',
+    // updated ankr rpc, which actually works.
+    rpcURL: 'https://rpc.ankr.com/dogechain',
     icon: '/dogechain.png',
     isTestNet: false,
     supportedLiquidityPairTokens: [
