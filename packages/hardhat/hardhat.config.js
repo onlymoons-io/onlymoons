@@ -308,6 +308,13 @@ module.exports = {
 				mnemonic: mnemonic(),
 			},
 		},
+    fvm: {
+			url: "https://api.node.glif.io",
+			// gasPrice: 1000000000,
+			accounts: {
+				mnemonic: mnemonic(),
+			},
+		},
     rinkebyArbitrum: {
       url: "https://rinkeby.arbitrum.io/rpc",
       gasPrice: 0,
