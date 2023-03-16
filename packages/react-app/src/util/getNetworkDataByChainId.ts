@@ -185,7 +185,7 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
-  314 : {
+  314: {
     chainId: 314,
     name: 'Filecoin',
     shortName: 'FVM',
@@ -197,9 +197,9 @@ export const networks: Record<number, NetworkData> = {
       decimals: 18,
       balance: BigNumber.from(0),
     },
-    explorerURL: 'https://filfox.info/en',
+    explorerURL: 'https://filfox.info/en/',
     rpcURL: 'https://api.node.glif.io',
-    icon: '0',
+    icon: '/fvm.png',
     isTestNet: false,
     supportedLiquidityPairTokens: [
       // FIL

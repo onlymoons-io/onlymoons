@@ -160,13 +160,13 @@ module.exports = {
       },
     },
     poochain: {
-			url: "https://mainnet.poochain.co/rpc",
-			// gasPrice: 1000000000,
-			accounts: {
-				mnemonic: mnemonic(),
-			},
-		},
-    
+      url: "https://mainnet.poochain.co/rpc",
+      // gasPrice: 1000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
+
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/cfeb072b8469447e889da944481d5874", // <---- YOUR INFURA ID! (or it won't work)
 
@@ -302,19 +302,22 @@ module.exports = {
       },
     },
     conflux: {
-			url: "https://evm.confluxrpc.com",
-			// gasPrice: 1000000000,
-			accounts: {
-				mnemonic: mnemonic(),
-			},
-		},
+      url: "https://evm.confluxrpc.com",
+      // gasPrice: 1000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
     fvm: {
-			url: "https://api.node.glif.io",
-			// gasPrice: 1000000000,
-			accounts: {
-				mnemonic: mnemonic(),
-			},
-		},
+      url: "https://api.node.glif.io",
+      // url: "https://api.node.glif.io/rpc/v1",
+      // url: "https://rpc.ankr.com/filecoin",
+      // chainId: 314,
+      // gasPrice: 498650941,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
     rinkebyArbitrum: {
       url: "https://rinkeby.arbitrum.io/rpc",
       gasPrice: 0,
