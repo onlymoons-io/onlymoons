@@ -36,6 +36,7 @@
     "deploy:metistest": "yarn deploy --network metistest",
     "deploy:milkomeda": "yarn deploy --network milkomeda",
     "deploy:arbitrum": "yarn deploy --network arbitrum",
+    "deploy:fvm": "yarn deploy --network fvm",
     "deploy:avax": "yarn deploy --network avax",
     "deploy:canto": "yarn deploy --network canto",
     "deploy:fuse": "yarn deploy --network fuse",

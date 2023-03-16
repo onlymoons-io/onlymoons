@@ -25,6 +25,9 @@
       "137": {
         "polygon": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
       },
+      "314": {
+        "fvm": "0x84a6ee8D28e322DD40B1988F06e2c58E943fE0a9"
+      },
       "588": {
         "metistest": "0x8DEE2F1768ed500FA9e0598378C6e8F18DAB07D6"
       },
@@ -442,6 +445,9 @@
       "137": {
         "polygon": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
       },
+      "314": {
+        "fvm": "0xF7B1f90024B10aF90B9e30D992193cFA7E1aC87C"
+      },
       "588": {
         "metistest": "0x92586B715c85b644a1fCe5186Bf51f759ECD3597"
       },
@@ -789,6 +795,9 @@
       },
       "137": {
         "polygon": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+      },
+      "314": {
+        "fvm": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
       },
       "588": {
         "metistest": "0x67be50aCd00883C9E85539b88aABE7697d607576"
