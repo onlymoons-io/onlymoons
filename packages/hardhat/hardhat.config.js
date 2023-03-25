@@ -301,6 +301,13 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    era: {
+			url: "https://mainnet.era.zksync.io",
+			// gasPrice: 1000000000,
+			accounts: {
+				mnemonic: mnemonic(),
+			},
+		},
     conflux: {
 			url: "https://evm.confluxrpc.com",
 			// gasPrice: 1000000000,

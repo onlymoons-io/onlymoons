@@ -185,6 +185,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  324 : {
+    chainId: 324,
+    name: 'zkSync Era',
+    shortName: 'Era',
+    urlName: 'era',
+    nativeCurrency: {
+      address: '0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91',
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://explorer.zksync.io/',
+    rpcURL: 'https://mainnet.era.zksync.io',
+    icon: '/era.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // ETH
+      {
+        address: '0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91',
+        // pair w/ USDC on 0
+        stablePair: '0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4',
+      },
+    ],
+  },  
   588: {
     chainId: 588,
     name: 'Metis Stardust (testnet)',
