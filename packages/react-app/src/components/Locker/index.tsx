@@ -40,7 +40,7 @@ const Locker: React.FC<LockerProps> = ({ useWatchlist = false }) => {
 
   const networkToUse = Object.keys(contracts.TokenLockerManagerV1.networks)
     .filter((v) => Object.keys((contracts.TokenLockerManagerV1.networks as any)[v])[0] === _chainIdToUse)
-    .map((v) => v)
+    // .map((v) => v)
     .shift()
   const chainIdToUse = networkToUse ? networkToUse : _chainIdToUse
 

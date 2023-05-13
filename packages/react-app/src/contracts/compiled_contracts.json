@@ -28,6 +28,9 @@
       "314": {
         "fvm": "0x84a6ee8D28e322DD40B1988F06e2c58E943fE0a9"
       },
+      "369": {
+        "pulse": "0x695C4825C25dd354eCC393eDF092Ac61d50E5B61"
+      },
       "588": {
         "metistest": "0x8DEE2F1768ed500FA9e0598378C6e8F18DAB07D6"
       },
@@ -448,6 +451,9 @@
       "314": {
         "fvm": "0xF7B1f90024B10aF90B9e30D992193cFA7E1aC87C"
       },
+      "369": {
+        "pulse": "0x096F3f7D5b656BdBc0acBcC0B43D07F9e5ecDa2f"
+      },
       "588": {
         "metistest": "0x92586B715c85b644a1fCe5186Bf51f759ECD3597"
       },
@@ -798,6 +804,9 @@
       },
       "314": {
         "fvm": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
+      },
+      "369": {
+        "pulse": "0x58E77ae66F74dEe08F0A73E29996856ffc7b5B80"
       },
       "588": {
         "metistest": "0x67be50aCd00883C9E85539b88aABE7697d607576"
