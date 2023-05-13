@@ -284,6 +284,13 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    pulse: {
+      url: "https://rpc.pulsechain.com",
+      // gasPrice: 1000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
 
     matic: {
       // url: "https://rpc-mainnet.maticvigil.com/",
