@@ -285,12 +285,12 @@ module.exports = {
       },
     },
     pulse: {
-			url: "https://rpc.pulsechain.com",
-			// gasPrice: 1000000000,
-			accounts: {
-				mnemonic: mnemonic(),
-			},
-		},
+      url: "https://rpc.pulsechain.com",
+      // gasPrice: 1000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
 
     matic: {
       // url: "https://rpc-mainnet.maticvigil.com/",
