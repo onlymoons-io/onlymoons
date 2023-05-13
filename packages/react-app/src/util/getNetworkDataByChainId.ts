@@ -210,6 +210,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  369 : {
+    chainId: 369,
+    name: 'PulseChain',
+    shortName: 'Pulse',
+    urlName: 'pulse',
+    nativeCurrency: {
+      address: '0',
+      name: 'PULSE',
+      symbol: 'PLS',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://scan.pulsechain.com',
+    rpcURL: 'https://rpc.pulsechain.com',
+    icon: '/pulse.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // PLS
+      {
+        address: '0',
+        // pair w/ 0 on 0
+        stablePair: '0',
+      },
+    ],
+  },  
   588: {
     chainId: 588,
     name: 'Metis Stardust (testnet)',
