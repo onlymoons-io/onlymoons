@@ -505,7 +505,7 @@ export const networks: Record<number, NetworkData> = {
     ],
   },
   59144: {
-    chainId: 43114,
+    chainId: 59144,
     name: 'Linea',
     shortName: 'linea',
     urlName: 'linea',
