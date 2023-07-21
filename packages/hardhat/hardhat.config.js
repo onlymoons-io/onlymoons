@@ -244,11 +244,11 @@ module.exports = {
       },
     },
     linea: {
-        url: "https://linea-mainnet.infura.io/v3",
-        // gasPrice: 1000000000,
-        accounts: {
-            mnemonic: mnemonic(),
-        },
+      url: "https://rpc.linea.build/",
+      gasPrice: 10000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
     },
 
     metistest: {
