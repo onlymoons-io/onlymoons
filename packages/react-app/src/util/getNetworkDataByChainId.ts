@@ -517,7 +517,7 @@ export const networks: Record<number, NetworkData> = {
       balance: BigNumber.from(0),
     },
     explorerURL: 'https://lineascan.build/',
-    rpcURL: 'https://linea-mainnet.infura.io/v3',
+    rpcURL: 'https://rpc.linea.build',
     icon: '/linea.png',
     isTestNet: false,
     supportedLiquidityPairTokens: [
