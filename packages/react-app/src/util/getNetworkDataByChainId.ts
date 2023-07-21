@@ -504,6 +504,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  59144: {
+    chainId: 59144,
+    name: 'Linea',
+    shortName: 'linea',
+    urlName: 'linea',
+    nativeCurrency: {
+      address: '0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f',
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://lineascan.build/',
+    rpcURL: 'https://linea-mainnet.infura.io/v3',
+    icon: '/linea.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      //
+      {
+        address: '0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f',
+        // pair w/ BUSD on Horizon Dex
+        stablePair: '0x7d43AABC515C356145049227CeE54B608342c0ad',
+      },
+    ],
+  },
   80001: {
     chainId: 43114,
     name: 'Polygon Mumbai (testnet)',
