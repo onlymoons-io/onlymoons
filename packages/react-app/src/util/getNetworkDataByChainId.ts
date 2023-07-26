@@ -429,6 +429,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  8453: {
+    chainId: 8453,
+    name: 'Base',
+    shortName: 'base',
+    urlName: 'base',
+    nativeCurrency: {
+      address: '0x4200000000000000000000000000000000000006',
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://basescan.org/',
+    rpcURL: 'https://developer-access-mainnet.base.org/',
+    icon: '/base.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // ETH
+      {
+        address: '0x4200000000000000000000000000000000000006',
+        // pair w/ 0 on 0
+        stablePair: '0',
+      },
+    ],
+  },
   42161: {
     chainId: 42161,
     name: 'Arbitrum',
