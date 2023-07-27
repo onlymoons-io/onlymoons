@@ -49,8 +49,14 @@
       "2001": {
         "milkomeda": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
       },
+      "5000": {
+        "mantle": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+      },
       "7700": {
         "canto": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
+      },
+      "8453": {
+        "base": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       },
       "10001": {
         "ethw": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
@@ -475,8 +481,14 @@
       "2001": {
         "milkomeda": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
       },
+      "5000": {
+        "mantle": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
+      },
       "7700": {
         "canto": "0x15b7Bd005EfFd43d7C9A05D73beBeBb84e38aFf0"
+      },
+      "8453": {
+        "base": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
       },
       "10001": {
         "ethw": "0x15b7Bd005EfFd43d7C9A05D73beBeBb84e38aFf0"
@@ -832,8 +844,14 @@
       "2001": {
         "milkomeda": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       },
+      "5000": {
+        "mantle": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+      },
       "7700": {
         "canto": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
+      },
+      "8453": {
+        "base": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
       },
       "10001": {
         "ethw": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"

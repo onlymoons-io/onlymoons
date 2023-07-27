@@ -404,6 +404,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  5000: {
+    chainId: 5000,
+    name: 'Mantle',
+    shortName: 'mantle',
+    urlName: 'mantle',
+    nativeCurrency: {
+      address: '0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8',
+      name: 'Mantle',
+      symbol: 'MTL',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://explorer.mantle.xyz/',
+    rpcURL: 'https://rpc.mantle.xyz/',
+    icon: '/mantle.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // MTL
+      {
+        address: '0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8',
+        // pair w/ USDT on 0
+        stablePair: '0x201EBa5CC46D216Ce6DC03F6a759e8E766e956aE',
+      },
+    ],
+  },
   7700: {
     chainId: 7700,
     name: 'Canto',
