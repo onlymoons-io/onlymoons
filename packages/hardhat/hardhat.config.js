@@ -166,19 +166,19 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    sats: {
+      url: "https://mainnet-rpc.satoshichain.io/",
+      gasPrice: 1500000000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
 
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/cfeb072b8469447e889da944481d5874", // <---- YOUR INFURA ID! (or it won't work)
 
       //    url: "https://speedy-nodes-nyc.moralis.io/XXXXXXXXXXXXXXXXXXXXXXX/eth/rinkeby", // <---- YOUR MORALIS ID! (not limited to infura)
 
-      accounts: {
-        mnemonic: mnemonic(),
-      },
-    },
-    mantle: {
-      url: "https://rpc.mantle.xyz/",
-      // gasPrice: 1000000000,
       accounts: {
         mnemonic: mnemonic(),
       },
@@ -250,14 +250,6 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
-    linea: {
-      url: "https://rpc.linea.build/",
-      gasPrice: 10000000000,
-      accounts: {
-        mnemonic: mnemonic(),
-      },
-    },
-
     metistest: {
       url: "https://stardust.metis.io/?owner=588",
       accounts: {
