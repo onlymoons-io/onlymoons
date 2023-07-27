@@ -404,6 +404,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  5000: {
+    chainId: 5000,
+    name: 'Mantle',
+    shortName: 'mantle',
+    urlName: 'mantle',
+    nativeCurrency: {
+      address: '0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8',
+      name: 'Mantle',
+      symbol: 'MTL',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://explorer.mantle.xyz/',
+    rpcURL: 'https://rpc.mantle.xyz/',
+    icon: '/mantle.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // MTL
+      {
+        address: '0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8',
+        // pair w/ USDT on 0
+        stablePair: '0x201EBa5CC46D216Ce6DC03F6a759e8E766e956aE',
+      },
+    ],
+  },
   7700: {
     chainId: 7700,
     name: 'Canto',
@@ -426,6 +451,55 @@ export const networks: Record<number, NetworkData> = {
         address: '0x826551890Dc65655a0Aceca109aB11AbDbD7a07B',
         // pair w/ USDC on cantoswap.fi
         stablePair: '0x628851EF2aAd2ACC4c4dD2E13fdceEBA0e5106bA',
+      },
+    ],
+  },
+  8453: {
+    chainId: 8453,
+    name: 'Base',
+    shortName: 'base',
+    urlName: 'base',
+    nativeCurrency: {
+      address: '0x4200000000000000000000000000000000000006',
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://basescan.org/',
+    rpcURL: 'https://developer-access-mainnet.base.org/',
+    icon: '/base.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // ETH
+      {
+        address: '0x4200000000000000000000000000000000000006',
+        // pair w/ 0 on 0
+        stablePair: '0',
+      },
+    ],
+  },
+  12009: {
+    chainId: 12009,
+    name: 'SatoshiChain',
+    shortName: 'satoshichain',
+    urlName: 'sats',
+    nativeCurrency: {
+      address: '0xf340aC507F8E9DD94f26a33B0Ecd8dF9fA85AAf4',
+      name: 'Satoshi',
+      symbol: 'SATS',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://satoshiscan.io',
+    rpcURL: 'https://mainnet-rpc.satoshichain.io/',
+    icon: '/sats.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // SatoshiChain
+      {
+        address: '0xf340aC507F8E9DD94f26a33B0Ecd8dF9fA85AAf4',
+        stablePair: '',
       },
     ],
   },
@@ -501,31 +575,6 @@ export const networks: Record<number, NetworkData> = {
         address: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7',
         // pair w/ USDC.e on https://traderjoexyz.com/home#/
         stablePair: '0xA389f9430876455C36478DeEa9769B7Ca4E3DDB1',
-      },
-    ],
-  },
-  59144: {
-    chainId: 59144,
-    name: 'Linea',
-    shortName: 'linea',
-    urlName: 'linea',
-    nativeCurrency: {
-      address: '0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f',
-      name: 'Ethereum',
-      symbol: 'ETH',
-      decimals: 18,
-      balance: BigNumber.from(0),
-    },
-    explorerURL: 'https://lineascan.build/',
-    rpcURL: 'https://rpc.linea.build',
-    icon: '/linea.png',
-    isTestNet: false,
-    supportedLiquidityPairTokens: [
-      //
-      {
-        address: '0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f',
-        // pair w/ BUSD on Horizon Dex
-        stablePair: '0x7d43AABC515C356145049227CeE54B608342c0ad',
       },
     ],
   },
