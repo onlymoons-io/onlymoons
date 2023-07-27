@@ -166,6 +166,21 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    sats: {
+      url: "https://mainnet-rpc.satoshichain.io/",
+      gasPrice: 1500000000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
+
+    base: {
+      url: "https://developer-access-mainnet.base.org/",
+      // gasPrice: 1000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
 
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/cfeb072b8469447e889da944481d5874", // <---- YOUR INFURA ID! (or it won't work)
@@ -176,6 +191,13 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+	mantle: {
+			url: "https://rpc.mantle.xyz/",
+			// gasPrice: 1000000000,
+			accounts: {
+				mnemonic: mnemonic(),
+			},
+		},
     kovan: {
       url: "https://kovan.infura.io/v3/adc2f4348c894e4bbb5b09ddb3ffdf07", // <---- YOUR INFURA ID! (or it won't work)
 
@@ -243,14 +265,6 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
-    linea: {
-      url: "https://rpc.linea.build/",
-      gasPrice: 10000000000,
-      accounts: {
-        mnemonic: mnemonic(),
-      },
-    },
-
     metistest: {
       url: "https://stardust.metis.io/?owner=588",
       accounts: {
