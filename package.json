@@ -35,6 +35,7 @@
     "deploy:conflux": "yarn deploy --network conflux",
     "deploy:metistest": "yarn deploy --network metistest",
     "deploy:milkomeda": "yarn deploy --network milkomeda",
+    "deploy:base": "yarn deploy --network base",
     "deploy:arbitrum": "yarn deploy --network arbitrum",
     "deploy:pulse": "yarn deploy --network pulse",
     "deploy:fvm": "yarn deploy --network fvm",
