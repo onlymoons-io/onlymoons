@@ -265,6 +265,13 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    linea: {
+      url: "https://rpc.linea.build/",
+      gasPrice: 10000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
     metistest: {
       url: "https://stardust.metis.io/?owner=588",
       accounts: {

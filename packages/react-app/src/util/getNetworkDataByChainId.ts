@@ -491,7 +491,7 @@ export const networks: Record<number, NetworkData> = {
       decimals: 18,
       balance: BigNumber.from(0),
     },
-    explorerURL: 'https://satoshiscan.io',
+    explorerURL: 'https://satoshiscan.io/',
     rpcURL: 'https://mainnet-rpc.satoshichain.io/',
     icon: '/sats.png',
     isTestNet: false,
@@ -575,6 +575,31 @@ export const networks: Record<number, NetworkData> = {
         address: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7',
         // pair w/ USDC.e on https://traderjoexyz.com/home#/
         stablePair: '0xA389f9430876455C36478DeEa9769B7Ca4E3DDB1',
+      },
+    ],
+  },
+  59144: {
+    chainId: 59144,
+    name: 'Linea',
+    shortName: 'linea',
+    urlName: 'linea',
+    nativeCurrency: {
+      address: '0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f',
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://lineascan.build/',
+    rpcURL: 'https://rpc.linea.build',
+    icon: '/linea.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      //
+      {
+        address: '0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f',
+        // pair w/ BUSD on Horizon Dex
+        stablePair: '0x7d43AABC515C356145049227CeE54B608342c0ad',
       },
     ],
   },
