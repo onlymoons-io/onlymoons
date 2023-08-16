@@ -117,6 +117,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  109: {
+    chainId: 109,
+    name: 'Shibarium',
+    shortName: 'Shibarium',
+    urlName: 'shibarium',
+    nativeCurrency: {
+      address: '0',
+      name: '0',
+      symbol: '0',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'http://shibariumscan.io/',
+    rpcURL: 'https://www.shibrpc.com/',
+    icon: '/shibarium.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // 0
+      {
+        address: '0',
+        // pair w/ 0 on 0
+        stablePair: '0',
+      },
+    ],
+  },
   122: {
     chainId: 122,
     name: 'Fuse',

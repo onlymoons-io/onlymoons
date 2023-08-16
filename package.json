@@ -36,6 +36,7 @@
     "deploy:conflux": "yarn deploy --network conflux",
     "deploy:metistest": "yarn deploy --network metistest",
     "deploy:milkomeda": "yarn deploy --network milkomeda",
+    "deploy:shibarium": "yarn deploy --network shibarium",
     "deploy:base": "yarn deploy --network base",
     "deploy:mantle": "yarn deploy --network mantle",
     "deploy:arbitrum": "yarn deploy --network arbitrum",
