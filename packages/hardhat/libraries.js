@@ -11,5 +11,7 @@ module.exports = {
   // polygon
   // Util: "0x77110f67C0EF3c98c43570BADe06046eF6549876",
   // avax
-  Util: "0x77110f67C0EF3c98c43570BADe06046eF6549876",
+  // Util: "0x77110f67C0EF3c98c43570BADe06046eF6549876",
+  // base
+  Util: "0x80531d9bAE23fFc04105a58E3771FFe10F86de11",
 };
