@@ -198,13 +198,13 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
-	mantle: {
-			url: "https://rpc.mantle.xyz/",
-			// gasPrice: 1000000000,
-			accounts: {
-				mnemonic: mnemonic(),
-			},
-		},
+    mantle: {
+      url: "https://rpc.mantle.xyz/",
+      // gasPrice: 1000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
     kovan: {
       url: "https://kovan.infura.io/v3/adc2f4348c894e4bbb5b09ddb3ffdf07", // <---- YOUR INFURA ID! (or it won't work)
 
@@ -486,7 +486,20 @@ module.exports = {
     },
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    // apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: {
+      base: process.env.ETHERSCAN_API_KEY_BASE || process.env.ETHERSCAN_API_KEY,
+    },
+    customChains: [
+      {
+        network: "base",
+        chainId: 8453,
+        urls: {
+          apiURL: "https://api.basescan.org/api",
+          browserURL: "https://basescan.org",
+        },
+      },
+    ],
   },
 };
 
