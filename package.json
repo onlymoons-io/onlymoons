@@ -1,6 +1,6 @@
 {
   "name": "@onlymoons-io/onlymoons",
-  "version": "0.0.39",
+  "version": "0.0.40",
   "keywords": [
     "ethereum",
     "react",
@@ -29,6 +29,7 @@
     "deploy:eth": "yarn deploy --network eth",
     "deploy:cro": "yarn deploy --network cro",
     "deploy:bsc": "yarn deploy --network bsc",
+    "deploy:opbnb": "yarn deploy --network opbnb",
     "deploy:localhost": "yarn deploy --network localhost",
     "deploy:bsctest": "yarn deploy --network bsctest",
     "deploy:metis": "yarn deploy --network metis",

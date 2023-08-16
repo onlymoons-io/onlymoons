@@ -25,6 +25,9 @@
       "137": {
         "polygon": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
       },
+      "204": {
+        "opbnb": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+      },
       "314": {
         "fvm": "0x84a6ee8D28e322DD40B1988F06e2c58E943fE0a9"
       },
@@ -460,6 +463,9 @@
       "137": {
         "polygon": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
       },
+      "204": {
+        "opbnb": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
+      },
       "314": {
         "fvm": "0xF7B1f90024B10aF90B9e30D992193cFA7E1aC87C"
       },
@@ -825,6 +831,9 @@
       },
       "137": {
         "polygon": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+      },
+      "204": {
+        "opbnb": "0x80531d9bae23ffc04105a58e3771ffe10f86de11"
       },
       "314": {
         "fvm": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
