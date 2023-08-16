@@ -185,6 +185,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  204: {
+    chainId: 204,
+    name: 'opBNB',
+    shortName: 'opBNB',
+    urlName: 'opbnb',
+    nativeCurrency: {
+      address: '0x4200000000000000000000000000000000000006',
+      name: 'Binance',
+      symbol: 'BNB',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://mainnet.opbnbscan.com/',
+    rpcURL: 'https://opbnb-mainnet-rpc.bnbchain.org/',
+    icon: '/opbnb.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // BNB
+      {
+        address: '0x4200000000000000000000000000000000000006',
+        // pair w/ 0 on 0
+        stablePair: '0',
+      },
+    ],
+  },
   314: {
     chainId: 314,
     name: 'Filecoin',

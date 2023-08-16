@@ -125,7 +125,14 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
-
+    opbnb: {
+        url: "https://opbnb-mainnet-rpc.bnbchain.org/",
+        // gasPrice: 1000000000,
+        accounts: {
+            mnemonic: mnemonic(),
+        },
+    },
+    
     avax: {
       url: "https://api.avax.network/ext/bc/C/rpc",
 
