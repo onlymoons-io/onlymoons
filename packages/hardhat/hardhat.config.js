@@ -140,6 +140,13 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    shibarium: {
+      url: "https://www.shibrpc.com/",
+      // gasPrice: 1000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
 
     canto: {
       url: "https://jsonrpc.canto.nodestake.top/",

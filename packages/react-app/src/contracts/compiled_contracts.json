@@ -16,6 +16,9 @@
       "97": {
         "bsctest": "0x67f5b7f5Ed623De0F57AE53B6801812Ad73b5d66"
       },
+      "109": {
+        "shibarium": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+      },
       "122": {
         "fuse": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       },
@@ -454,6 +457,9 @@
       "97": {
         "bsctest": "0x02922138D7980B8C68f0a35395c81cf677eeAe24"
       },
+      "109": {
+        "shibarium": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
+      },
       "122": {
         "fuse": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
       },
@@ -822,6 +828,9 @@
       },
       "97": {
         "bsctest": "0x82CD31c0a0de621b52ee80f8f14d55Ffd5cb734A"
+      },
+      "109": {
+        "shibarium": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
       },
       "122": {
         "fuse": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"

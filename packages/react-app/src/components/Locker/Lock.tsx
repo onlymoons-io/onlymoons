@@ -450,7 +450,10 @@ const Lock: React.FC<LockProps> = ({ lockId }) => {
                       fixedWidth
                     />
                     {getFormattedAmount(lockData.balance, lockTokenData?.decimals)} (
-                    {utils.formatUnits(lockData.balance.mul(10000).div(lockData.totalSupply), 2)}%)
+                    {lockData.totalSupply.gt(0)
+                      ? utils.formatUnits(lockData.balance.mul(10000).div(lockData.totalSupply), 2)
+                      : '0.0'}
+                    %)
                   </div>
 
                   {lpToken0Data && lpToken1Data && (
