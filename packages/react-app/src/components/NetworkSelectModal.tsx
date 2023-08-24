@@ -13,7 +13,11 @@ import { useNetworkSwitcherContext } from './NetworkSwitcher'
 const allNetworkData: Array<NetworkData> = Object.keys(networks)
   .map((key) => getNetworkDataByChainId(parseInt(key)) as NetworkData)
   // sort network data array by name
-  .sort((a, b) => (a.name > b.name ? 1 : a.name < b.name ? -1 : 0))
+  .sort((a, b) => {
+    const aa = a.name.toLowerCase()
+    const bb = b.name.toLowerCase()
+    return aa > bb ? 1 : aa < bb ? -1 : 0
+  })
 
 const NetworkSelectModal: React.FC = () => {
   const { chainId } = useContext(getWeb3ReactContext('constant'))

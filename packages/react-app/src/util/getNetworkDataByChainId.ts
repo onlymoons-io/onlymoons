@@ -224,7 +224,7 @@ export const networks: Record<number, NetworkData> = {
     },
     explorerURL: 'https://mainnet.opbnbscan.com/',
     rpcURL: 'https://opbnb-mainnet-rpc.bnbchain.org/',
-    icon: '/opbnb.png',
+    icon: '/opBNB.png',
     isTestNet: false,
     supportedLiquidityPairTokens: [
       // BNB

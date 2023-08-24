@@ -141,11 +141,11 @@ module.exports = {
       },
     },
     shibarium: {
-        url: "https://www.shibrpc.com/",
-        // gasPrice: 1000000000,
-        accounts: {
-            mnemonic: mnemonic(),
-        },
+      url: "https://www.shibrpc.com/",
+      // gasPrice: 1000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
     },
 
     canto: {
