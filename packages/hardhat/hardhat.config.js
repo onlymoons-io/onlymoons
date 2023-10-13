@@ -254,6 +254,14 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    scroll: {
+      url: "https://rpc.scroll.io/",
+      chainId: 534352,
+      // gasPrice: 1000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
     bsc: {
       url: "https://bsc-dataseed.binance.org/",
       accounts: {
