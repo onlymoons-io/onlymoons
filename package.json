@@ -45,6 +45,7 @@
     "deploy:avax": "yarn deploy --network avax",
     "deploy:canto": "yarn deploy --network canto",
     "deploy:fuse": "yarn deploy --network fuse",
+    "deploy:scroll": "yarn deploy --network scroll",
     "deploy:sats": "yarn deploy --network sats",
     "deploy:ethw": "yarn deploy --network ethw",
     "deploy:fusetest": "yarn deploy --network fusetest",

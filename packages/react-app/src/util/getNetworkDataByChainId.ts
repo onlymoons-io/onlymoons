@@ -727,6 +727,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  534352: {
+    chainId: 534352,
+    name: 'Scroll',
+    shortName: 'Scroll',
+    urlName: 'scroll',
+    nativeCurrency: {
+      address: '0x5300000000000000000000000000000000000004',
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://blockscout.scroll.io/',
+    rpcURL: 'https://rpc.scroll.io/',
+    icon: '/scroll.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // ETH
+      {
+        address: '0x5300000000000000000000000000000000000004',
+        // pair w/ 0 on 0
+        stablePair: '0',
+      },
+    ],
+  },
   20202021: {
     chainId: 20202021,
     name: 'Poochain',
