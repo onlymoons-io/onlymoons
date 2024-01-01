@@ -210,6 +210,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  169 : {
+    chainId: 169,
+    name: 'Manta',
+    shortName: 'Manta',
+    urlName: 'manta',
+    nativeCurrency: {
+      address: '0x0Dc808adcE2099A9F62AA87D9670745AbA741746',
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://pacific-explorer.manta.network/',
+    rpcURL: 'https://pacific-rpc.manta.network/http',
+    icon: '/manta.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // ETH
+      {
+        address: '0x0Dc808adcE2099A9F62AA87D9670745AbA741746',
+        // pair w/ USDC on Quickswap
+        stablePair: '0xb73603C5d87fA094B7314C74ACE2e64D165016fb',
+      },
+    ],
+  },  
   204: {
     chainId: 204,
     name: 'opBNB',

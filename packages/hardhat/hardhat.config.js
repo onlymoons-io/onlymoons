@@ -212,6 +212,13 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    manta: {
+			url: "https://pacific-rpc.manta.network/http",
+			// gasPrice: 1000000000,
+			accounts: {
+				mnemonic: mnemonic(),
+			},
+		},
     kovan: {
       url: "https://kovan.infura.io/v3/adc2f4348c894e4bbb5b09ddb3ffdf07", // <---- YOUR INFURA ID! (or it won't work)
 
