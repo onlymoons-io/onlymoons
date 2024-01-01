@@ -112,7 +112,7 @@ module.exports = {
     },
 
     dogechain: {
-      url: "https://rpc01-sg.dogechain.dog",
+      url: "https://rpc.dogechain.dog",
       accounts: {
         mnemonic: mnemonic(),
       },
