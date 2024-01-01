@@ -777,7 +777,7 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
-  245022934 : {
+  245022934: {
     chainId: 245022934,
     name: 'Neon',
     shortName: 'Neon',
@@ -801,7 +801,7 @@ export const networks: Record<number, NetworkData> = {
         stablePair: '0xea6b04272f9f62f997f666f07d3a974134f7ffb9',
       },
     ],
-  },  
+  },
 }
 
 export default function getNetworkDataByChainId(chainId: number): NetworkData | undefined {
