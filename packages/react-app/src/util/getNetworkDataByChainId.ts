@@ -418,7 +418,7 @@ export const networks: Record<number, NetworkData> = {
     // here it is, but tbh don't bother with it.
     // rpcURL: 'https://rpc.dogechain.dog',
     // updated ankr rpc, which actually works.
-    rpcURL: 'https://rpc.ankr.com/dogechain',
+    rpcURL: 'https://rpc.dogechain.dog',
     icon: '/dogechain.png',
     isTestNet: false,
     supportedLiquidityPairTokens: [
