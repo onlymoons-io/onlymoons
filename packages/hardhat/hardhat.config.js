@@ -112,7 +112,7 @@ module.exports = {
     },
 
     dogechain: {
-      url: "https://rpc01-sg.dogechain.dog",
+      url: "https://rpc.dogechain.dog",
       accounts: {
         mnemonic: mnemonic(),
       },
@@ -207,6 +207,13 @@ module.exports = {
     },
     mantle: {
       url: "https://rpc.mantle.xyz/",
+      // gasPrice: 1000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
+    manta: {
+      url: "https://pacific-rpc.manta.network/http",
       // gasPrice: 1000000000,
       accounts: {
         mnemonic: mnemonic(),
