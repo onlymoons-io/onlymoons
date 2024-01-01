@@ -210,7 +210,7 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
-  169 : {
+  169: {
     chainId: 169,
     name: 'Manta',
     shortName: 'Manta',
@@ -234,7 +234,7 @@ export const networks: Record<number, NetworkData> = {
         stablePair: '0xb73603C5d87fA094B7314C74ACE2e64D165016fb',
       },
     ],
-  },  
+  },
   204: {
     chainId: 204,
     name: 'opBNB',
