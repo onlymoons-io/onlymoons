@@ -28,6 +28,9 @@
       "137": {
         "polygon": "0x016c1D8cf86f60A5382BA5c42D4be960CBd1b868"
       },
+      "169": {
+        "manta": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+      },
       "204": {
         "opbnb": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       },
@@ -472,6 +475,9 @@
       "137": {
         "polygon": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
       },
+      "169": {
+        "manta": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
+      },
       "204": {
         "opbnb": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
       },
@@ -846,6 +852,9 @@
       },
       "137": {
         "polygon": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+      },
+      "169": {
+        "manta": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
       },
       "204": {
         "opbnb": "0x80531d9bae23ffc04105a58e3771ffe10f86de11"

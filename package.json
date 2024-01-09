@@ -1,6 +1,6 @@
 {
   "name": "@onlymoons-io/onlymoons",
-  "version": "0.0.41",
+  "version": "0.0.43",
   "keywords": [
     "ethereum",
     "react",
@@ -39,6 +39,7 @@
     "deploy:shibarium": "yarn deploy --network shibarium",
     "deploy:base": "yarn deploy --network base",
     "deploy:mantle": "yarn deploy --network mantle",
+    "deploy:manta": "yarn deploy --network manta",
     "deploy:arbitrum": "yarn deploy --network arbitrum",
     "deploy:pulse": "yarn deploy --network pulse",
     "deploy:fvm": "yarn deploy --network fvm",
