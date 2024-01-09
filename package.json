@@ -60,6 +60,7 @@
     "deploy:dogechain": "yarn deploy --network dogechain",
     "deploy:kektest": "yarn deploy --network kektest",
     "deploy:poochain": "yarn deploy --network poochain",
+    "deploy:neon": "yarn deploy --network neon",
     "watch": "yarn workspace @onlymoons-io/hardhat watch",
     "accounts": "yarn workspace @onlymoons-io/hardhat accounts",
     "balance": "yarn workspace @onlymoons-io/hardhat balance",
