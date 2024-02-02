@@ -44,6 +44,7 @@
     "deploy:pulse": "yarn deploy --network pulse",
     "deploy:fvm": "yarn deploy --network fvm",
     "deploy:avax": "yarn deploy --network avax",
+    "deploy:zeta": "yarn deploy --network zeta",
     "deploy:canto": "yarn deploy --network canto",
     "deploy:fuse": "yarn deploy --network fuse",
     "deploy:scroll": "yarn deploy --network scroll",

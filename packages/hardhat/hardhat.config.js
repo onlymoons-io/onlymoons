@@ -147,7 +147,13 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
-
+    zeta: {
+			url: "https://zetachain-evm.blockpi.network/v1/rpc/public",
+			// gasPrice: 1000000000,
+			accounts: {
+				mnemonic: mnemonic(),
+			},
+		},
     canto: {
       url: "https://jsonrpc.canto.nodestake.top/",
 
