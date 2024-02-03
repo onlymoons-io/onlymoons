@@ -218,6 +218,13 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    neon: {
+      url: "https://neon-proxy-mainnet.solana.p2p.org",
+      // gasPrice: 1000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
     manta: {
       url: "https://pacific-rpc.manta.network/http",
       // gasPrice: 1000000000,
