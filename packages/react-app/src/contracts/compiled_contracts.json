@@ -61,6 +61,9 @@
       "5000": {
         "mantle": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       },
+      "7000": {
+        "zeta": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+      },
       "7700": {
         "canto": "0xA70765C0428d1f9BE926e2C64b93823aa1646Efe"
       },
@@ -511,6 +514,9 @@
       "5000": {
         "mantle": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
       },
+      "7000": {
+        "zeta": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
+      },
       "7700": {
         "canto": "0x15b7Bd005EfFd43d7C9A05D73beBeBb84e38aFf0"
       },
@@ -891,6 +897,9 @@
       },
       "5000": {
         "mantle": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+      },
+      "7000": {
+        "zeta": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
       },
       "7700": {
         "canto": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
