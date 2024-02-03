@@ -504,7 +504,7 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
-  7000 : {
+  7000: {
     chainId: 7000,
     name: 'ZetaChain',
     shortName: 'Zeta',
@@ -516,7 +516,7 @@ export const networks: Record<number, NetworkData> = {
       decimals: 18,
       balance: BigNumber.from(0),
     },
-    explorerURL: 'https://zetachain.blockscout.com',
+    explorerURL: 'https://zetachain.blockscout.com/',
     rpcURL: 'https://zetachain-evm.blockpi.network/v1/rpc/public',
     icon: '/zeta.png',
     isTestNet: false,
@@ -528,7 +528,7 @@ export const networks: Record<number, NetworkData> = {
         stablePair: '0',
       },
     ],
-  },  
+  },
   7700: {
     chainId: 7700,
     name: 'Canto',
