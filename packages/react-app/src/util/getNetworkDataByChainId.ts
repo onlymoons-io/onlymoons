@@ -479,7 +479,7 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
-  4200 : {
+  4200: {
     chainId: 4200,
     name: 'Merlin',
     shortName: 'Merlin',
@@ -503,7 +503,7 @@ export const networks: Record<number, NetworkData> = {
         stablePair: '0',
       },
     ],
-  },  
+  },
   5000: {
     chainId: 5000,
     name: 'Mantle',
