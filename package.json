@@ -1,6 +1,6 @@
 {
   "name": "@onlymoons-io/onlymoons",
-  "version": "0.0.45",
+  "version": "0.0.46",
   "keywords": [
     "ethereum",
     "react",
@@ -61,6 +61,7 @@
     "deploy:dogechain": "yarn deploy --network dogechain",
     "deploy:kektest": "yarn deploy --network kektest",
     "deploy:poochain": "yarn deploy --network poochain",
+    "deploy:merlin": "yarn deploy --network merlin",
     "deploy:neon": "yarn deploy --network neon",
     "watch": "yarn workspace @onlymoons-io/hardhat watch",
     "accounts": "yarn workspace @onlymoons-io/hardhat accounts",

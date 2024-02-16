@@ -479,6 +479,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  4200: {
+    chainId: 4200,
+    name: 'Merlin',
+    shortName: 'Merlin',
+    urlName: 'merlin',
+    nativeCurrency: {
+      address: '0xF6D226f9Dc15d9bB51182815b320D3fBE324e1bA',
+      name: 'Bitcoin',
+      symbol: 'BTC',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://scan.merlinchain.io/',
+    rpcURL: 'https://rpc.merlinchain.io',
+    icon: '/merlin.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // BTC
+      {
+        address: '0xF6D226f9Dc15d9bB51182815b320D3fBE324e1bA',
+        // pair w/ 0 on 0
+        stablePair: '0',
+      },
+    ],
+  },
   5000: {
     chainId: 5000,
     name: 'Mantle',
