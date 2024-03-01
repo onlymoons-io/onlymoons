@@ -200,6 +200,13 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    blast: {
+      url: "https://blast.blockpi.network/v1/rpc/public",
+      gasPrice: 100000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
     base: {
       url: "https://developer-access-mainnet.base.org/",
       // gasPrice: 1000000000,
