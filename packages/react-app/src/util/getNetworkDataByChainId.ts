@@ -752,7 +752,7 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
-  81457 : {
+  81457: {
     chainId: 81457,
     name: 'Blast',
     shortName: 'Blast',
@@ -776,7 +776,7 @@ export const networks: Record<number, NetworkData> = {
         stablePair: '0',
       },
     ],
-  },  
+  },
   420420: {
     chainId: 420420,
     name: 'KeKchain',
