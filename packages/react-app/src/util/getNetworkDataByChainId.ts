@@ -752,6 +752,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  81457: {
+    chainId: 81457,
+    name: 'Blast',
+    shortName: 'Blast',
+    urlName: 'blast',
+    nativeCurrency: {
+      address: '0x4300000000000000000000000000000000000004',
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://blastscan.io/',
+    rpcURL: 'https://blast.blockpi.network/v1/rpc/public',
+    icon: '/blast.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // ETH
+      {
+        address: '0x4300000000000000000000000000000000000004',
+        // pair w/ 0 on 0
+        stablePair: '0',
+      },
+    ],
+  },
   420420: {
     chainId: 420420,
     name: 'KeKchain',
