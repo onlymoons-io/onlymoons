@@ -852,6 +852,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  7777777: {
+    chainId: 7777777,
+    name: 'Zora',
+    shortName: 'Zora',
+    urlName: 'zora',
+    nativeCurrency: {
+      address: '0',
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://explorer.zora.energy/',
+    rpcURL: 'https://rpc.zora.energy',
+    icon: '/zora.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // ETH
+      {
+        address: '0',
+        // pair w/ 0 on 0
+        stablePair: '0',
+      },
+    ],
+  },
   20202021: {
     chainId: 20202021,
     name: 'Poochain',
