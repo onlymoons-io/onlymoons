@@ -852,7 +852,7 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
-  7777777 : {
+  7777777: {
     chainId: 7777777,
     name: 'Zora',
     shortName: 'Zora',
@@ -876,7 +876,7 @@ export const networks: Record<number, NetworkData> = {
         stablePair: '0',
       },
     ],
-  },  
+  },
   20202021: {
     chainId: 20202021,
     name: 'Poochain',
