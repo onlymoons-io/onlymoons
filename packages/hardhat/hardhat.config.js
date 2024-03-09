@@ -156,7 +156,7 @@ module.exports = {
     },
     zora: {
       url: "https://rpc.zora.energy",
-      // gasPrice: 1000000000,
+      gasPrice: 1,
       accounts: {
         mnemonic: mnemonic(),
       },
