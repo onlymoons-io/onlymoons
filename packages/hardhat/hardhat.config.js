@@ -154,6 +154,13 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    zora: {
+      url: "https://rpc.zora.energy",
+      gasPrice: 1,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
     canto: {
       url: "https://jsonrpc.canto.nodestake.top/",
 
