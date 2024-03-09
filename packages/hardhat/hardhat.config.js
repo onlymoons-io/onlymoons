@@ -155,12 +155,12 @@ module.exports = {
       },
     },
     zora: {
-			url: "https://rpc.zora.energy",
-			// gasPrice: 1000000000,
-			accounts: {
-				mnemonic: mnemonic(),
-			},
-		},
+      url: "https://rpc.zora.energy",
+      // gasPrice: 1000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
     canto: {
       url: "https://jsonrpc.canto.nodestake.top/",
 
@@ -203,6 +203,13 @@ module.exports = {
     merlin: {
       url: "https://rpc.merlinchain.io",
       // gasPrice: 1000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
+    blast: {
+      url: "https://blast.blockpi.network/v1/rpc/public",
+      gasPrice: 100000,
       accounts: {
         mnemonic: mnemonic(),
       },
