@@ -170,12 +170,12 @@ module.exports = {
       },
     },
     degen: {
-			url: "https://rpc.degen.tips",
-			// gasPrice: 1000000000,
-			accounts: {
-				mnemonic: mnemonic(),
-			},
-		},
+      url: "https://rpc.degen.tips",
+      // gasPrice: 1000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
     kekchain: {
       url: "https://mainnet.kekchain.com",
       gasPrice: 1100000000,
