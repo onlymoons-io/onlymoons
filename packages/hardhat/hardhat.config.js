@@ -170,7 +170,7 @@ module.exports = {
       },
     },
     degen: {
-			url: ""https://rpc.degen.tips"",
+			url: "https://rpc.degen.tips",
 			// gasPrice: 1000000000,
 			accounts: {
 				mnemonic: mnemonic(),
