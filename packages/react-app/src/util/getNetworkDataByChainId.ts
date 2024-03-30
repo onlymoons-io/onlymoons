@@ -877,6 +877,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  666666666 : {
+    chainId: 666666666,
+    name: 'Degen',
+    shortName: 'Degen',
+    urlName: 'degen',
+    nativeCurrency: {
+      address: '0xEb54dACB4C2ccb64F8074eceEa33b5eBb38E5387',
+      name: 'Degen',
+      symbol: 'degen',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://explorer.degen.tips/',
+    rpcURL: 'https://rpc.degen.tips',
+    icon: '/degen.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // degen
+      {
+        address: '0xEb54dACB4C2ccb64F8074eceEa33b5eBb38E5387',
+        // pair w/ 0 on 0
+        stablePair: '0',
+      },
+    ],
+  },  
   20202021: {
     chainId: 20202021,
     name: 'Poochain',

@@ -63,6 +63,7 @@
     "deploy:poochain": "yarn deploy --network poochain",
     "deploy:zora": "yarn deploy --network zora",
     "deploy:blast": "yarn deploy --network blast",
+    "deploy:degen": "yarn deploy --network degen",
     "deploy:merlin": "yarn deploy --network merlin",
     "deploy:neon": "yarn deploy --network neon",
     "watch": "yarn workspace @onlymoons-io/hardhat watch",
