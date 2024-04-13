@@ -20,7 +20,7 @@ const Outer = tw.nav`
   dark:text-gray-100
   overflow-hidden
   fixed
-  top-0
+  top-10
   left-0
   md:left-16
   right-0
@@ -40,8 +40,20 @@ const Inner = tw.div`
 const Left = tw.div``
 
 const HeaderCSS = styled.h1`
-  font-family: 'Rubik', Avenir, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
-    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family:
+    'Rubik',
+    Avenir,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Roboto',
+    'Oxygen',
+    'Ubuntu',
+    'Cantarell',
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    sans-serif;
 `
 
 const Header = tw(HeaderCSS)`

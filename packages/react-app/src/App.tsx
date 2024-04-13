@@ -41,6 +41,7 @@ import { NetworkConnector } from '@web3-react/network-connector'
 
 import { providers } from 'ethers'
 import { createBreakpoint, usePromise } from 'react-use'
+import Migrating from './components/Migrating'
 
 const { Web3Provider } = providers
 
@@ -63,7 +64,7 @@ const LeftArea = tw.div<AreaProps>`
   duration-200
   fixed
   left-0
-  top-0
+  top-10
   bottom-0
   pt-16
   z-20
@@ -169,6 +170,8 @@ const AppContent: React.FC = () => {
         </LeftArea>
 
         <RightArea>
+          <Migrating />
+
           <NavBar />
 
           <Routes>
