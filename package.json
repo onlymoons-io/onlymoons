@@ -90,5 +90,7 @@
       "**/hardhat-ts/**"
     ]
   },
-  "dependencies": {}
+  "devDependencies": {
+    "prettier": "^3.2.5"
+  }
 }
