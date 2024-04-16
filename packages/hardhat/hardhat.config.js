@@ -161,6 +161,13 @@ module.exports = {
         mnemonic: mnemonic(),
       },
     },
+    xlayer: {
+      url: "https://rpc.xlayer.tech",
+      // gasPrice: 1000000000,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
     canto: {
       url: "https://jsonrpc.canto.nodestake.top/",
 
