@@ -235,7 +235,7 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
-  196 : {
+  196: {
     chainId: 196,
     name: 'X Layer',
     shortName: 'Xlayer',
@@ -247,7 +247,7 @@ export const networks: Record<number, NetworkData> = {
       decimals: 18,
       balance: BigNumber.from(0),
     },
-    explorerURL: 'https://www.okx.com/explorer/xlayer',
+    explorerURL: 'https://www.okx.com/explorer/xlayer/',
     rpcURL: 'https://rpc.xlayer.tech',
     icon: '/xlayer.png',
     isTestNet: false,
@@ -259,7 +259,7 @@ export const networks: Record<number, NetworkData> = {
         stablePair: '0',
       },
     ],
-  },  
+  },
   204: {
     chainId: 204,
     name: 'opBNB',
@@ -902,7 +902,7 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
-  666666666 : {
+  666666666: {
     chainId: 666666666,
     name: 'Degen',
     shortName: 'Degen',
@@ -926,7 +926,7 @@ export const networks: Record<number, NetworkData> = {
         stablePair: '0',
       },
     ],
-  },  
+  },
   20202021: {
     chainId: 20202021,
     name: 'Poochain',
