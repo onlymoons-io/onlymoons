@@ -31,6 +31,9 @@
       "169": {
         "manta": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       },
+      "196": {
+        "xlayer": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
+      },
       "204": {
         "opbnb": "0x77110f67C0EF3c98c43570BADe06046eF6549876"
       },
@@ -496,6 +499,9 @@
       "169": {
         "manta": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
       },
+      "196": {
+        "xlayer": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
+      },
       "204": {
         "opbnb": "0x7BF2f06D65b5C9f146ea79a4eCC7C7cdFC01B613"
       },
@@ -888,6 +894,9 @@
       },
       "169": {
         "manta": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
+      },
+      "196": {
+        "xlayer": "0x80531d9bAE23fFc04105a58E3771FFe10F86de11"
       },
       "204": {
         "opbnb": "0x80531d9bae23ffc04105a58e3771ffe10f86de11"

@@ -235,6 +235,31 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
+  196: {
+    chainId: 196,
+    name: 'X Layer',
+    shortName: 'Xlayer',
+    urlName: 'xlayer',
+    nativeCurrency: {
+      address: '0xe538905cf8410324e03a5a23c1c177a474d59b2b',
+      name: 'OKB',
+      symbol: 'OKB',
+      decimals: 18,
+      balance: BigNumber.from(0),
+    },
+    explorerURL: 'https://www.okx.com/explorer/xlayer/',
+    rpcURL: 'https://rpc.xlayer.tech',
+    icon: '/xlayer.png',
+    isTestNet: false,
+    supportedLiquidityPairTokens: [
+      // OKB
+      {
+        address: '0xe538905cf8410324e03a5a23c1c177a474d59b2b',
+        // pair w/ 0 on 0
+        stablePair: '0',
+      },
+    ],
+  },
   204: {
     chainId: 204,
     name: 'opBNB',
@@ -877,7 +902,7 @@ export const networks: Record<number, NetworkData> = {
       },
     ],
   },
-  666666666 : {
+  666666666: {
     chainId: 666666666,
     name: 'Degen',
     shortName: 'Degen',
@@ -901,7 +926,7 @@ export const networks: Record<number, NetworkData> = {
         stablePair: '0',
       },
     ],
-  },  
+  },
   20202021: {
     chainId: 20202021,
     name: 'Poochain',

@@ -62,6 +62,7 @@
     "deploy:kektest": "yarn deploy --network kektest",
     "deploy:poochain": "yarn deploy --network poochain",
     "deploy:zora": "yarn deploy --network zora",
+    "deploy:xlayer": "yarn deploy --network xlayer",
     "deploy:blast": "yarn deploy --network blast",
     "deploy:degen": "yarn deploy --network degen",
     "deploy:merlin": "yarn deploy --network merlin",
